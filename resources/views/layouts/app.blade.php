@@ -34,7 +34,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
 </head>
-<body class="bg-gray-950 text-gray-200 antialiased"
+<body class="pfx-shell bg-gray-950 text-gray-200 antialiased"
       x-data="{
           sidebarOpen: false,
           sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
@@ -46,21 +46,12 @@
               localStorage.setItem('theme', this.theme);
           }
       }">
-    <div class="flex h-screen overflow-hidden">
+    @include('layouts.partials.app-nav')
 
-        {{-- Sidebar --}}
-        @include('layouts.partials.sidebar')
-
-        {{-- Main Content --}}
-        <div class="flex-1 flex flex-col overflow-hidden" :class="sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'" style="transition: margin-left 0.3s ease">
-            {{-- Top Bar --}}
-            @include('layouts.partials.topbar')
-
-            {{-- Page Content --}}
-            <main class="flex-1 overflow-y-auto">
+            <main class="pfx-canvas min-h-[calc(100vh-4rem)]">
                 {{-- Demo Mode Banner --}}
                 @if(env('DEMO_MODE') === 'true' || env('DEMO_MODE') === true || env('DEMO_MODE') === '1')
-                <div class="sticky top-0 z-30 flex items-center justify-center gap-2 bg-amber-500 px-4 py-2 text-xs font-semibold text-amber-950">
+                <div class="flex items-center justify-center gap-2 bg-amber-500 px-4 py-2 text-xs font-semibold text-amber-950">
                     <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>
                     Demo Mode Active — all changes are disabled. This is a read-only preview.
                 </div>
@@ -69,7 +60,7 @@
                 @if(session('success'))
                 <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
                      x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2"
-                     class="mx-6 mt-4">
+                     class="max-w-[1400px] mx-auto px-4 sm:px-6 mt-4">
                     <div class="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-400 text-sm flex items-center justify-between">
                         <div class="flex items-center gap-2">
                             <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
@@ -80,7 +71,7 @@
                 </div>
                 @endif
                 @if(session('error'))
-                <div x-data="{ show: true }" x-show="show" class="mx-6 mt-4">
+                <div x-data="{ show: true }" x-show="show" class="max-w-[1400px] mx-auto px-4 sm:px-6 mt-4">
                     <div class="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-400 text-sm flex items-center justify-between">
                         <div class="flex items-center gap-2">
                             <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
@@ -92,18 +83,20 @@
                 @endif
 
                 @if(session('impersonating'))
-                <div class="mx-6 mt-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400 text-sm flex items-center justify-between">
+                <div class="max-w-[1400px] mx-auto px-4 sm:px-6 mt-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400 text-sm flex items-center justify-between">
                     <span>⚡ You are impersonating <strong>{{ auth()->user()->name }}</strong></span>
                     <a href="{{ route('admin.stopImpersonating') }}" class="px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 rounded-lg text-xs font-medium transition">Stop</a>
                 </div>
                 @endif
 
-                <div class="p-6">
+                <div class="max-w-[1400px] mx-auto px-4 sm:px-6 pt-8 pb-12">
+                    <div class="mb-7">
+                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-accent-400">{{ now()->format('l, j F') }}</p>
+                        <h1 class="mt-1.5 text-2xl sm:text-3xl font-extrabold tracking-tight text-white">@yield('page-title', 'Dashboard')</h1>
+                    </div>
                     @yield('content')
                 </div>
             </main>
-        </div>
-    </div>
 
     @stack('modals')
     @stack('scripts')

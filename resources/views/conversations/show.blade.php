@@ -8,7 +8,7 @@
     {{ session('success') }}
 </div>
 @endif
-<div class="flex gap-5 max-w-7xl" style="height: calc(100vh - 180px)">
+<div class="flex gap-5" style="height: calc(100vh - 240px); min-height: 520px">
     {{-- Chat Thread --}}
     <div class="flex-1 flex flex-col bg-gray-900/50 border border-white/5 rounded-2xl overflow-hidden min-w-0">
         {{-- Header --}}

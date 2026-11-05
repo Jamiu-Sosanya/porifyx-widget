@@ -21,7 +21,7 @@
 @endif
 
 {{-- KPI Stats Grid --}}
-<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+<div class="grid grid-cols-2 xl:grid-cols-4 mb-8 bg-gray-900/50 border border-white/5 rounded-2xl overflow-hidden divide-white/5 [&>*]:border-white/5 [&>*:nth-child(odd)]:border-r xl:[&>*]:border-r xl:[&>*:last-child]:border-r-0 [&>*:nth-child(-n+2)]:border-b xl:[&>*]:border-b-0">
     @php
     $kpiCards = [
         ['label' => 'Total Widgets',   'value' => $totalWidgets,        'change' => null,        'icon' => 'M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42', 'color' => 'brand', 'gradient' => 'from-brand-500/10 to-brand-500/5'],
@@ -31,33 +31,20 @@
     ];
     @endphp
     @foreach($kpiCards as $card)
-    <div class="relative overflow-hidden bg-gray-900/50 border border-white/5 rounded-2xl p-5 hover:border-{{ $card['color'] }}-500/20 transition-all duration-300 group">
-        <div class="absolute inset-0 bg-linear-to-br {{ $card['gradient'] }} opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <div class="relative flex items-start justify-between">
-            <div class="flex-1">
-                <p class="text-sm text-gray-400 mb-1">{{ $card['label'] }}</p>
-                <p class="text-3xl font-bold text-white">{{ number_format($card['value']) }}</p>
-                @if($card['change'] !== null)
-                <div class="flex items-center gap-1 mt-2">
-                    @if($card['change'] >= 0)
-                    <span class="inline-flex items-center gap-0.5 text-xs font-medium text-emerald-400">
-                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" /></svg>
-                        {{ $card['change'] }}%
-                    </span>
-                    @else
-                    <span class="inline-flex items-center gap-0.5 text-xs font-medium text-rose-400">
-                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" /></svg>
-                        {{ abs($card['change']) }}%
-                    </span>
-                    @endif
-                    <span class="text-xs text-gray-600">vs prev period</span>
-                </div>
-                @endif
-            </div>
-            <div class="w-10 h-10 bg-{{ $card['color'] }}-500/10 rounded-xl flex items-center justify-center shrink-0">
-                <svg class="w-5 h-5 text-{{ $card['color'] }}-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
-            </div>
+    <div class="relative p-5 sm:p-6">
+        <div class="flex items-center gap-2.5">
+            <span class="w-8 h-8 rounded-full bg-{{ $card['color'] }}-500/15 grid place-items-center shrink-0">
+                <svg class="w-4 h-4 text-{{ $card['color'] }}-400" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
+            </span>
+            <p class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-gray-400 truncate">{{ $card['label'] }}</p>
         </div>
+        <div class="mt-4 flex items-end justify-between gap-3">
+            <p class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-none">{{ number_format($card['value']) }}</p>
+            @if($card['change'] !== null)
+            <span class="px-2 py-1 rounded-full text-[11px] font-bold {{ $card['change'] >= 0 ? 'bg-emerald-500/15 text-emerald-400' : 'bg-rose-500/15 text-rose-400' }}" title="vs previous period">{{ $card['change'] >= 0 ? '+' : '−' }}{{ abs($card['change']) }}%</span>
+            @endif
+        </div>
+        <span class="absolute left-6 right-6 bottom-0 h-0.5 rounded-full bg-{{ $card['color'] }}-500/50"></span>
     </div>
     @endforeach
 </div>
