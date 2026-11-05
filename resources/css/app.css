@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Class-based dark mode (html.dark), shared with the app theme toggle. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* PoriFyx Widget design tokens */
 @theme {
     --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
