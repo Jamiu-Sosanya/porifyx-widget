@@ -54,46 +54,7 @@
 <div class="min-h-screen bg-[#f6f7fb] text-[#0b1324] dark:bg-[#070d1a] dark:text-slate-100 transition-colors">
 
 {{-- ================= NAV ================= --}}
-<header class="sticky top-0 z-40 border-b border-slate-200/70 bg-[#f6f7fb]/80 backdrop-blur-lg dark:border-white/10 dark:bg-[#070d1a]/80">
-    <nav class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between gap-4">
-        <a href="{{ url('/') }}" class="flex items-center gap-2.5 font-extrabold tracking-tight text-lg shrink-0">
-            @include('layouts.partials.logo', ['size' => 32]) <span>{{ $name }}</span>
-        </a>
-        <div class="hidden lg:flex items-center gap-7 text-sm font-medium {{ $muted }}">
-            <a href="#features" class="hover:text-slate-900 dark:hover:text-white">Features</a>
-            <a href="#use-cases" class="hover:text-slate-900 dark:hover:text-white">Use cases</a>
-            <a href="#how" class="hover:text-slate-900 dark:hover:text-white">How it works</a>
-            <a href="#pricing" class="hover:text-slate-900 dark:hover:text-white">Pricing</a>
-            <a href="#faq" class="hover:text-slate-900 dark:hover:text-white">FAQ</a>
-        </div>
-        <div class="flex items-center gap-1.5">
-            <button type="button" @click="toggleTheme()" :aria-label="dark ? 'Switch to light mode' : 'Switch to dark mode'"
-                    class="grid place-items-center w-10 h-10 rounded-xl hover:bg-slate-200/70 dark:hover:bg-white/10">
-                <svg x-show="!dark" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-                <svg x-show="dark" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4l1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-            </button>
-            <div class="hidden md:flex items-center gap-2 text-sm font-semibold">
-                @auth
-                    <a href="{{ route('dashboard') }}" class="px-4 py-2.5 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900">Dashboard</a>
-                @else
-                    <a href="{{ route('login') }}" class="px-3 py-2.5 hover:text-brand-600 dark:hover:text-brand-300">Sign in</a>
-                    <a href="{{ route('register') }}" class="px-4 py-2.5 rounded-xl bg-brand-500 text-white hover:bg-brand-600">Start free</a>
-                @endauth
-            </div>
-            <button class="lg:hidden grid place-items-center w-10 h-10 -mr-2" @click="menu = !menu" :aria-expanded="menu" aria-label="Menu">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path x-show="!menu" d="M4 7h16M4 12h16M4 17h16"/><path x-show="menu" x-cloak d="M6 6l12 12M18 6L6 18"/></svg>
-            </button>
-        </div>
-    </nav>
-    <div x-show="menu" x-cloak x-transition.opacity @click="menu = false"
-         class="lg:hidden absolute inset-x-0 top-16 border-b border-slate-200 bg-white px-5 py-5 flex flex-col gap-4 font-medium dark:bg-[#0b1324] dark:border-white/10">
-        <a href="#features">Features</a><a href="#use-cases">Use cases</a><a href="#how">How it works</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a>
-        <div class="grid grid-cols-2 gap-3 pt-2 md:hidden">
-            <a href="{{ route('login') }}" class="py-3 rounded-xl border border-slate-300 dark:border-white/20 text-center">Sign in</a>
-            <a href="{{ route('register') }}" class="py-3 rounded-xl bg-brand-500 text-white text-center">Start free</a>
-        </div>
-    </div>
-</header>
+@include('layouts.partials.site-nav')
 
 {{-- ================= HERO ================= --}}
 <section class="pfx-hero relative">
@@ -431,55 +392,14 @@
             <p class="mt-4 text-slate-300">Start free. Keep it if it earns its place.</p>
             <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
                 <a href="{{ route('register') }}" class="px-8 py-4 rounded-xl bg-white text-slate-900 font-bold hover:bg-slate-200">Create my assistant</a>
-                <a href="mailto:{{ config('branding.support_email') }}" class="px-8 py-4 rounded-xl border border-white/25 font-semibold hover:bg-white/5">Talk to sales</a>
+                <a href="{{ route('contact', ['topic' => 'sales']) }}#form" class="px-8 py-4 rounded-xl border border-white/25 font-semibold hover:bg-white/5">Talk to sales</a>
             </div>
         </div>
     </div>
 </section>
 
 {{-- ================= FOOTER ================= --}}
-<footer class="border-t border-slate-200 bg-white dark:border-white/10 dark:bg-[#050a14]">
-    <div class="max-w-6xl mx-auto px-5 pt-16 pb-24 sm:pb-10">
-        <div class="grid grid-cols-2 md:grid-cols-6 gap-x-6 gap-y-10">
-            <div class="col-span-2">
-                <a href="{{ url('/') }}" class="flex items-center gap-2.5 font-extrabold text-lg">@include('layouts.partials.logo', ['size' => 30]) {{ $name }}</a>
-                <p class="mt-4 text-sm leading-relaxed max-w-xs {{ $muted }}">{{ config('branding.tagline') }}</p>
-                <a href="mailto:{{ config('branding.support_email') }}" class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-brand-600 dark:text-brand-400 break-all">
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l9 6 9-6M5 19h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2z"/></svg>{{ config('branding.support_email') }}
-                </a>
-                @php $socials = array_filter(['X' => config('branding.twitter_url'), 'Facebook' => config('branding.facebook_url'), 'LinkedIn' => config('branding.linkedin_url')]); @endphp
-                @if($socials)
-                <div class="mt-5 flex gap-2">
-                    @foreach($socials as $label => $href)
-                    <a href="{{ $href }}" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $card }}">{{ $label }}</a>
-                    @endforeach
-                </div>
-                @endif
-            </div>
-            @foreach([
-                'Product'   => [['Features', '#features'], ['Use cases', '#use-cases'], ['Pricing', '#pricing'], ['Live demo', '#demo'], ['Changelog', route('changelog')], ['Roadmap', route('roadmap')]],
-                'Resources' => [['Documentation', route('documentation')], ['API reference', route('api.reference')], ['Blog', route('blog')], ['System status', route('status')]],
-                'Company'   => [['About', route('about')], ['Careers', route('careers')], ['Contact', route('contact')]],
-                'Legal'     => [['Privacy policy', route('privacy')], ['Terms of service', route('terms')]],
-            ] as $heading => $links)
-            <nav aria-label="{{ $heading }}">
-                <p class="text-sm font-bold">{{ $heading }}</p>
-                <ul class="mt-4 space-y-3 text-sm {{ $muted }}">
-                    @foreach($links as [$label, $href])
-                    <li><a href="{{ $href }}" class="hover:text-brand-600 dark:hover:text-brand-300">{{ $label }}</a></li>
-                    @endforeach
-                </ul>
-            </nav>
-            @endforeach
-        </div>
-        <div class="mt-14 pt-6 border-t border-slate-200 dark:border-white/10 flex flex-col-reverse sm:flex-row gap-4 sm:items-center justify-between text-sm {{ $muted }}">
-            <p>{{ config('branding.copyright') ?: '© ' . date('Y') . ' ' . $name . '. All rights reserved.' }}</p>
-            <button type="button" @click="toggleTheme()" class="self-start sm:self-auto inline-flex items-center gap-2 px-3 py-1.5 rounded-lg {{ $card }}">
-                <span x-text="dark ? '☀ Light mode' : '☾ Dark mode'"></span>
-            </button>
-        </div>
-    </div>
-</footer>
+@include('layouts.partials.site-footer')
 
 {{-- Floating launcher: jumps to the live assistant --}}
 <a href="#demo" @click="setTimeout(() => document.getElementById('pfx-demo-input').focus({ preventScroll: true }), 500)" aria-label="Chat with us"

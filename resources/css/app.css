@@ -16,6 +16,30 @@
     --color-accent-900: #164e63; --color-accent-950: #083344;
 }
 
+/* Long-form content on public pages (docs, legal, blog). */
+.pfx-prose { color: #334155; font-size: 1.0625rem; line-height: 1.8; }
+.dark .pfx-prose { color: #cbd5e1; }
+.pfx-prose > * + * { margin-top: 1.1em; }
+.pfx-prose h2 { margin-top: 2.6em; font-size: 1.6rem; line-height: 1.3; font-weight: 800; letter-spacing: -0.02em; color: #0b1324; scroll-margin-top: 6rem; }
+.pfx-prose h3 { margin-top: 2em; font-size: 1.2rem; font-weight: 700; color: #0b1324; scroll-margin-top: 6rem; }
+.dark .pfx-prose h2, .dark .pfx-prose h3, .dark .pfx-prose strong { color: #fff; }
+.pfx-prose h2:first-child { margin-top: 0; }
+.pfx-prose strong { color: #0b1324; font-weight: 700; }
+.pfx-prose a { color: var(--color-brand-600); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.dark .pfx-prose a { color: var(--color-brand-300); }
+.pfx-prose ul, .pfx-prose ol { padding-left: 1.3em; }
+.pfx-prose ul { list-style: disc; } .pfx-prose ol { list-style: decimal; }
+.pfx-prose li + li { margin-top: .45em; }
+.pfx-prose li::marker { color: var(--color-brand-500); }
+.pfx-prose code { font-size: .875em; padding: .15em .4em; border-radius: .4rem; background: #eef2f7; color: #1e3b9c; overflow-wrap: anywhere; }
+.dark .pfx-prose code { background: rgba(255,255,255,.08); color: #93b0f7; }
+.pfx-prose pre { font-size: .85rem; line-height: 1.7; padding: 1.1rem 1.25rem; border-radius: 1rem; background: #0b1324; color: #e2e8f0; overflow-x: auto; }
+.pfx-prose pre code { background: none; padding: 0; color: inherit; overflow-wrap: normal; }
+.pfx-prose table { width: 100%; font-size: .95rem; border-collapse: collapse; display: block; overflow-x: auto; }
+.pfx-prose th, .pfx-prose td { text-align: left; padding: .65rem .8rem; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+.dark .pfx-prose th, .dark .pfx-prose td { border-color: rgba(255,255,255,.1); }
+.pfx-prose th { font-weight: 700; color: #0b1324; } .dark .pfx-prose th { color: #fff; }
+.pfx-prose blockquote { border-left: 3px solid var(--color-brand-500); padding-left: 1.1em; font-style: italic; }
 
 /* Custom scrollbar */
 .custom-scrollbar::-webkit-scrollbar { width: 4px; }

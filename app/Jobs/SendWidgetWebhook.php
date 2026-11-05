@@ -42,7 +42,7 @@ class SendWidgetWebhook implements ShouldQueue
 
         $headers = [
             'Content-Type' => 'application/json',
-            'User-Agent'   => 'porifyxwidgetPro-Webhook/1.0',
+            'User-Agent'   => 'PoriFyx-Webhook/1.0',
             'X-PFX-Event'  => $this->event,
             'X-PFX-Widget' => $widget->uuid,
         ];

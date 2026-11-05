@@ -20,6 +20,14 @@ class AppServiceProvider extends ServiceProvider
     {
         Gate::policy(Widget::class, WidgetPolicy::class);
 
+        // Shared class strings for the public site pages (light and dark pairs kept in one place).
+        \Illuminate\Support\Facades\View::composer(['pages.*', 'layouts.site', 'layouts.doc'], fn ($view) => $view->with([
+            'name'    => config('branding.name'),
+            'card'    => 'bg-white border border-slate-200 dark:bg-white/[0.03] dark:border-white/10',
+            'muted'   => 'text-slate-600 dark:text-slate-400',
+            'eyebrow' => 'text-sm font-bold uppercase tracking-widest text-brand-600 dark:text-brand-400',
+        ]));
+
         $this->bootDynamicMailConfig();
         $this->bootCustomEmailTemplates();
     }

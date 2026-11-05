@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KnowledgeBaseController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\SiteController;
 use App\Http\Controllers\WidgetController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,136 +24,17 @@ Route::get('/offline', function () {
 // Landing page
 Route::get('/', [\App\Http\Controllers\LandingController::class, 'index'])->name('home');
 Route::post('/demo-chat', [\App\Http\Controllers\LandingController::class, 'chat'])->middleware('throttle:20,1')->name('demo.chat');
+// Public site pages (footer links)
 
-$staticPages = [
-    'about' => [
-        'name' => 'about',
-        'title' => 'About',
-        'heading' => 'About ' . config('branding.name'),
-        'subheading' => config('branding.name') . ' makes AI chat widgets that help support and sales teams capture more leads, answer questions instantly, and convert visitors automatically.',
-        'sections' => [
-            ['title' => 'Our mission', 'body' => 'We are building intelligent chat tools that empower businesses to deliver better customer experiences while reducing manual workload and response time.'],
-            ['title' => 'What we build', 'body' => 'From smart lead capture to knowledge-based answers, our platform combines AI, analytics, and customizable widgets so conversations stay fast, accurate, and human-friendly.'],
-        ],
-    ],
-    'careers' => [
-        'name' => 'careers',
-        'title' => 'Careers',
-        'heading' => 'Join our team',
-        'subheading' => 'We are a small, remote-first team building the next generation of AI customer experience tools.',
-        'sections' => [
-            ['title' => 'Open opportunities', 'body' => 'We hire people who love solving product problems, shipping polished software, and working with modern AI stacks. If that sounds like you, let us know.'],
-            ['title' => 'Why work with us', 'body' => 'Flexible hours, strong ownership, and a focus on quality over hype. We value collaboration, learning, and helping customers succeed.'],
-            ['title' => 'Apply today', 'body' => 'Send your resume and a short note to ' . config('branding.support_email', 'support@example.com') . ' — we would love to hear what you want to build next.'],
-        ],
-    ],
-    'privacy' => [
-        'name' => 'privacy',
-        'title' => 'Privacy Policy',
-        'heading' => 'Privacy Policy',
-        'subheading' => 'We respect your privacy and protect customer data with strong security controls.',
-        'sections' => [
-            ['title' => 'Data handling', 'body' => 'We collect the minimum data required to run your account, process conversations, and deliver reliable AI responses. We never sell personal data to third parties.'],
-            ['title' => 'Security', 'body' => 'All data is encrypted in transit and at rest. Access is restricted by authenticated user sessions, role controls, and audit logging.'],
-        ],
-    ],
-    'terms' => [
-        'name' => 'terms',
-        'title' => 'Terms of Service',
-        'heading' => 'Terms of Service',
-        'subheading' => 'These terms describe how you may use our software and services.',
-        'sections' => [
-            ['title' => 'Use of service', 'body' => 'You agree to use the platform in a lawful way, to maintain control of your account credentials, and to provide accurate information during registration.'],
-            ['title' => 'Billing and cancellation', 'body' => 'Subscriptions are billed monthly or yearly according to your selected plan. You may cancel at any time, and any unused prepaid portion will be handled according to the plan terms.'],
-        ],
-    ],
-    'contact' => [
-        'name' => 'contact',
-        'title' => 'Contact',
-        'heading' => 'Contact us',
-        'subheading' => 'Need help? We are here to answer questions about setup, billing, and AI workflows.',
-        'sections' => [
-            ['title' => 'Sales and support', 'body' => 'Email our team at ' . config('branding.support_email', 'support@example.com') . ' for quotes, onboarding questions, or product support.'],
-            ['title' => 'General inquiries', 'body' => 'If you need a custom integration or want to discuss enterprise plans, our inbox is open and we reply quickly.'],
-        ],
-    ],
-    'documentation' => [
-        'name' => 'documentation',
-        'title' => 'Documentation',
-        'heading' => 'Documentation',
-        'subheading' => 'Everything you need to embed, configure, and extend your AI chat widget.',
-        'sections' => [
-            ['title' => 'Getting started', 'body' => 'Learn how to install the widget script, connect your AI provider, and launch a chat experience on your site.'],
-            ['title' => 'Advanced guides', 'body' => 'Explore knowledge base setup, webhook integration, custom branding, and developer tools for deeper customization.'],
-        ],
-    ],
-    'api-reference' => [
-        'name' => 'api.reference',
-        'title' => 'API Reference',
-        'heading' => 'API Reference',
-        'subheading' => 'Use our API to manage widgets, leads, and automation programmatically.',
-        'sections' => [
-            ['title' => 'Authentication', 'body' => 'Authenticate using API keys and follow our secure request patterns to interact with widget and lead data.'],
-            ['title' => 'Endpoints', 'body' => 'Call endpoints for widget creation, conversation export, lead retrieval, and webhook events. Use strong error handling for reliable integrations.'],
-        ],
-    ],
-    'blog' => [
-        'name' => 'blog',
-        'title' => 'Blog',
-        'heading' => 'Blog',
-        'subheading' => 'Stories and updates about AI chat, customer experience automation, and product development.',
-        'sections' => [
-            ['title' => 'Latest news', 'body' => 'Read about feature launches, product updates, and best practices for building smarter customer experiences.'],
-            ['title' => 'Community insights', 'body' => 'We publish guides that help teams reduce support load, increase conversions, and launch AI experiences with confidence.'],
-        ],
-    ],
-    'case-studies' => [
-        'name' => 'case-studies',
-        'title' => 'Case Studies',
-        'heading' => 'Case Studies',
-        'subheading' => 'See how real customers use AI chat to capture leads, boost conversions, and scale support.',
-        'sections' => [
-            ['title' => 'Success stories', 'body' => 'Explore example deployments, business outcomes, and the measurable ROI teams achieve with our platform.'],
-            ['title' => 'Customer value', 'body' => 'From faster response times to higher lead quality, our customers gain more predictable growth with AI-assisted conversations.'],
-        ],
-    ],
-    'changelog' => [
-        'name' => 'changelog',
-        'title' => 'Changelog',
-        'heading' => 'Changelog',
-        'subheading' => 'Track product improvements, bug fixes, and new feature releases.',
-        'sections' => [
-            ['title' => 'Release cadence', 'body' => 'We ship updates frequently, with an emphasis on reliability, performance, and the features our customers ask for most.'],
-            ['title' => 'What to expect', 'body' => 'New releases include improvements to AI accuracy, widget customization, analytics, and developer tools.'],
-        ],
-    ],
-    'roadmap' => [
-        'name' => 'roadmap',
-        'title' => 'Roadmap',
-        'heading' => 'Roadmap',
-        'subheading' => 'Our product roadmap is centered on AI experiences, integrations, and easier deployment.',
-        'sections' => [
-            ['title' => 'Upcoming work', 'body' => 'Expect improvements to analytics, deeper knowledge base capabilities, and more ways to personalize chat behavior.'],
-            ['title' => 'Customer-driven', 'body' => 'We prioritize feedback from customers who want better support automation, higher conversion, and simplified AI management.'],
-        ],
-    ],
-    'status' => [
-        'name' => 'status',
-        'title' => 'Status',
-        'heading' => 'System status',
-        'subheading' => 'Our platform is monitored continuously for uptime, reliability, and performance.',
-        'sections' => [
-            ['title' => 'Operational status', 'body' => 'All systems are currently operational. We maintain active monitoring and alerts for chat delivery, authentication, and analytics processing.'],
-            ['title' => 'Incident response', 'body' => 'In the rare event of degraded service, our team responds immediately and communicates updates through our support channels.'],
-        ],
-    ],
-];
-
-foreach ($staticPages as $slug => $pageData) {
-    Route::get('/' . $slug, function () use ($pageData) {
-        return view('pages.page', $pageData);
-    })->name($pageData['name']);
+foreach (['about', 'careers', 'privacy', 'terms', 'documentation', 'api-reference' => 'api.reference', 'changelog', 'roadmap'] as $slug => $name) {
+    $slug = is_int($slug) ? $name : $slug;
+    Route::get('/' . $slug, [SiteController::class, 'page'])->defaults('view', $slug)->name($name);
 }
+Route::get('/blog', [SiteController::class, 'blog'])->name('blog');
+Route::get('/blog/{slug}', [SiteController::class, 'post'])->name('blog.post');
+Route::get('/status', [SiteController::class, 'status'])->name('status');
+Route::get('/contact', [SiteController::class, 'contact'])->name('contact');
+Route::post('/contact', [SiteController::class, 'sendContact'])->middleware('throttle:5,1')->name('contact.send');
 
 // Admin login (separate from user login, IP-restricted)
 Route::middleware('admin.ip')->group(function () {
@@ -308,6 +190,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/users/{user}/impersonate', [AdminController::class, 'impersonateUser'])->name('users.impersonate');
         Route::get('/stop-impersonating', [AdminController::class, 'stopImpersonating'])->name('stopImpersonating');
         Route::get('/plans', [AdminController::class, 'plans'])->name('plans');
+        Route::get('/inbox', [SiteController::class, 'inbox'])->name('inbox');
+        Route::patch('/inbox/{contactRequest}', [SiteController::class, 'toggleHandled'])->name('inbox.toggle');
         Route::post('/plans', [AdminController::class, 'storePlan'])->name('plans.store');
         Route::put('/plans/{plan}', [AdminController::class, 'updatePlan'])->name('plans.update');
         Route::delete('/plans/{plan}', [AdminController::class, 'deletePlan'])->name('plans.delete');
