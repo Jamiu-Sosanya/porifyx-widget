@@ -173,7 +173,7 @@
             'squarespace' => 'Squarespace', 'framer' => 'Framer', 'react' => 'React', 'nextdotjs' => 'Next.js', 'vuedotjs' => 'Vue', 'nuxt' => 'Nuxt',
             'angular' => 'Angular', 'svelte' => 'Svelte', 'laravel' => 'Laravel', 'bigcommerce' => 'BigCommerce', 'prestashop' => 'PrestaShop',
             'drupal' => 'Drupal', 'joomla' => 'Joomla', 'ghost' => 'Ghost', 'hubspot' => 'HubSpot', 'gatsby' => 'Gatsby', 'html5' => 'HTML'];
-        $monoLogos = ['nextdotjs', 'framer', 'wix', 'ghost', 'squarespace', 'bigcommerce'];
+        $monoLogos = ['nextdotjs', 'ghost', 'squarespace', 'bigcommerce'];
     @endphp
     <div class="max-w-6xl mx-auto px-5 pt-8 pb-2">
         <p class="text-xs font-bold uppercase tracking-widest text-slate-400 text-center">Works on any site — {{ count($platforms) }}+ platforms and frameworks</p>
