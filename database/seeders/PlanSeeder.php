@@ -42,7 +42,7 @@ class PlanSeeder extends Seeder
             ],
             [
                 'name' => 'Enterprise', 'slug' => 'enterprise', 'sort_order' => 4, 'color' => 'amber',
-                'description' => 'Unlimited everything. White-label. Dedicated support.',
+                'description' => 'Unlimited everything. Custom branding. Dedicated support.',
                 'price_monthly' => 499, 'price_yearly' => 4990,
                 'stripe_monthly_id' => 'price_enterprise_monthly', 'stripe_yearly_id' => 'price_enterprise_yearly',
                 'widgets_limit' => -1, 'messages_per_month' => -1, 'training_sources_limit' => -1,

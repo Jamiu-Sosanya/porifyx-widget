@@ -1,5 +1,5 @@
 /**
- * PoriFyx Widget v2.0 — Embeddable Widget Script
+ * PoriFyx Widget v1.0 — Embeddable Widget Script
  * Features: Multi-theme, Markdown, Smart Suggestions, Proactive Messaging,
  *           Sound Notifications, Offline Form, Emoji Reactions, Timestamps,
  *           Unread Badge, Auto-language, Conversation Starters
@@ -247,11 +247,11 @@
         const pos     = config.position || 'bottom-right';
         const hPos    = pos.includes('left') ? 'left:20px;' : 'right:20px;';
         const vPos    = pos.includes('top')  ? 'top:20px;'  : 'bottom:20px;';
-        const shape   = config.launcher_shape === 'rounded' ? '16px' : (config.launcher_shape === 'square' ? '12px' : '50%');
+        const shape   = config.launcher_shape === 'rounded' ? '16px' : (config.launcher_shape === 'square' ? '10px' : '22px');
         const mHide   = config.show_on_mobile === false ? 'pfx-hide-mobile' : '';
 
-        return '<div id="pfx-launcher" class="' + mHide + '" style="position:fixed;' + hPos + vPos + 'width:60px;height:60px;border-radius:' + shape + ';background:' + config.primary_color + ';display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 30px rgba(0,0,0,0.35);z-index:99998;transition:transform 0.3s,box-shadow 0.3s;" onmouseover="this.style.transform=\'scale(1.1)\';this.style.boxShadow=\'0 12px 40px rgba(0,0,0,0.45)\'" onmouseout="this.style.transform=\'scale(1)\';this.style.boxShadow=\'0 8px 30px rgba(0,0,0,0.35)\'">' +
-            '<svg width="28" height="28" fill="white" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>' +
+        return '<div id="pfx-launcher" class="' + mHide + '" style="position:fixed;' + hPos + vPos + 'width:60px;height:60px;border-radius:' + shape + ';background:' + config.primary_color + ';display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 10px 28px -6px ' + config.primary_color + 'aa,0 2px 6px rgba(0,0,0,0.2);z-index:99998;transition:transform 0.3s,box-shadow 0.3s;" onmouseover="this.style.transform=\'scale(1.1)\';this.style.boxShadow=\'0 12px 40px rgba(0,0,0,0.45)\'" onmouseout="this.style.transform=\'scale(1)\';this.style.boxShadow=\'0 8px 30px rgba(0,0,0,0.35)\'">' +
+            '<svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M5 3h14a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-8l-5 4v-4H5a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3z" fill="white" fill-opacity=".95"/><path d="M12 6.5l1.2 2.8 2.8 1.2-2.8 1.2L12 14.5l-1.2-2.8L8 10.5l2.8-1.2z" fill="' + config.primary_color + '"/></svg>' +
             '<div id="pfx-badge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;border-radius:10px;background:#ef4444;color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 2px 8px rgba(239,68,68,0.5);">0</div>' +
             '</div>';
     }
@@ -265,14 +265,14 @@
         const showHO = config.show_handoff_button !== false;
         const hoLabel = escapeHtml(config.handoff_button_label || 'Talk to a human');
 
-        return '<div id="pfx-chat" class="' + mHide + '" style="position:fixed;' + hPos + vPos + 'width:390px;height:500px;display:none;flex-direction:column;border-radius:20px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,0.45);z-index:99999;font-family:' + (config.font_family || '\'Inter\',system-ui,sans-serif') + ';background:' + t.bg + ';border:1px solid ' + t.border + ';opacity:0;transform:translateY(24px) scale(0.97);transition:opacity 0.35s cubic-bezier(0.4,0,0.2,1),transform 0.35s cubic-bezier(0.4,0,0.2,1);">' +
+        return '<div id="pfx-chat" class="' + mHide + '" style="position:fixed;' + hPos + vPos + 'width:390px;height:500px;display:none;flex-direction:column;border-radius:16px;overflow:hidden;box-shadow:0 30px 80px -20px rgba(11,19,36,0.55);z-index:99999;font-family:' + (config.font_family || '\'Plus Jakarta Sans\',system-ui,-apple-system,sans-serif') + ';background:' + t.bg + ';border:1px solid ' + t.border + ';opacity:0;transform:translateY(24px) scale(0.97);transition:opacity 0.35s cubic-bezier(0.4,0,0.2,1),transform 0.35s cubic-bezier(0.4,0,0.2,1);">' +
 
             // ── Header ──
-            '<div id="pfx-header" style="padding:14px 16px;background:' + config.primary_color + ';display:flex;align-items:center;justify-content:space-between;gap:8px;flex-shrink:0;">' +
+            '<div id="pfx-header" style="padding:16px 16px 14px;background:linear-gradient(135deg,' + config.primary_color + ' 0%,' + (config.secondary_color || config.primary_color) + ' 100%);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-shrink:0;">' +
             '<div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1;">' +
             (config.ai_avatar
                 ? '<img src="' + escapeAttr(config.ai_avatar) + '" alt="" style="width:38px;height:38px;border-radius:12px;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,0.3);">'
-                : '<div style="width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;">🤖</div>') +
+                : '<div style="width:38px;height:38px;border-radius:50%;background:white;color:' + config.primary_color + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:800;">' + escapeHtml((config.ai_name || 'A').trim().charAt(0).toUpperCase()) + '</div>') +
             '<div style="min-width:0;">' +
             '<div style="font-weight:700;color:white;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escapeHtml(config.ai_name || 'AI Assistant') + '</div>' +
             '<div style="font-size:11px;color:rgba(255,255,255,0.75);display:flex;align-items:center;gap:4px;"><span style="width:7px;height:7px;border-radius:50%;background:#4ade80;display:inline-block;"></span>Online</div>' +

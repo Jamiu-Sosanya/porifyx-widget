@@ -2,7 +2,7 @@
 
 /**
  * Branding & customisation config.
- * All values read from .env so buyers can white-label without touching PHP.
+ * All values read from .env so branding can change without touching PHP.
  */
 return [
     'name'             => env('APP_NAME', 'PoriFyx Widget'),

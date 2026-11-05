@@ -88,7 +88,7 @@
 
             {{-- Footer --}}
             <div class="text-center mt-8 text-gray-500 text-sm">
-                <p>{{ config('branding.name', 'PoriFyx Widget') }} v2.0 • Installation</p>
+                <p>{{ config('branding.name', 'PoriFyx Widget') }} v1.0 • Installation</p>
             </div>
         </div>
     </div>

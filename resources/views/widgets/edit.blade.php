@@ -13,7 +13,7 @@
     pPosition: @js($widget->position ?? 'bottom-right'),
     pShape: @js($widget->launcher_shape ?? 'circle'),
     pTheme: @js($widget->theme ?? 'dark'),
-    pFont: @js($widget->font_family ?? 'Inter, system-ui, sans-serif'),
+    pFont: @js($widget->font_family ?? 'Plus Jakarta Sans, system-ui, sans-serif'),
     pChatOpen: true,
     appName: @js(config('branding.name', config('app.name'))),
 }" class="max-w-5xl">

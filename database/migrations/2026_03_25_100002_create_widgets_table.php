@@ -28,7 +28,7 @@ return new class extends Migration
             $table->enum('position', ['bottom-right', 'bottom-left', 'top-right', 'top-left'])->default('bottom-right');
             $table->enum('launcher_shape', ['circle', 'rounded', 'square'])->default('circle');
             $table->string('launcher_icon')->nullable();
-            $table->string('font_family')->default('Inter, sans-serif');
+            $table->string('font_family')->default('Plus Jakarta Sans, sans-serif');
 
             // Behavior
             $table->string('welcome_message')->default('Hi! How can I help you today?');

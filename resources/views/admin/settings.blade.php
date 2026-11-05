@@ -315,7 +315,7 @@ HTML;
                 <div class="px-6 py-4">
                     <h3 class="text-sm font-semibold text-white capitalize">
                         @php
-                        $groupLabels = ['app' => 'General', 'branding' => 'Branding & White-Label', 'ai' => 'AI Providers', 'mail' => 'Email / SMTP', 'payment' => 'Payment (Stripe)', 'security' => 'Security & Access', 'features' => 'Features & Limits'];
+                        $groupLabels = ['app' => 'General', 'branding' => 'Branding & Custom Branding', 'ai' => 'AI Providers', 'mail' => 'Email / SMTP', 'payment' => 'Payment (Stripe)', 'security' => 'Security & Access', 'features' => 'Features & Limits'];
                         echo $groupLabels[$group] ?? ucfirst($group);
                         @endphp
                     </h3>

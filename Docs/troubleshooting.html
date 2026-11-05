@@ -12,7 +12,7 @@
 <aside class="sidebar">
   <div class="sidebar-logo">
     <div class="logo-icon">💬</div>
-    <div><div class="logo-text">PoriFyx Widget</div><div class="logo-sub">Documentation v2.0</div></div>
+    <div><div class="logo-text">PoriFyx Widget</div><div class="logo-sub">Documentation v1.0</div></div>
   </div>
   <div class="nav-section">
     <div class="nav-section-label">Getting Started</div>
@@ -85,7 +85,7 @@
 
     <div class="callout danger">
       <span class="callout-icon">🚨</span>
-      <p><strong>This was a known bug in versions prior to v2.0.1.</strong> The async loader queue was broken — the widget script loaded but the <code>init</code> call was silently dropped before the widget could render. This is fixed in the current release. If you are running an older copy, apply the patch below.</p>
+      <p><strong>This was a known bug in versions prior to v1.0.</strong> The async loader queue was broken — the widget script loaded but the <code>init</code> call was silently dropped before the widget could render. This is fixed in the current release. If you are running an older copy, apply the patch below.</p>
     </div>
 
     <h3>Root Cause</h3>
@@ -172,7 +172,7 @@ window.pfx = function (action, options) {
     <p>This happens on <strong>Laravel 11 and newer</strong>. The <code>local</code> disk now stores files under <code>storage/app/private/</code> instead of the old <code>storage/app/</code> path. Older code used a hardcoded path that no longer exists.</p>
     <div class="callout tip">
       <span class="callout-icon">💡</span>
-      <p><strong>Already fixed in v2.0.1.</strong> The platform now uses <code>Storage::disk('local')</code> to resolve paths correctly. If you are on an older copy, update <code>app/Services/TrainingService.php</code> — the <code>extractFromPdf()</code> method must use <code>Storage::disk('local')->exists()</code> and <code>Storage::disk('local')->path()</code> instead of <code>storage_path('app/')</code>.</p>
+      <p><strong>Already fixed in v1.0.</strong> The platform now uses <code>Storage::disk('local')</code> to resolve paths correctly. If you are on an older copy, update <code>app/Services/TrainingService.php</code> — the <code>extractFromPdf()</code> method must use <code>Storage::disk('local')->exists()</code> and <code>Storage::disk('local')->path()</code> instead of <code>storage_path('app/')</code>.</p>
     </div>
 
     <h3>Error 2 — "pdftotext is not installed"</h3>
@@ -199,11 +199,11 @@ window.pfx = function (action, options) {
     </ul>
 
     <h3>Error 3 — "Data too long for column 'content'"</h3>
-    <p>This error appeared in older versions when <code>pdftotext</code> was not installed. The platform fell back to reading the raw PDF binary file and tried to store the binary data in the database, which overflowed the column size. This fallback has been removed in v2.0.1 — you will now see the clear "pdftotext not installed" message instead of a database crash.</p>
+    <p>This error appeared in older versions when <code>pdftotext</code> was not installed. The platform fell back to reading the raw PDF binary file and tried to store the binary data in the database, which overflowed the column size. This fallback has been removed in v1.0 — you will now see the clear "pdftotext not installed" message instead of a database crash.</p>
 
     <div class="callout warning">
       <span class="callout-icon">⚠️</span>
-      <p><strong>If you still see the column overflow error</strong> after updating, you are running a version prior to v2.0.1. Apply the <code>extractFromPdf()</code> patch from <code>app/Services/TrainingService.php</code> — the dangerous raw-binary fallback must be removed entirely.</p>
+      <p><strong>If you still see the column overflow error</strong> after updating, you are running a version prior to v1.0. Apply the <code>extractFromPdf()</code> patch from <code>app/Services/TrainingService.php</code> — the dangerous raw-binary fallback must be removed entirely.</p>
     </div>
   </div>
 
@@ -226,7 +226,7 @@ window.pfx = function (action, options) {
 
     <div class="callout tip">
       <span class="callout-icon">💡</span>
-      <p><strong>Already fixed in v2.0.1.</strong> The <strong>Retrain</strong> action now dispatches a background queue job instead of processing synchronously. Adding new sources already worked this way — Retrain has been updated to match. The HTTP response returns instantly; training happens in the background.</p>
+      <p><strong>Already fixed in v1.0.</strong> The <strong>Retrain</strong> action now dispatches a background queue job instead of processing synchronously. Adding new sources already worked this way — Retrain has been updated to match. The HTTP response returns instantly; training happens in the background.</p>
     </div>
 
     <h3>The Fix Requires a Queue Worker</h3>
@@ -417,17 +417,17 @@ process_name=%(program_name)s_%(process_num)02d
     <p>Go to <strong>Widgets → Your Widget → AI Settings</strong> and change the model to <strong>GPT-4o Mini (Fast)</strong> — this is the most accessible model across all account tiers.</p>
 
     <h4>4. Smart Suggestions Crashing the Response (Older Versions)</h4>
-    <p>In versions prior to v2.0.1, if the smart-suggestions feature threw an internal error, it would <em>also</em> return "technical difficulties" even when the main AI reply was generated successfully. This masked the real response entirely.</p>
+    <p>In versions prior to v1.0, if the smart-suggestions feature threw an internal error, it would <em>also</em> return "technical difficulties" even when the main AI reply was generated successfully. This masked the real response entirely.</p>
     <div class="callout tip">
       <span class="callout-icon">💡</span>
-      <p><strong>Fixed in v2.0.1.</strong> Smart suggestions are now wrapped in their own isolated try-catch. A suggestion failure logs a warning and returns an empty suggestion list — the AI response is always delivered regardless.</p>
+      <p><strong>Fixed in v1.0.</strong> Smart suggestions are now wrapped in their own isolated try-catch. A suggestion failure logs a warning and returns an empty suggestion list — the AI response is always delivered regardless.</p>
     </div>
 
     <h4>5. Duplicate Sentiment API Call Hitting Rate Limits (Older Versions)</h4>
     <p>In older versions, the sentiment-analysis API call was made <strong>twice</strong> for every visitor message — once in the HTTP handler and once inside the AI service. This doubled the OpenAI API calls per message, which could trigger rate-limit errors (HTTP 429) that then surfaced as "technical difficulties."</p>
     <div class="callout tip">
       <span class="callout-icon">💡</span>
-      <p><strong>Fixed in v2.0.1.</strong> The duplicate sentiment call inside <code>AiChatService::generateResponse()</code> has been removed. Each message now makes exactly one sentiment call.</p>
+      <p><strong>Fixed in v1.0.</strong> The duplicate sentiment call inside <code>AiChatService::generateResponse()</code> has been removed. Each message now makes exactly one sentiment call.</p>
     </div>
 
     <h3>How to Read the Actual Error</h3>
@@ -461,7 +461,7 @@ process_name=%(program_name)s_%(process_num)02d
 
     <div class="callout tip">
       <span class="callout-icon">💡</span>
-      <p><strong>Already fixed in v2.0.1.</strong> The <code>trigger_count</code> and <code>success_count</code> columns are now declared as <code>'integer'</code> casts in the <code>Automation</code> model, so PHP always receives proper integers from the database. No manual action is required if you are running the latest version.</p>
+      <p><strong>Already fixed in v1.0.</strong> The <code>trigger_count</code> and <code>success_count</code> columns are now declared as <code>'integer'</code> casts in the <code>Automation</code> model, so PHP always receives proper integers from the database. No manual action is required if you are running the latest version.</p>
     </div>
 
     <h3>Manual Patch (Older Installs)</h3>
@@ -498,7 +498,7 @@ protected function casts(): array
         <tr>
           <td>Widget launcher never appears on embedded site</td>
           <td>Async queue bug — <code>window.pfx.q</code> destroyed on <code>widget.js</code> load</td>
-          <td><span class="pill new">Fixed v2.0.1</span> — queue captured before overwrite; hard-refresh browser</td>
+          <td><span class="pill new">Fixed v1.0</span> — queue captured before overwrite; hard-refresh browser</td>
         </tr>
         <tr>
           <td>Widget shows on some domains but not others</td>
@@ -508,7 +508,7 @@ protected function casts(): array
         <tr>
           <td>PDF training — "PDF file not found"</td>
           <td>Laravel 11 changed <code>local</code> disk root to <code>storage/app/private/</code></td>
-          <td><span class="pill new">Fixed v2.0.1</span> — uses <code>Storage::disk('local')</code> instead of hardcoded path</td>
+          <td><span class="pill new">Fixed v1.0</span> — uses <code>Storage::disk('local')</code> instead of hardcoded path</td>
         </tr>
         <tr>
           <td>PDF training — "pdftotext not installed"</td>
@@ -518,12 +518,12 @@ protected function casts(): array
         <tr>
           <td>PDF training — SQL column overflow error</td>
           <td>Old code read raw PDF binary as fallback when <code>pdftotext</code> missing</td>
-          <td><span class="pill new">Fixed v2.0.1</span> — dangerous fallback removed; clear error shown instead</td>
+          <td><span class="pill new">Fixed v1.0</span> — dangerous fallback removed; clear error shown instead</td>
         </tr>
         <tr>
           <td>URL / sitemap training — times out, keeps loading</td>
           <td>Retrain ran synchronously in HTTP request, hitting PHP execution timeout</td>
-          <td><span class="pill new">Fixed v2.0.1</span> — Retrain now dispatches background jobs; requires queue worker</td>
+          <td><span class="pill new">Fixed v1.0</span> — Retrain now dispatches background jobs; requires queue worker</td>
         </tr>
         <tr>
           <td>Training sources stuck in "Pending" forever</td>
@@ -538,17 +538,17 @@ protected function casts(): array
         <tr>
           <td>AI "technical difficulties" even though key is valid</td>
           <td>Smart suggestions failure swallowed entire response (older versions)</td>
-          <td><span class="pill new">Fixed v2.0.1</span> — suggestions isolated in own try-catch; AI response always delivered</td>
+          <td><span class="pill new">Fixed v1.0</span> — suggestions isolated in own try-catch; AI response always delivered</td>
         </tr>
         <tr>
           <td>Excessive OpenAI API usage / rate-limit errors during chat</td>
           <td>Sentiment analysis called twice per message — duplicate wasted API quota</td>
-          <td><span class="pill new">Fixed v2.0.1</span> — duplicate call in <code>generateResponse()</code> removed</td>
+          <td><span class="pill new">Fixed v1.0</span> — duplicate call in <code>generateResponse()</code> removed</td>
         </tr>
         <tr>
           <td>Automation <code>DivisionByZeroError</code></td>
           <td>MySQL returns integer columns as strings; strict <code>=== 0</code> check failed</td>
-          <td><span class="pill new">Fixed v2.0.1</span> — <code>trigger_count</code> and <code>success_count</code> declared as integer casts</td>
+          <td><span class="pill new">Fixed v1.0</span> — <code>trigger_count</code> and <code>success_count</code> declared as integer casts</td>
         </tr>
         <tr>
           <td>General 500 errors on any page</td>
@@ -560,7 +560,7 @@ protected function casts(): array
 
     <div class="callout info">
       <span class="callout-icon">ℹ️</span>
-      <p>All items marked <span class="pill new">Fixed v2.0.1</span> are resolved in the current release. If you have an older copy, apply the patches described in the relevant section above, or pull the latest version from the PoriFyx repository.</p>
+      <p>All items marked <span class="pill new">Fixed v1.0</span> are resolved in the current release. If you have an older copy, apply the patches described in the relevant section above, or pull the latest version from the PoriFyx repository.</p>
     </div>
   </div>
 
