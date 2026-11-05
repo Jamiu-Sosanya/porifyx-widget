@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PWA Checklist | PoriFyx Widget</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page-shell">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">💬</div>
+    <div>
+      <div class="logo-text">PoriFyx Widget</div>
+      <div class="logo-sub">Documentation v2.0</div>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Getting Started</div>
+    <nav>
+      <a href="index.html"><span class="nav-icon">🏠</span> Home</a>
+      <a href="installation.html"><span class="nav-icon">⚙️</span> Installation</a>
+    </nav>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Reference</div>
+    <nav>
+      <a href="features.html"><span class="nav-icon">✨</span> Features</a>
+      <a href="user-guide.html"><span class="nav-icon">👤</span> User Guide</a>
+      <a href="admin-guide.html"><span class="nav-icon">🛡️</span> Admin Guide</a>
+    </nav>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Technical</div>
+    <nav>
+      <a href="developer-guide.html"><span class="nav-icon">🔧</span> Developer Guide</a>
+      <a href="pwa-guide.html"><span class="nav-icon">📱</span> PWA Guide</a>
+      <a href="pwa-checklist.html" class="active"><span class="nav-icon">✅</span> PWA Checklist</a>
+    </nav>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Support</div>
+    <nav>
+      <a href="troubleshooting.html"><span class="nav-icon">🛠️</span> Troubleshooting</a>
+    </nav>
+  </div>
+  <div class="sidebar-footer">PoriFyx Widget &copy; 2026</div>
+</aside>
+
+<!-- MAIN -->
+<article class="main-content">
+
+  <section class="hero">
+    <div class="hero-eyebrow">✅ Launch Verification</div>
+    <h1>PWA Checklist</h1>
+    <p>Use this checklist before going live to verify that every Progressive Web App feature is correctly configured on your server. Each item includes what to check and exactly how to verify it — no guessing required.</p>
+    <div class="badge-row">
+      <span class="badge">Server Admin</span>
+      <span class="badge">Pre-Launch</span>
+      <span class="badge">Post-Update</span>
+    </div>
+  </section>
+
+  <div class="callout info">
+    <span class="callout-icon">ℹ️</span>
+    <p>This checklist is for <strong>server administrators and developers</strong> setting up the platform. If you are a regular user wanting to install the app on your phone, see the <a href="pwa-guide.html">PWA Guide</a> instead.</p>
+  </div>
+
+  <!-- SECTION A: HTTPS -->
+  <div class="section-block" id="https">
+    <h2><span class="section-num">A</span> HTTPS &amp; Security</h2>
+    <p>PWAs require HTTPS. Without it, the browser will refuse to register the service worker and the install prompt will never appear.</p>
+
+    <ul class="checklist">
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>SSL certificate is installed and valid</strong><br>
+          <span class="muted">Verify: visit <code>https://yourdomain.com</code> in a browser. The padlock icon must show as secure (green or locked). No mixed-content warnings.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>HTTP redirects to HTTPS</strong><br>
+          <span class="muted">Verify: visit <code>http://yourdomain.com</code> (without the s) and confirm it automatically redirects to <code>https://yourdomain.com</code>.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>SSL certificate is not expired</strong><br>
+          <span class="muted">Verify: check the certificate expiry date using <code>curl -vI https://yourdomain.com 2>&amp;1 | grep expire</code> or use an online SSL checker tool.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>No mixed content warnings</strong><br>
+          <span class="muted">Verify: open browser DevTools (F12) → Console. No warnings about "Mixed Content" or "insecure content". All resources (images, scripts, fonts) must load over HTTPS.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- SECTION B: Web App Manifest -->
+  <div class="section-block" id="manifest">
+    <h2><span class="section-num">B</span> Web App Manifest</h2>
+    <p>The manifest file tells the browser how to present the installed app — its name, icons, theme colours, and display mode.</p>
+
+    <ul class="checklist">
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>manifest.json is accessible</strong><br>
+          <span class="muted">Verify: open <code>https://yourdomain.com/manifest.json</code> in a browser. It should return a JSON file, not a 404 error.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>manifest contains correct <code>name</code> and <code>short_name</code></strong><br>
+          <span class="muted">Verify: open the manifest.json file. The <code>"name"</code> field should match your platform name (e.g. "PoriFyx Widget") and <code>"short_name"</code> should be ≤ 12 characters (shown under the home screen icon).</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Icons include 192×192 and 512×512 PNG</strong><br>
+          <span class="muted">Verify: check the <code>"icons"</code> array in manifest.json. Both sizes must be present. The 512×512 icon is used for the splash screen; 192×192 for the home screen.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Icon files are accessible</strong><br>
+          <span class="muted">Verify: copy each icon URL from the manifest and open it in a browser tab. Each must return an actual PNG image, not a 404.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong><code>start_url</code> loads the dashboard, not the marketing page</strong><br>
+          <span class="muted">Verify: in manifest.json, <code>"start_url"</code> should be <code>"/dashboard"</code> (or your configured dashboard path), not <code>"/"</code>.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong><code>display</code> is set to <code>standalone</code></strong><br>
+          <span class="muted">Verify: manifest.json should contain <code>"display": "standalone"</code>. This removes the browser address bar when the app is opened from the home screen.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong><code>theme_color</code> matches your brand colour</strong><br>
+          <span class="muted">Verify: <code>"theme_color"</code> in manifest.json should match your primary brand colour (e.g. <code>"#2f5ee8"</code>). This colours the browser chrome and status bar on Android.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Manifest is linked in the HTML &lt;head&gt;</strong><br>
+          <span class="muted">Verify: view-source the dashboard page and confirm: <code>&lt;link rel="manifest" href="/manifest.json"&gt;</code> is present inside <code>&lt;head&gt;</code>.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Maskable icon is included</strong><br>
+          <span class="muted">Verify: the icons array should include at least one entry with <code>"purpose": "maskable"</code>. This allows Android to shape the icon to match the device's icon style. Use <a href="https://maskable.app" target="_blank">maskable.app</a> to preview.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- SECTION C: Service Worker -->
+  <div class="section-block" id="service-worker">
+    <h2><span class="section-num">C</span> Service Worker</h2>
+    <p>The service worker is the engine behind offline mode and push notifications. It must be registered correctly to enable PWA capabilities.</p>
+
+    <ul class="checklist">
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>service-worker.js is accessible</strong><br>
+          <span class="muted">Verify: open <code>https://yourdomain.com/service-worker.js</code>. It should return JavaScript code, not a 404.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Service worker is registered on the dashboard</strong><br>
+          <span class="muted">Verify: open the dashboard in Chrome → DevTools (F12) → Application → Service Workers. You should see the service worker listed with status "Activated and is running".</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Service worker scope is <code>/</code> (root)</strong><br>
+          <span class="muted">Verify: in the DevTools Service Workers panel, the scope should show your full domain (e.g. <code>https://yourdomain.com/</code>), not a subdirectory.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>No console errors from the service worker</strong><br>
+          <span class="muted">Verify: DevTools → Console. Filter by "Service Worker". No red errors should appear when the page loads.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Offline fallback page is cached</strong><br>
+          <span class="muted">Verify: DevTools → Application → Cache Storage → find <code>offline-cache</code>. An <code>offline.html</code> entry should be listed.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Core app shell assets are pre-cached</strong><br>
+          <span class="muted">Verify: in Cache Storage, check <code>app-shell-cache</code> contains the main CSS, JS, and font files. These load instantly even offline.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- SECTION D: Push Notifications -->
+  <div class="section-block" id="push-checklist">
+    <h2><span class="section-num">D</span> Push Notifications</h2>
+    <ul class="checklist">
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>VAPID keys are generated and set in .env</strong><br>
+          <span class="muted">Verify: <code>.env</code> file contains non-empty <code>VAPID_PUBLIC_KEY</code>, <code>VAPID_PRIVATE_KEY</code>, and <code>VAPID_SUBJECT</code>. Run <code>php artisan webpush:vapid</code> if not yet generated.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Config cache has been cleared after setting VAPID keys</strong><br>
+          <span class="muted">Verify: run <code>php artisan config:cache</code> after updating .env. Without this, the app reads the old (empty) values.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Push subscription endpoint is working</strong><br>
+          <span class="muted">Verify: install the PWA on a test device, grant notification permission, then in Admin → System, trigger a test notification. It should arrive on the device within a few seconds.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Notification icon and title are customised</strong><br>
+          <span class="muted">Verify: trigger a test notification. The icon should show your logo (not a generic browser icon). The title should show your platform name.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Tapping a notification opens the correct page</strong><br>
+          <span class="muted">Verify: when you tap a "New Lead" notification, it should open the leads page. "Conversation Escalated" should open that conversation. Check the notification click handler in service-worker.js.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Queue worker is running (required for push delivery)</strong><br>
+          <span class="muted">Verify: Admin → System → Queue Dashboard. Horizon must be running. Push notifications are sent as background jobs — if Horizon is stopped, notifications will not be delivered.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- SECTION E: Installability -->
+  <div class="section-block" id="installability">
+    <h2><span class="section-num">E</span> Installability</h2>
+    <ul class="checklist">
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Install prompt appears on Android Chrome</strong><br>
+          <span class="muted">Verify: open the dashboard in Chrome on an Android device (or Chrome DevTools Device Toolbar). After a few seconds, an install banner should appear at the bottom. If it does not appear, check the Manifest and Service Worker sections above.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>"Add to Home Screen" works on iOS Safari</strong><br>
+          <span class="muted">Verify: on an iPhone/iPad, open Safari → tap the Share button → confirm "Add to Home Screen" appears in the list. Tap it and verify the icon appears on the home screen.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Install icon appears in Chrome desktop address bar</strong><br>
+          <span class="muted">Verify: open the dashboard in Chrome on a desktop computer. A small monitor/install icon should appear at the right end of the address bar.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>App launches in standalone mode (no browser chrome)</strong><br>
+          <span class="muted">Verify: after installing, open the app from the home screen icon. The browser address bar and navigation buttons should NOT be visible. The app should occupy the full screen.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Splash screen displays correctly on Android</strong><br>
+          <span class="muted">Verify: open the installed app on Android. A brief splash screen should appear (with your app icon on the theme_color background) before the dashboard loads.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- SECTION F: Offline Behaviour -->
+  <div class="section-block" id="offline-checklist">
+    <h2><span class="section-num">F</span> Offline Behaviour</h2>
+    <ul class="checklist">
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>App does not show a blank page when offline</strong><br>
+          <span class="muted">Verify: load the dashboard, then in DevTools → Network → check "Offline". Refresh the page. The app shell (navigation, layout) should still render, showing cached data or a friendly offline message.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Offline banner appears when connection is lost</strong><br>
+          <span class="muted">Verify: load the dashboard, disable your network connection. A yellow "You are offline" banner should appear at the top of the screen within a few seconds.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Offline banner disappears when connection returns</strong><br>
+          <span class="muted">Verify: re-enable your network connection after step above. The banner should disappear automatically and the live data should reload.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Recent conversations are readable offline</strong><br>
+          <span class="muted">Verify: load the conversations list, then go offline. The previously loaded conversations should still be readable (though new ones will not appear).</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- SECTION G: Performance -->
+  <div class="section-block" id="performance">
+    <h2><span class="section-num">G</span> Performance</h2>
+    <ul class="checklist">
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Lighthouse PWA score is 90+</strong><br>
+          <span class="muted">Verify: open Chrome DevTools → Lighthouse tab → select "Progressive Web App" category → Generate report. Target a score of 90 or above. Any failing audits are listed with specific fixes.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>First Contentful Paint is under 3 seconds on mobile</strong><br>
+          <span class="muted">Verify: Lighthouse → Performance score → check First Contentful Paint metric. Over 3 seconds on a simulated slow 3G connection indicates caching is not working properly.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>App shell loads instantly on repeat visits</strong><br>
+          <span class="muted">Verify: hard-reload the dashboard (Ctrl+Shift+R / Cmd+Shift+R) to clear memory cache, then reload normally. On the second load, the navigation and layout should appear before the network data arrives.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- SECTION H: Accessibility & Metadata -->
+  <div class="section-block" id="meta">
+    <h2><span class="section-num">H</span> Accessibility &amp; Metadata</h2>
+    <ul class="checklist">
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Apple touch icon is set</strong><br>
+          <span class="muted">Verify: view-source the dashboard HTML and confirm: <code>&lt;link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"&gt;</code> is present. This icon is used for the iOS home screen when adding from Safari.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Apple mobile web app capable meta tag is set</strong><br>
+          <span class="muted">Verify: view-source shows <code>&lt;meta name="apple-mobile-web-app-capable" content="yes"&gt;</code>. Required for iOS standalone mode.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Status bar style is set for iOS</strong><br>
+          <span class="muted">Verify: <code>&lt;meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"&gt;</code> or <code>"default"</code> is set. This controls the iOS status bar appearance in standalone mode.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Microsoft tile meta tags are set (Windows)</strong><br>
+          <span class="muted">Verify: <code>&lt;meta name="msapplication-TileColor"&gt;</code> and <code>&lt;meta name="msapplication-TileImage"&gt;</code> are set for Windows Start Menu tile appearance.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Viewport meta tag is set correctly</strong><br>
+          <span class="muted">Verify: <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code> is present. Without this the app will appear zoomed out on mobile.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- SECTION I: Post-Update Verification -->
+  <div class="section-block" id="post-update">
+    <h2><span class="section-num">I</span> Post-Update Verification</h2>
+    <p>After every application update, re-verify these items to ensure the PWA still works correctly with the new code.</p>
+
+    <ul class="checklist">
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Service worker version has been incremented</strong><br>
+          <span class="muted">Verify: open service-worker.js and confirm the <code>CACHE_VERSION</code> constant has changed from the previous release. Without a version bump, users will continue using the old cached assets.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Old caches are cleaned up</strong><br>
+          <span class="muted">Verify: in DevTools → Application → Cache Storage, only the new cache version (e.g. <code>app-v2</code>) should exist. Old caches (e.g. <code>app-v1</code>) should have been deleted by the service worker's activate handler.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Existing installed users receive the update</strong><br>
+          <span class="muted">Verify: open the installed app on a test device. After a few seconds (or on the next launch), the new version should be active. A "New version available" toast or automatic reload is expected.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>Push subscriptions are still valid after update</strong><br>
+          <span class="muted">Verify: send a test push notification to a previously subscribed device. If VAPID keys did not change, existing subscriptions remain valid. If keys changed, all users must re-subscribe.</span>
+        </div>
+      </li>
+      <li class="checklist-item">
+        <span class="check-icon">☐</span>
+        <div>
+          <strong>No broken asset URLs in the new service worker cache list</strong><br>
+          <span class="muted">Verify: open DevTools Console after the update and check for any 404 errors during service worker install. Every file listed in the service worker's <code>urlsToCache</code> array must exist at that URL.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Quick Reference -->
+  <div class="section-block">
+    <h2>Quick Reference: Debugging Tools</h2>
+    <table class="feat-table">
+      <thead><tr><th>Tool</th><th>Where to Find It</th><th>What to Check</th></tr></thead>
+      <tbody>
+        <tr><td>Chrome DevTools — Application</td><td>F12 → Application tab</td><td>Manifest, Service Workers, Cache Storage, Push subscriptions</td></tr>
+        <tr><td>Chrome Lighthouse</td><td>F12 → Lighthouse tab</td><td>Overall PWA score with specific failing audits</td></tr>
+        <tr><td>chrome://serviceworker-internals</td><td>Type in Chrome address bar</td><td>All registered service workers across all sites; force update</td></tr>
+        <tr><td>web.dev/measure</td><td>External tool</td><td>Public-facing Lighthouse audit (works for production sites)</td></tr>
+        <tr><td>maskable.app</td><td>External tool</td><td>Preview how your icon looks with Android adaptive icon shapes</td></tr>
+        <tr><td>progressier.com/pwa-checker</td><td>External tool</td><td>Comprehensive PWA checklist with automated verification</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cta-block">
+    <h2>All Done?</h2>
+    <p>If every item above is checked, your PWA is production-ready. Users can install it on any device and receive real-time notifications for leads and conversations.</p>
+    <div class="cta-buttons">
+      <a href="pwa-guide.html" class="btn-primary">📱 PWA Installation Guide</a>
+      <a href="index.html" class="btn-secondary">🏠 Back to Home</a>
+    </div>
+  </div>
+
+  <footer class="docs-footer">
+    <span>PoriFyx Widget Documentation</span>
+    <span>
+      <a href="installation.html">Installation</a> ·
+      <a href="user-guide.html">User Guide</a> ·
+      <a href="admin-guide.html">Admin Guide</a> ·
+      <a href="developer-guide.html">Developer Guide</a> ·
+      <a href="pwa-guide.html">PWA Guide</a>
+    </span>
+  </footer>
+
+</article>
+</div>
+
+<style>
+/* Checklist-specific styles */
+.checklist { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+.checklist-item { display: flex; gap: 1rem; align-items: flex-start; padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; transition: background 0.15s; }
+.checklist-item:hover { background: var(--surface-soft); }
+.check-icon { font-size: 1.25rem; flex-shrink: 0; margin-top: 0.1rem; cursor: pointer; color: var(--subtle); }
+.checklist-item strong { display: block; margin-bottom: 0.2rem; color: var(--text); }
+.checklist-item .muted { font-size: 0.875rem; color: var(--muted); line-height: 1.5; }
+</style>
+
+</body>
+</html>

@@ -1,0 +1,184 @@
+@import "tailwindcss";
+
+/* PoriFyx Widget design tokens */
+@theme {
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --color-brand-50: #eef3ff; --color-brand-100: #dce6fd; --color-brand-200: #bfd0fb;
+    --color-brand-300: #93b0f7; --color-brand-400: #6b8ff2; --color-brand-500: #2f5ee8;
+    --color-brand-600: #2449c4; --color-brand-700: #1e3b9c; --color-brand-800: #1d347d;
+    --color-brand-900: #1c2f66; --color-brand-950: #131d3f;
+    --color-accent-50: #ecfeff; --color-accent-100: #cffafe; --color-accent-200: #a5f3fc;
+    --color-accent-300: #67e8f9; --color-accent-400: #22d3ee; --color-accent-500: #06b6d4;
+    --color-accent-600: #0891b2; --color-accent-700: #0e7490; --color-accent-800: #155e75;
+    --color-accent-900: #164e63; --color-accent-950: #083344;
+}
+
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+/* Selection */
+::selection { background: rgba(47, 94, 232, 0.3); color: white; }
+
+/* Animations */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(47, 94, 232, 0.4); } 50% { box-shadow: 0 0 0 8px rgba(47, 94, 232, 0); } }
+
+.animate-fade-in { animation: fadeIn 0.5s ease-out; }
+.animate-slide-in { animation: slideIn 0.3s ease-out; }
+.animate-pulse-glow { animation: pulse-glow 2s infinite; }
+
+/* ===== SELECT DROPDOWN FIX (all themes) ===== */
+select {
+    background-color: #1f2937;
+    color: #f9fafb;
+    -webkit-appearance: none;
+    appearance: none;
+}
+select option {
+    background-color: #1f2937;
+    color: #f9fafb;
+}
+select optgroup {
+    background-color: #1f2937;
+    color: #f9fafb;
+}
+
+/* ===== DARK MODE (default) ===== */
+html.dark body { background-color: #030712; color: #e5e7eb; }
+
+/* Pagination dark mode */
+html.dark nav[role="navigation"] a,
+html.dark nav[role="navigation"] span:not([aria-current]) {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+    color: #9ca3af !important;
+    background: rgba(255,255,255,0.03) !important;
+    border: 1px solid rgba(255,255,255,0.05) !important;
+}
+html.dark nav[role="navigation"] span[aria-current="page"] span {
+    background: rgba(47, 94, 232, 0.2) !important;
+    color: #6b8ff2 !important;
+    border-color: rgba(47, 94, 232, 0.3) !important;
+}
+
+/* ===== LIGHT MODE OVERRIDES ===== */
+html.light body { background-color: #f1f5f9 !important; color: #1e293b !important; }
+
+/* Sidebar stays dark in light mode — intentional "always dark nav" pattern */
+html.light #sidebar { background-color: #0f172a !important; border-color: rgba(255,255,255,0.06) !important; }
+html.light #sidebar * { --keep-dark: 1; }
+
+/* Main card/panel backgrounds */
+html.light .bg-gray-900\/50 { background-color: rgba(255,255,255,0.9) !important; }
+html.light .bg-gray-900 { background-color: #ffffff !important; }
+html.light .bg-gray-800 { background-color: #f8fafc !important; }
+html.light .bg-gray-950 { background-color: #f1f5f9 !important; }
+
+/* BUT keep sidebar dark */
+html.light #sidebar .bg-gray-950,
+html.light #sidebar .bg-gray-900,
+html.light #sidebar .bg-gray-900\/50 { background-color: inherit !important; }
+
+/* Topbar */
+html.light header.h-16 { background-color: rgba(255,255,255,0.95) !important; border-color: #e2e8f0 !important; backdrop-filter: blur(16px); }
+
+/* Borders */
+html.light .border-white\/5 { border-color: #e2e8f0 !important; }
+html.light .border-white\/10 { border-color: #cbd5e1 !important; }
+html.light .divide-white\/5 > * + * { border-color: #e2e8f0 !important; }
+
+/* Text — main content only (sidebar excluded via specificity) */
+html.light main .text-white { color: #0f172a !important; }
+html.light main .text-gray-200 { color: #1e293b !important; }
+html.light main .text-gray-300 { color: #334155 !important; }
+html.light main .text-gray-400 { color: #64748b !important; }
+html.light main .text-gray-500 { color: #94a3b8 !important; }
+html.light main .text-gray-600 { color: #475569 !important; }
+html.light header .text-white { color: #0f172a !important; }
+html.light header .text-gray-400 { color: #64748b !important; }
+html.light header .text-gray-500 { color: #94a3b8 !important; }
+
+/* Semi-transparent panel backgrounds in main */
+html.light main .bg-white\/5 { background-color: rgba(0,0,0,0.04) !important; }
+html.light main .bg-white\/\[0\.02\] { background-color: rgba(0,0,0,0.02) !important; }
+html.light main .bg-white\/10 { background-color: rgba(0,0,0,0.06) !important; }
+html.light main .bg-white\/\[0\.03\] { background-color: rgba(0,0,0,0.03) !important; }
+
+/* Inputs, selects, textareas in light mode */
+html.light main select,
+html.light main input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+html.light main textarea {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.light main select option { background-color: #f8fafc !important; color: #0f172a !important; }
+html.light main input::placeholder,
+html.light main textarea::placeholder { color: #94a3b8 !important; }
+
+/* Topbar search */
+html.light header input { background-color: rgba(0,0,0,0.05) !important; color: #0f172a !important; border-color: rgba(0,0,0,0.1) !important; }
+html.light header input::placeholder { color: #94a3b8 !important; }
+
+/* Hover states */
+html.light main .hover\:bg-white\/5:hover { background-color: rgba(0,0,0,0.04) !important; }
+html.light main .hover\:bg-white\/10:hover { background-color: rgba(0,0,0,0.08) !important; }
+html.light main .hover\:text-white:hover { color: #0f172a !important; }
+html.light header .hover\:bg-white\/5:hover { background-color: rgba(0,0,0,0.05) !important; }
+html.light header .hover\:text-white:hover { color: #0f172a !important; }
+
+/* Dropdown menus from topbar */
+html.light header .bg-gray-900 { background-color: #ffffff !important; }
+html.light header .border-white\/10 { border-color: #e2e8f0 !important; }
+html.light header .border-white\/5 { border-color: #f1f5f9 !important; }
+html.light header .text-gray-300 { color: #334155 !important; }
+html.light header .hover\:bg-white\/5:hover { background-color: rgba(0,0,0,0.04) !important; }
+
+/* Scrollbar for light mode */
+html.light .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); }
+html.light .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.22); }
+
+/* Pagination for light mode */
+html.light nav[role="navigation"] .relative.inline-flex { gap: 2px; }
+html.light nav[role="navigation"] a,
+html.light nav[role="navigation"] span:not([aria-current]) {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+    color: #64748b !important;
+    background: rgba(0,0,0,0.04) !important;
+    border: 1px solid rgba(0,0,0,0.08) !important;
+}
+html.light nav[role="navigation"] span[aria-current="page"] span {
+    background: rgba(47, 94, 232, 0.15) !important;
+    color: #2449c4 !important;
+    border-color: rgba(47, 94, 232, 0.3) !important;
+}
+
+/* Flash messages */
+html.light .bg-emerald-500\/10 { background-color: rgba(16,185,129,0.08) !important; }
+html.light .bg-rose-500\/10 { background-color: rgba(239,68,68,0.08) !important; }
+html.light .bg-amber-500\/10 { background-color: rgba(245,158,11,0.08) !important; }
+
+/* Default dark pagination (no html.dark needed since it was default) */
+:not(html.light) nav[role="navigation"] .relative.inline-flex { gap: 2px; }
+:not(html.light) nav[role="navigation"] a,
+:not(html.light) nav[role="navigation"] span:not([aria-current]) {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+    color: #9ca3af !important;
+    background: rgba(255,255,255,0.03) !important;
+    border: 1px solid rgba(255,255,255,0.05) !important;
+}
+:not(html.light) nav[role="navigation"] span[aria-current="page"] span {
+    background: rgba(47, 94, 232, 0.2) !important;
+    color: #6b8ff2 !important;
+    border-color: rgba(47, 94, 232, 0.3) !important;
+}

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Troubleshooting Guide | PoriFyx Widget</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page-shell">
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">💬</div>
+    <div><div class="logo-text">PoriFyx Widget</div><div class="logo-sub">Documentation v2.0</div></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Getting Started</div>
+    <nav>
+      <a href="index.html"><span class="nav-icon">🏠</span> Home</a>
+      <a href="installation.html"><span class="nav-icon">⚙️</span> Installation</a>
+    </nav>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Reference</div>
+    <nav>
+      <a href="features.html"><span class="nav-icon">✨</span> Features</a>
+      <a href="user-guide.html"><span class="nav-icon">👤</span> User Guide</a>
+      <a href="admin-guide.html"><span class="nav-icon">🛡️</span> Admin Guide</a>
+    </nav>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Technical</div>
+    <nav>
+      <a href="developer-guide.html"><span class="nav-icon">🔧</span> Developer Guide</a>
+      <a href="pwa-guide.html"><span class="nav-icon">📱</span> PWA Guide</a>
+      <a href="pwa-checklist.html"><span class="nav-icon">✅</span> PWA Checklist</a>
+    </nav>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Support</div>
+    <nav>
+      <a href="troubleshooting.html" class="active"><span class="nav-icon">🛠️</span> Troubleshooting</a>
+    </nav>
+  </div>
+  <div class="sidebar-footer">PoriFyx Widget &copy; 2026</div>
+</aside>
+
+<article class="main-content">
+
+  <div class="breadcrumb"><a href="index.html">Home</a> <span>/</span> Troubleshooting</div>
+
+  <section class="hero">
+    <div class="hero-eyebrow">🛠️ Troubleshooting Guide</div>
+    <h1>Common Issues &amp; Fixes</h1>
+    <p>Step-by-step solutions for the most frequently reported problems after installation. Each section explains exactly what is wrong, why it happens, and how to fix it — no guesswork required.</p>
+    <div class="badge-row">
+      <span class="badge">Widget Not Showing</span>
+      <span class="badge">PDF Training</span>
+      <span class="badge">Queue &amp; Cron Setup</span>
+      <span class="badge">Knowledge Base</span>
+    </div>
+  </section>
+
+  <div class="toc">
+    <h4>On This Page</h4>
+    <ol>
+      <li><a href="#widget-not-showing">Widget Not Showing on Website</a></li>
+      <li><a href="#pdf-training">PDF Training Fails</a></li>
+      <li><a href="#training-timeout">Training Times Out / Keeps Loading</a></li>
+      <li><a href="#queue-setup">Queue Worker &amp; Cron Job Setup</a></li>
+      <li><a href="#ai-chat-error">AI Chat "Technical Difficulties"</a></li>
+      <li><a href="#automation-error">Automation Division Error</a></li>
+      <li><a href="#quick-reference">Quick Reference Table</a></li>
+    </ol>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ISSUE 1 — Widget Not Showing                           -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section-block" id="widget-not-showing">
+    <h2><span class="section-num">1</span> Widget Not Showing on Website</h2>
+    <p>You pasted the embed code into your website but the chat launcher button never appears — the page loads normally with no visible widget.</p>
+
+    <div class="callout danger">
+      <span class="callout-icon">🚨</span>
+      <p><strong>This was a known bug in versions prior to v2.0.1.</strong> The async loader queue was broken — the widget script loaded but the <code>init</code> call was silently dropped before the widget could render. This is fixed in the current release. If you are running an older copy, apply the patch below.</p>
+    </div>
+
+    <h3>Root Cause</h3>
+    <p>The embed snippet works by queuing the <code>init</code> call while <code>widget.js</code> loads in the background. When <code>widget.js</code> finally loaded, it replaced <code>window.pfx</code> with a new function — but in doing so it destroyed the <code>.q</code> queue property that held the pending <code>init</code> call. The check <code>if (window.pfx.q)</code> always evaluated to false, so the queue was never replayed and the widget never started.</p>
+
+    <h3>Fix — Update widget.js</h3>
+    <p>If you are applying this manually (older install), find the <strong>Public API</strong> block in <code>public/widget.js</code> and replace it with the corrected version below. The key change is capturing the queue <em>before</em> overwriting <code>window.pfx</code>.</p>
+
+    <div class="code-block"><span class="comment">// BEFORE (broken — .q is lost after reassignment)</span>
+window.pfx = function (action, options) {
+    if (action === 'init') init(options);
+    ...
+};
+if (window.pfx && window.pfx.q) {      <span class="comment">// always false — .q no longer exists</span>
+    ...
+}
+
+<span class="comment">// AFTER (fixed — capture queue BEFORE overwriting window.pfx)</span>
+<span class="key">const _queue = (window.pfx && window.pfx.q) ? window.pfx.q.slice() : [];</span>
+
+window.pfx = function (action, options) {
+    if (action === 'init') init(options);
+    if (action === 'open'  && config) { if (!isOpen) toggleChat(); }
+    if (action === 'close' && config) { if (isOpen)  toggleChat(); }
+};
+
+<span class="comment">// Replay any calls that were queued before the script loaded</span>
+<span class="key">_queue.forEach(function (args) { window.pfx.apply(null, args); });</span></div>
+
+    <h3>Also Check: Domain Restriction</h3>
+    <p>If the widget <em>does</em> load on some domains but not others, the issue is likely the allowed-domains setting. When you enter a domain in the <strong>Security → Allowed Domains</strong> field, enter it <strong>without</strong> the protocol prefix:</p>
+
+    <table class="req-table">
+      <thead><tr><th>Wrong ❌</th><th>Correct ✅</th></tr></thead>
+      <tbody>
+        <tr><td><code>https://example.com</code></td><td><code>example.com</code></td></tr>
+        <tr><td><code>http://www.mysite.com/</code></td><td><code>www.mysite.com</code></td></tr>
+        <tr><td><code>https://shop.mystore.io</code></td><td><code>shop.mystore.io</code></td></tr>
+      </tbody>
+    </table>
+
+    <p>Wildcards are supported — <code>*.mysite.com</code> will match any subdomain. After updating, click <strong>Save Widget</strong> and do a hard-refresh on the site where the widget is embedded.</p>
+
+    <h3>After Applying the Fix</h3>
+    <ol class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Hard-refresh the page</h4>
+          <p>Browsers cache JavaScript aggressively. Press <strong>Ctrl + Shift + R</strong> (Windows / Linux) or <strong>Cmd + Shift + R</strong> (Mac) on the page where the widget is embedded to bypass the cache and load the new <code>widget.js</code>.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Open the browser console</h4>
+          <p>Press <strong>F12</strong> → Console tab. If the widget still does not appear, look for any red error messages. A <code>403 Domain not authorized</code> error means the domain restriction setting needs updating (see above). A <code>404</code> means the <code>widget.js</code> URL is wrong in your embed code.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Check the widget is active</h4>
+          <p>In the dashboard, go to <strong>Widgets → Your Widget → Settings</strong> and confirm the <strong>Widget Active</strong> toggle is turned on. Inactive widgets return a 404 from the API and will not render.</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ISSUE 2 — PDF Training Fails                           -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section-block" id="pdf-training">
+    <h2><span class="section-num">2</span> PDF Training Fails</h2>
+    <p>You upload a PDF as a knowledge base source, click <strong>Retrain</strong>, and see one of these errors:</p>
+    <ul>
+      <li><code>PDF file not found: training-sources/1/abc123.pdf</code></li>
+      <li><code>pdftotext is not installed on this server</code></li>
+      <li><code>SQLSTATE[22001]: String data, right truncated: 1406 Data too long for column 'content'</code></li>
+    </ul>
+
+    <h3>Error 1 — "PDF file not found"</h3>
+    <p>This happens on <strong>Laravel 11 and newer</strong>. The <code>local</code> disk now stores files under <code>storage/app/private/</code> instead of the old <code>storage/app/</code> path. Older code used a hardcoded path that no longer exists.</p>
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <p><strong>Already fixed in v2.0.1.</strong> The platform now uses <code>Storage::disk('local')</code> to resolve paths correctly. If you are on an older copy, update <code>app/Services/TrainingService.php</code> — the <code>extractFromPdf()</code> method must use <code>Storage::disk('local')->exists()</code> and <code>Storage::disk('local')->path()</code> instead of <code>storage_path('app/')</code>.</p>
+    </div>
+
+    <h3>Error 2 — "pdftotext is not installed"</h3>
+    <p>The platform extracts text from PDFs using the <strong>pdftotext</strong> command-line utility, which is part of the <code>poppler-utils</code> package. This tool is not installed on all servers by default.</p>
+
+    <h4>Install on Debian / Ubuntu (most common Linux hosting)</h4>
+    <div class="code-block"><span class="cmd">sudo apt-get update</span>
+<span class="cmd">sudo apt-get install -y poppler-utils</span>
+
+<span class="comment"># Verify the install worked:</span>
+<span class="cmd">pdftotext -v</span></div>
+
+    <h4>Install on CentOS / RHEL / AlmaLinux</h4>
+    <div class="code-block"><span class="cmd">sudo yum install -y poppler-utils</span>
+<span class="comment"># or on newer versions:</span>
+<span class="cmd">sudo dnf install -y poppler-utils</span></div>
+
+    <h4>Install on cPanel / Shared Hosting</h4>
+    <p>Most shared hosts do not give you root access to install system packages. Contact your hosting provider and ask them to install <strong>poppler-utils</strong> on the server. If they cannot, consider:</p>
+    <ul>
+      <li>Upgrading to a VPS or cloud server (DigitalOcean, Vultr, Cloudways) where you have full root access</li>
+      <li>Converting your PDFs to plain text or FAQ format before uploading — these do not require <code>pdftotext</code></li>
+      <li>Using a URL or website link source instead of PDF upload</li>
+    </ul>
+
+    <h3>Error 3 — "Data too long for column 'content'"</h3>
+    <p>This error appeared in older versions when <code>pdftotext</code> was not installed. The platform fell back to reading the raw PDF binary file and tried to store the binary data in the database, which overflowed the column size. This fallback has been removed in v2.0.1 — you will now see the clear "pdftotext not installed" message instead of a database crash.</p>
+
+    <div class="callout warning">
+      <span class="callout-icon">⚠️</span>
+      <p><strong>If you still see the column overflow error</strong> after updating, you are running a version prior to v2.0.1. Apply the <code>extractFromPdf()</code> patch from <code>app/Services/TrainingService.php</code> — the dangerous raw-binary fallback must be removed entirely.</p>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ISSUE 3 — Training Times Out                           -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section-block" id="training-timeout">
+    <h2><span class="section-num">3</span> Training Times Out / Keeps Loading</h2>
+    <p>You add a website URL as a knowledge base source (or click <strong>Retrain</strong> on an existing knowledge base) and the browser spins for 30–90 seconds before showing <em>"This page is not working right now"</em> or a gateway timeout error.</p>
+
+    <h3>Why This Happens</h3>
+    <p>Training a URL source involves several slow operations chained together:</p>
+    <ol>
+      <li>Fetching the URL over HTTP (up to 30 seconds per page)</li>
+      <li>Chunking the extracted text into segments</li>
+      <li>Calling the OpenAI embeddings API for each batch of chunks (multiple network round-trips)</li>
+    </ol>
+    <p>For a sitemap source that crawls 50 pages, this can take 10–20 minutes. PHP and the web server both have execution time limits (typically 30–60 seconds) that kill the process long before it finishes, returning a blank error page.</p>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <p><strong>Already fixed in v2.0.1.</strong> The <strong>Retrain</strong> action now dispatches a background queue job instead of processing synchronously. Adding new sources already worked this way — Retrain has been updated to match. The HTTP response returns instantly; training happens in the background.</p>
+    </div>
+
+    <h3>The Fix Requires a Queue Worker</h3>
+    <p>Background jobs only work if something is <em>consuming</em> the job queue. The application uses a <strong>database queue</strong> (<code>QUEUE_CONNECTION=database</code> in <code>.env</code>). Jobs are written to the <code>jobs</code> table and stay there until a <strong>queue worker process</strong> picks them up and runs them.</p>
+
+    <div class="callout danger">
+      <span class="callout-icon">🚨</span>
+      <p><strong>If no queue worker is running, training will never complete</strong> — sources will stay stuck in "processing" or "pending" state forever. The queue worker is required for ALL training (both adding new sources and retraining).</p>
+    </div>
+
+    <p>See <a href="#queue-setup">Section 4 — Queue Worker &amp; Cron Job Setup</a> for the full setup instructions.</p>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ISSUE 4 — Queue Worker Setup                           -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section-block" id="queue-setup">
+    <h2><span class="section-num">4</span> Queue Worker &amp; Cron Job Setup</h2>
+    <p>The queue worker is a background process that runs continuously, picking up and executing jobs as they are added to the queue. It is required for:</p>
+    <ul>
+      <li>Knowledge base training (URL, PDF, text, FAQ, sitemap sources)</li>
+      <li>Knowledge base retrain</li>
+      <li>Scheduled automations</li>
+      <li>Email notifications (if using queued mail)</li>
+    </ul>
+
+    <h3>Option A — VPS / Dedicated Server (Recommended)</h3>
+    <p>On a server where you have SSH access, run the worker as a persistent daemon managed by <strong>Supervisor</strong>. Supervisor restarts the worker automatically if it crashes.</p>
+
+    <h4>Step 1 — Install Supervisor</h4>
+    <div class="code-block"><span class="cmd">sudo apt-get install -y supervisor</span></div>
+
+    <h4>Step 2 — Create a Supervisor config file</h4>
+    <div class="code-block"><span class="cmd">sudo nano /etc/supervisor/conf.d/aichat-worker.conf</span></div>
+    <p>Paste this content (replace <code>/var/www/html</code> with your actual project path and <code>www-data</code> with your web server user):</p>
+    <div class="code-block">[program:aichat-worker]
+process_name=%(program_name)s_%(process_num)02d
+<span class="key">command</span>=<span class="value">php /var/www/html/artisan queue:work database --sleep=3 --tries=3 --timeout=300</span>
+<span class="key">autostart</span>=<span class="value">true</span>
+<span class="key">autorestart</span>=<span class="value">true</span>
+<span class="key">user</span>=<span class="value">www-data</span>
+<span class="key">numprocs</span>=<span class="value">1</span>
+<span class="key">redirect_stderr</span>=<span class="value">true</span>
+<span class="key">stdout_logfile</span>=<span class="value">/var/log/aichat-worker.log</span>
+<span class="key">stopwaitsecs</span>=<span class="value">3600</span></div>
+
+    <h4>Step 3 — Start the worker</h4>
+    <div class="code-block"><span class="cmd">sudo supervisorctl reread</span>
+<span class="cmd">sudo supervisorctl update</span>
+<span class="cmd">sudo supervisorctl start aichat-worker:*</span>
+
+<span class="comment"># Check it is running:</span>
+<span class="cmd">sudo supervisorctl status</span></div>
+
+    <p>You should see <code>aichat-worker:00    RUNNING</code>. The worker will now survive server reboots automatically.</p>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <p><strong>After deploying code changes</strong> always restart the worker so it picks up any updated job classes: <code>sudo supervisorctl restart aichat-worker:*</code></p>
+    </div>
+
+    <h3>Option B — Shared Hosting (Cron-Based Worker)</h3>
+    <p>Most shared hosts (cPanel, Plesk) do not allow long-running background processes. Instead, use a <strong>cron job</strong> that runs the queue worker every minute, processes all pending jobs, and then exits.</p>
+
+    <h4>Step 1 — Log into cPanel</h4>
+    <p>Go to your cPanel dashboard → <strong>Cron Jobs</strong>.</p>
+
+    <h4>Step 2 — Add a new cron job</h4>
+    <p>Set the frequency to <strong>Every Minute</strong> and enter this command (replace the path with your actual project root):</p>
+    <div class="code-block"><span class="cmd">php /home/yourusername/public_html/artisan queue:work --stop-when-empty --timeout=300 --tries=3 >> /dev/null 2>&amp;1</span></div>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <p>The <code>--stop-when-empty</code> flag tells the worker to exit as soon as the queue is empty. This prevents multiple cron instances from stacking up. A new cron fires every minute, picks up any new jobs, and exits cleanly.</p>
+    </div>
+
+    <h4>Step 3 — Find your PHP path</h4>
+    <p>On shared hosts, <code>php</code> may not be in the default path. Use the full path to your PHP 8.x binary. Common paths:</p>
+    <table class="req-table">
+      <thead><tr><th>Host / Setup</th><th>PHP Binary Path</th></tr></thead>
+      <tbody>
+        <tr><td>cPanel default</td><td><code>/usr/bin/php</code> or <code>/usr/local/bin/php</code></td></tr>
+        <tr><td>cPanel PHP 8.2 selector</td><td><code>/usr/local/php82/bin/php</code></td></tr>
+        <tr><td>Plesk</td><td><code>/opt/plesk/php/8.2/bin/php</code></td></tr>
+        <tr><td>Not sure?</td><td>Run <code>which php</code> via SSH, or ask your host</td></tr>
+      </tbody>
+    </table>
+    <p>Example with explicit PHP path:</p>
+    <div class="code-block"><span class="cmd">/usr/local/php82/bin/php /home/yourusername/public_html/artisan queue:work --stop-when-empty --timeout=300 >> /dev/null 2>&amp;1</span></div>
+
+    <h3>Option C — One-off / Testing (SSH Only)</h3>
+    <p>If you just want to test that training works without setting up Supervisor or cron, run the worker manually in your SSH session:</p>
+    <div class="code-block"><span class="comment"># Option A — one-shot: process everything in the queue then exit</span>
+<span class="cmd">php artisan queue:work --stop-when-empty --timeout=300</span>
+
+<span class="comment"># Option B — persistent (VPS / Supervisor): run continuously until stopped</span>
+<span class="cmd">php artisan queue:work --timeout=300 --tries=3</span>
+
+<span class="comment"># Option C — shared hosting cron (add to cPanel Cron Jobs, runs every minute):</span>
+<span class="cmd">php /home/user/public_html/artisan queue:work --stop-when-empty --timeout=300 >> /dev/null 2>&amp;1</span></div>
+
+    <div class="callout warning">
+      <span class="callout-icon">⚠️</span>
+      <p><strong>SSH testing only</strong> — as soon as you close your SSH session the worker stops. Use Supervisor (Option A above) or cron (Option B above) for production so the worker restarts automatically.</p>
+    </div>
+
+    <h3>Verifying the Queue Is Working</h3>
+    <p>After setting up the worker, test it end-to-end:</p>
+    <ol class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Add a training source</h4>
+          <p>Go to <strong>Widgets → Your Widget → Knowledge Base → Add Source</strong> and add a short text or FAQ source. Click save. The status should show <strong>Pending</strong> immediately.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Wait 1–2 minutes</h4>
+          <p>Refresh the knowledge base page. If the worker is running, the status will change from <strong>Pending</strong> → <strong>Processing</strong> → <strong>Completed</strong>. If it stays on Pending after 2 minutes, the worker is not running.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Check for failed jobs (if status shows Failed)</h4>
+          <p>Run this via SSH to see any failed job error messages:</p>
+          <div class="code-block"><span class="cmd">php artisan queue:failed</span>
+<span class="comment"># To retry all failed jobs:</span>
+<span class="cmd">php artisan queue:retry all</span></div>
+        </div>
+      </li>
+    </ol>
+
+    <h3>Also Add the Laravel Scheduler (Recommended)</h3>
+    <p>The platform's scheduled tasks (daily stats cleanup, automation checks, etc.) also run through the queue. Add a second cron entry for the <strong>Laravel Scheduler</strong> so these tasks run automatically:</p>
+    <div class="code-block"><span class="comment"># Add this SEPARATE cron entry (runs once per minute):</span>
+<span class="cmd">* * * * * php /home/yourusername/public_html/artisan schedule:run >> /dev/null 2>&amp;1</span></div>
+    <p>On Supervisor / VPS setups, this cron entry should still be added — the scheduler is separate from the queue worker.</p>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ISSUE 5 — AI Chat "Technical Difficulties"             -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section-block" id="ai-chat-error">
+    <h2><span class="section-num">5</span> AI Chat Says "I'm Experiencing Technical Difficulties"</h2>
+    <p>The widget loads and the visitor can type, but every AI reply comes back as:</p>
+    <div class="code-block">I'm experiencing some technical difficulties. Please try again in a moment, or I can connect you with our team.</div>
+
+    <h3>Root Causes (in order of likelihood)</h3>
+
+    <h4>1. OpenAI API Key Missing or Invalid</h4>
+    <p>The AI can't call OpenAI without a valid key. Verify it is set correctly:</p>
+    <ol class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Check the key is saved in Admin</h4>
+          <p>Go to <strong>Admin → Settings → AI Configuration</strong>. Paste your OpenAI API key and click the <strong>Test</strong> button next to it. You should see a green "Connection successful" message. If the test fails, the key is wrong — get a new one from <code>platform.openai.com → API Keys</code>.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Confirm the key is written to .env</h4>
+          <p>After saving in Admin, open your <code>.env</code> file and check that <code>OPENAI_API_KEY</code> contains your key (not blank, not the literal text "your-key-here").</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Clear the config cache</h4>
+          <p>If you edited <code>.env</code> manually, the old cached config may still be loaded. Run via SSH:</p>
+          <div class="code-block"><span class="cmd">php artisan config:clear</span>
+<span class="cmd">php artisan cache:clear</span></div>
+        </div>
+      </li>
+    </ol>
+
+    <h4>2. OpenAI Account Has No Credits</h4>
+    <p>Even a valid API key fails if the account has run out of credits or the billing card is declined. Log into <code>platform.openai.com → Billing</code> to check your balance and add credits if needed.</p>
+
+    <h4>3. AI Model Not Available to Your Account</h4>
+    <p>Some models (like <code>gpt-4o</code>) require a paid OpenAI account with a certain usage history. If you are on a new account, try switching the widget to a more accessible model:</p>
+    <p>Go to <strong>Widgets → Your Widget → AI Settings</strong> and change the model to <strong>GPT-4o Mini (Fast)</strong> — this is the most accessible model across all account tiers.</p>
+
+    <h4>4. Smart Suggestions Crashing the Response (Older Versions)</h4>
+    <p>In versions prior to v2.0.1, if the smart-suggestions feature threw an internal error, it would <em>also</em> return "technical difficulties" even when the main AI reply was generated successfully. This masked the real response entirely.</p>
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <p><strong>Fixed in v2.0.1.</strong> Smart suggestions are now wrapped in their own isolated try-catch. A suggestion failure logs a warning and returns an empty suggestion list — the AI response is always delivered regardless.</p>
+    </div>
+
+    <h4>5. Duplicate Sentiment API Call Hitting Rate Limits (Older Versions)</h4>
+    <p>In older versions, the sentiment-analysis API call was made <strong>twice</strong> for every visitor message — once in the HTTP handler and once inside the AI service. This doubled the OpenAI API calls per message, which could trigger rate-limit errors (HTTP 429) that then surfaced as "technical difficulties."</p>
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <p><strong>Fixed in v2.0.1.</strong> The duplicate sentiment call inside <code>AiChatService::generateResponse()</code> has been removed. Each message now makes exactly one sentiment call.</p>
+    </div>
+
+    <h3>How to Read the Actual Error</h3>
+    <p>The real exception is always written to the Laravel log. SSH into your server and run:</p>
+    <div class="code-block"><span class="comment"># View the last 50 lines of the log (most recent errors at the bottom):</span>
+<span class="cmd">tail -50 storage/logs/laravel.log</span>
+
+<span class="comment"># Or search specifically for AI errors:</span>
+<span class="cmd">grep "AI API error" storage/logs/laravel.log | tail -20</span></div>
+    <p>The log entry will show the exact exception message from OpenAI (e.g., "Incorrect API key", "You exceeded your current quota", "The model does not exist"). That message tells you precisely which fix to apply.</p>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <p>You can also temporarily set <code>APP_DEBUG=true</code> in <code>.env</code> and run <code>php artisan config:clear</code> — the full exception will then appear in the browser for admin-origin requests, making diagnosis faster. <strong>Remember to set it back to <code>false</code> before sharing the site with visitors.</strong></p>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ISSUE 6 — Automation Division Error                    -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section-block" id="automation-error">
+    <h2><span class="section-num">6</span> Automation "Division by Zero" Error</h2>
+    <p>When creating or viewing an automation, you see a PHP error similar to:</p>
+    <div class="code-block">DivisionByZeroError: Division by zero
+  at app/Models/Automation.php line 42</div>
+
+    <h3>Root Cause</h3>
+    <p>The <code>success_rate</code> calculated attribute on the <code>Automation</code> model divides the success count by the trigger count. When <code>trigger_count</code> is zero (a brand-new automation that has never fired), this causes a division-by-zero crash.</p>
+    <p>The underlying cause was that MySQL returns integer columns as strings when there are no type casts configured. The guard <code>if ($trigger_count === 0)</code> used strict equality (<code>===</code>) — which always fails when comparing the integer <code>0</code> to the string <code>"0"</code>, so the division always proceeded regardless of the value.</p>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <p><strong>Already fixed in v2.0.1.</strong> The <code>trigger_count</code> and <code>success_count</code> columns are now declared as <code>'integer'</code> casts in the <code>Automation</code> model, so PHP always receives proper integers from the database. No manual action is required if you are running the latest version.</p>
+    </div>
+
+    <h3>Manual Patch (Older Installs)</h3>
+    <p>If you are on an older version, open <code>app/Models/Automation.php</code> and find the <code>casts()</code> method. Add these two lines inside the returned array:</p>
+    <div class="code-block"><span class="comment">// In App\Models\Automation — casts() method</span>
+protected function casts(): array
+{
+    return [
+        ...
+        <span class="key">'trigger_count'</span> => <span class="value">'integer'</span>,
+        <span class="key">'success_count'</span> => <span class="value">'integer'</span>,
+        ...
+    ];
+}</div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- Quick Reference Table                                   -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section-block" id="quick-reference">
+    <h2><span class="section-num">7</span> Quick Reference Table</h2>
+    <p>A summary of all known issues and their resolutions.</p>
+
+    <table class="feat-table">
+      <thead>
+        <tr>
+          <th>Symptom</th>
+          <th>Root Cause</th>
+          <th>Fix / Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Widget launcher never appears on embedded site</td>
+          <td>Async queue bug — <code>window.pfx.q</code> destroyed on <code>widget.js</code> load</td>
+          <td><span class="pill new">Fixed v2.0.1</span> — queue captured before overwrite; hard-refresh browser</td>
+        </tr>
+        <tr>
+          <td>Widget shows on some domains but not others</td>
+          <td>Allowed domain entered with <code>https://</code> prefix — <code>fnmatch</code> comparison fails</td>
+          <td>Re-save allowed domains without protocol prefix (e.g. <code>example.com</code> not <code>https://example.com</code>)</td>
+        </tr>
+        <tr>
+          <td>PDF training — "PDF file not found"</td>
+          <td>Laravel 11 changed <code>local</code> disk root to <code>storage/app/private/</code></td>
+          <td><span class="pill new">Fixed v2.0.1</span> — uses <code>Storage::disk('local')</code> instead of hardcoded path</td>
+        </tr>
+        <tr>
+          <td>PDF training — "pdftotext not installed"</td>
+          <td><code>poppler-utils</code> not installed on server</td>
+          <td>Install with <code>sudo apt-get install poppler-utils</code> (or contact host)</td>
+        </tr>
+        <tr>
+          <td>PDF training — SQL column overflow error</td>
+          <td>Old code read raw PDF binary as fallback when <code>pdftotext</code> missing</td>
+          <td><span class="pill new">Fixed v2.0.1</span> — dangerous fallback removed; clear error shown instead</td>
+        </tr>
+        <tr>
+          <td>URL / sitemap training — times out, keeps loading</td>
+          <td>Retrain ran synchronously in HTTP request, hitting PHP execution timeout</td>
+          <td><span class="pill new">Fixed v2.0.1</span> — Retrain now dispatches background jobs; requires queue worker</td>
+        </tr>
+        <tr>
+          <td>Training sources stuck in "Pending" forever</td>
+          <td>No queue worker running; jobs queued but never consumed</td>
+          <td>Set up Supervisor worker or cron job — see <a href="#queue-setup">Section 4</a></td>
+        </tr>
+        <tr>
+          <td>AI chat replies "I'm experiencing technical difficulties"</td>
+          <td>OpenAI API call throws exception — key missing/invalid, no credits, or wrong model</td>
+          <td>Check Admin → AI Configuration → Test button; verify <code>OPENAI_API_KEY</code> in <code>.env</code>; check <code>storage/logs/laravel.log</code> for exact error</td>
+        </tr>
+        <tr>
+          <td>AI "technical difficulties" even though key is valid</td>
+          <td>Smart suggestions failure swallowed entire response (older versions)</td>
+          <td><span class="pill new">Fixed v2.0.1</span> — suggestions isolated in own try-catch; AI response always delivered</td>
+        </tr>
+        <tr>
+          <td>Excessive OpenAI API usage / rate-limit errors during chat</td>
+          <td>Sentiment analysis called twice per message — duplicate wasted API quota</td>
+          <td><span class="pill new">Fixed v2.0.1</span> — duplicate call in <code>generateResponse()</code> removed</td>
+        </tr>
+        <tr>
+          <td>Automation <code>DivisionByZeroError</code></td>
+          <td>MySQL returns integer columns as strings; strict <code>=== 0</code> check failed</td>
+          <td><span class="pill new">Fixed v2.0.1</span> — <code>trigger_count</code> and <code>success_count</code> declared as integer casts</td>
+        </tr>
+        <tr>
+          <td>General 500 errors on any page</td>
+          <td>Various — need full error to diagnose</td>
+          <td>Set <code>APP_DEBUG=true</code> in <code>.env</code> temporarily, reload, read the full error, then set back to <code>false</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <p>All items marked <span class="pill new">Fixed v2.0.1</span> are resolved in the current release. If you have an older copy, apply the patches described in the relevant section above, or pull the latest version from the PoriFyx repository.</p>
+    </div>
+  </div>
+
+
+  <div class="cta-block">
+    <h2>Still Having Issues?</h2>
+    <p>If your problem is not listed here, enable debug mode (<code>APP_DEBUG=true</code>), capture the full error trace, and open a PoriFyx support ticket with your PHP version, hosting provider name, and the error message.</p>
+    <div class="cta-buttons">
+      <a href="installation.html" class="btn-primary">⚙️ Back to Installation</a>
+      <a href="developer-guide.html" class="btn-secondary">🔧 Developer Guide</a>
+    </div>
+  </div>
+
+  <footer class="docs-footer">
+    <span>Troubleshooting Guide — PoriFyx Widget</span>
+    <span>
+      <a href="index.html">Home</a> ·
+      <a href="installation.html">Installation</a> ·
+      <a href="user-guide.html">User Guide</a> ·
+      <a href="developer-guide.html">Developer Guide</a>
+    </span>
+  </footer>
+
+</article>
+</div>
+</body>
+</html>

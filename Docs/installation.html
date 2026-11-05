@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Installation Guide | PoriFyx Widget</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page-shell">
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">💬</div>
+    <div><div class="logo-text">PoriFyx Widget</div><div class="logo-sub">Documentation v2.0</div></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Getting Started</div>
+    <nav>
+      <a href="index.html"><span class="nav-icon">🏠</span> Home</a>
+      <a href="installation.html" class="active"><span class="nav-icon">⚙️</span> Installation</a>
+    </nav>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Reference</div>
+    <nav>
+      <a href="features.html"><span class="nav-icon">✨</span> Features</a>
+      <a href="user-guide.html"><span class="nav-icon">👤</span> User Guide</a>
+      <a href="admin-guide.html"><span class="nav-icon">🛡️</span> Admin Guide</a>
+    </nav>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Technical</div>
+    <nav>
+      <a href="developer-guide.html"><span class="nav-icon">🔧</span> Developer Guide</a>
+      <a href="pwa-guide.html"><span class="nav-icon">📱</span> PWA Guide</a>
+      <a href="pwa-checklist.html"><span class="nav-icon">✅</span> PWA Checklist</a>
+    </nav>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Support</div>
+    <nav>
+      <a href="troubleshooting.html"><span class="nav-icon">🛠️</span> Troubleshooting</a>
+    </nav>
+  </div>
+  <div class="sidebar-footer">PoriFyx Widget &copy; 2026</div>
+</aside>
+
+<article class="main-content">
+
+  <div class="breadcrumb"><a href="index.html">Home</a> <span>/</span> Installation</div>
+
+  <section class="hero">
+    <div class="hero-eyebrow">⚙️ Installation Guide</div>
+    <h1>Install PoriFyx Widget</h1>
+    <p>This guide is written for non-developers. You do not need to know any programming. Follow each step in order and your platform will be live in under 10 minutes. The built-in browser installer does all the hard work for you.</p>
+    <div class="badge-row">
+      <span class="badge">No Terminal Needed</span>
+      <span class="badge">Browser Installer</span>
+      <span class="badge">Auto Migrations</span>
+      <span class="badge">10-Minute Setup</span>
+    </div>
+  </section>
+
+  <div class="toc">
+    <h4>On This Page</h4>
+    <ol>
+      <li><a href="#requirements">Server Requirements</a></li>
+      <li><a href="#upload">Upload Files</a></li>
+      <li><a href="#env">Create .env File</a></li>
+      <li><a href="#permissions">Set File Permissions</a></li>
+      <li><a href="#installer">Run Browser Installer</a></li>
+      <li><a href="#wizard">Installer Wizard Steps</a></li>
+      <li><a href="#after">After Installation</a></li>
+      <li><a href="#ai-keys">Connect AI Providers</a></li>
+      <li><a href="#push-notifications">Push Notifications (VAPID Keys)</a></li>
+      <li><a href="#reverb">Real-time Chat (Reverb)</a></li>
+      <li><a href="#stripe">Connect Stripe Billing</a></li>
+      <li><a href="#troubleshoot">Troubleshooting</a></li>
+    </ol>
+  </div>
+
+  <!-- Requirements -->
+  <div class="section-block" id="requirements">
+    <h2><span class="section-num">1</span> Server Requirements</h2>
+    <p>Before uploading, confirm your hosting account meets these requirements. Most modern shared hosting plans (SiteGround, Cloudways, DigitalOcean, cPanel hosts) already meet all of them.</p>
+    <table class="req-table">
+      <thead><tr><th>Requirement</th><th>Minimum</th><th>Recommended</th><th>Where to Check</th></tr></thead>
+      <tbody>
+        <tr><td>PHP Version</td><td>8.1</td><td>8.2 or 8.3</td><td>cPanel → PHP Selector</td></tr>
+        <tr><td>MySQL / MariaDB</td><td>MySQL 5.7</td><td>MySQL 8.0+</td><td>cPanel → Databases</td></tr>
+        <tr><td>PHP Extensions</td><td colspan="2">BCMath, Ctype, cURL, DOM, Fileinfo, JSON, Mbstring, OpenSSL, PDO, PDO_MySQL, Tokenizer, XML, Zip</td><td>phpinfo() page</td></tr>
+        <tr><td>Disk Space</td><td>500 MB</td><td>2 GB+</td><td>cPanel → Disk Usage</td></tr>
+        <tr><td>RAM</td><td>512 MB</td><td>1 GB+</td><td>Hosting control panel</td></tr>
+        <tr><td>HTTPS / SSL</td><td>Required</td><td>Let's Encrypt (free)</td><td>cPanel → SSL/TLS</td></tr>
+        <tr><td>URL Rewriting</td><td>mod_rewrite or Nginx rewrite rules</td><td>Already enabled on most hosts</td><td>Apache: check .htaccess support</td></tr>
+      </tbody>
+    </table>
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <p><strong>Not sure?</strong> Create a file called <code>phpinfo.php</code> on your server with the contents <code>&lt;?php phpinfo(); ?&gt;</code> and open it in your browser. Search the page for each extension name to confirm it is loaded.</p>
+    </div>
+  </div>
+
+  <!-- Upload -->
+  <div class="section-block" id="upload">
+    <h2><span class="section-num">2</span> Upload the Files</h2>
+    <p>You received a ZIP file from PoriFyx. Extract it on your computer — you will see the full project folder inside.</p>
+    <ol class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Extract the ZIP</h4>
+          <p>Right-click the downloaded ZIP and choose <strong>Extract All</strong> (Windows) or double-click (Mac). You will get a folder containing <code>app/</code>, <code>public/</code>, <code>routes/</code>, and other Laravel directories.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Upload via cPanel File Manager or FTP</h4>
+          <p><strong>Option A — cPanel File Manager:</strong> Log into cPanel → File Manager → navigate to <code>public_html</code> (or your domain folder) → Upload the extracted folder contents there.</p>
+          <p><strong>Option B — FTP (FileZilla):</strong> Connect to your server using your FTP credentials. Drag and drop the extracted folder contents into your domain's root directory.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Verify the structure</h4>
+          <p>After upload, your domain root (<code>public_html/</code>) should contain these top-level items:</p>
+          <div class="code-block">public_html/
+├── app/
+├── bootstrap/
+├── config/
+├── database/
+├── public/          ← contains index.php
+├── resources/
+├── routes/
+├── storage/
+├── vendor/          ← PHP dependencies (must be present)
+├── .htaccess        ← root rewrite rule (already included)
+├── artisan
+└── composer.json</div>
+          <div class="callout warning"><span class="callout-icon">⚠️</span><p>The <code>vendor/</code> folder is large (~100 MB) but must be present. If it is missing from the package, install it locally with <code>composer install --no-dev</code> and then upload it, or use your host's Composer tool.</p></div>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  <!-- .env -->
+  <div class="section-block" id="env">
+    <h2><span class="section-num">3</span> Create the .env File</h2>
+    <p>The <code>.env</code> file stores your site's private configuration — database credentials, app URL, and secret keys. <strong>Never share this file publicly.</strong></p>
+    <ol class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Create a MySQL Database</h4>
+          <p>In cPanel → MySQL Databases: create a new database (e.g. <code>mysite_aichat</code>), create a database user with a strong password, and grant that user <strong>All Privileges</strong> on the database. Write down the database name, username, and password.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Copy .env.example to .env</h4>
+          <p>In File Manager, find <code>.env.example</code> in the root. Right-click → Copy → paste it in the same folder. Rename the copy to exactly <code>.env</code> (no extension).</p>
+          <div class="callout info"><span class="callout-icon">ℹ️</span><p>On some hosts, files starting with a dot are hidden by default. In File Manager, click the <strong>Settings</strong> button and enable <strong>Show Hidden Files</strong>.</p></div>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Edit the .env file</h4>
+          <p>Right-click <code>.env</code> → Edit. Update the following lines at minimum:</p>
+          <div class="code-block"><span class="key">APP_NAME</span>=<span class="value">"My AI Chat"</span>
+<span class="key">APP_ENV</span>=<span class="value">production</span>
+<span class="key">APP_KEY</span>=<span class="value">            </span><span class="comment"># leave blank — installer will generate this</span>
+<span class="key">APP_DEBUG</span>=<span class="value">false</span>
+<span class="key">APP_URL</span>=<span class="value">https://yourdomain.com</span>
+
+<span class="key">DB_CONNECTION</span>=<span class="value">mysql</span>
+<span class="key">DB_HOST</span>=<span class="value">localhost</span>
+<span class="key">DB_PORT</span>=<span class="value">3306</span>
+<span class="key">DB_DATABASE</span>=<span class="value">mysite_aichat</span>
+<span class="key">DB_USERNAME</span>=<span class="value">mysite_user</span>
+<span class="key">DB_PASSWORD</span>=<span class="value">your_strong_password</span></div>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  <!-- Permissions -->
+  <div class="section-block" id="permissions">
+    <h2><span class="section-num">4</span> Set File Permissions</h2>
+    <p>Laravel needs write access to two folders. Set them in File Manager by right-clicking each folder and choosing <strong>Change Permissions</strong>.</p>
+    <table class="req-table">
+      <thead><tr><th>Folder</th><th>Permission</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td><code>storage/</code></td><td><strong>775</strong></td><td>Logs, session files, compiled views, and file uploads are stored here</td></tr>
+        <tr><td><code>bootstrap/cache/</code></td><td><strong>775</strong></td><td>Framework caches configuration and routes here for speed</td></tr>
+      </tbody>
+    </table>
+    <div class="callout tip"><span class="callout-icon">💡</span><p>Set permissions <strong>recursively</strong> so all sub-folders inside <code>storage/</code> are also writable. In cPanel File Manager, tick the <em>Recurse into subdirectories</em> checkbox when setting permissions.</p></div>
+  </div>
+
+  <!-- Run installer -->
+  <div class="section-block" id="installer">
+    <h2><span class="section-num">5</span> Run the Browser Installer</h2>
+    <p>Open your web browser and visit:</p>
+    <div class="code-block">https://yourdomain.com/install</div>
+    <p>If you installed in a sub-folder (e.g. <code>public_html/chat/</code>) use:</p>
+    <div class="code-block">https://yourdomain.com/chat/install</div>
+    <div class="callout warning"><span class="callout-icon">⚠️</span><p>If you see a <strong>404 Not Found</strong> page, the <code>.htaccess</code> file is probably not being read by Apache. Check with your host that <code>mod_rewrite</code> is enabled and that <code>AllowOverride All</code> is set for your document root.</p></div>
+  </div>
+
+  <!-- Wizard steps -->
+  <div class="section-block" id="wizard">
+    <h2><span class="section-num">6</span> Installer Wizard — Step by Step</h2>
+    <p>The installer walks you through 7 steps. Each step must pass before you can continue.</p>
+
+    <ol class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Welcome Screen</h4>
+          <p>Confirms the installer is loading correctly. Click <strong>Begin Installation</strong> to proceed.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Requirements Check</h4>
+          <p>The installer checks your PHP version and all required extensions. Each item shows a green tick or red cross. If anything is red, contact your hosting support and ask them to enable the listed PHP extension.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Permissions Check</h4>
+          <p>Verifies that <code>storage/</code> and <code>bootstrap/cache/</code> are writable. If either shows a red warning, go back and set the folder permissions to <code>775</code> as described in Step 4.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Environment Configuration</h4>
+          <p>Enter (or confirm) your <strong>App URL</strong> and <strong>Database credentials</strong>. The installer will test the connection before allowing you to proceed. If the connection test fails, double-check the database name, username, password, and host.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h4>Database Setup</h4>
+          <p>The installer runs all database migrations (creates 35+ tables) and seeds default data including a free plan, default system settings, and notification templates. This takes 10–30 seconds. Do not close the browser.</p>
+          <div class="callout tip"><span class="callout-icon">💡</span><p>You can optionally enable <strong>Demo Data</strong> here. This seeds sample widgets, conversations, and leads so you can explore the interface immediately without creating everything from scratch.</p></div>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <h4>Create Admin Account</h4>
+          <p>Enter a name, email address, and a strong password (at least 8 characters, mix of letters, numbers, and symbols). This account will be the super-administrator with access to every part of the platform.</p>
+          <div class="callout warning"><span class="callout-icon">⚠️</span><p>Write down this email and password. There is no "forgot password" link for the admin panel — recovery requires direct database access.</p></div>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">7</div>
+        <div class="step-body">
+          <h4>Installation Complete</h4>
+          <p>The installer writes <code>INSTALLATION_COMPLETE=true</code> to your <code>.env</code> file and locks the installer so it cannot be run again. You will see links to your dashboard and admin panel.</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  <!-- After installation -->
+  <div class="section-block" id="after">
+    <h2><span class="section-num">7</span> After Installation — First Steps</h2>
+    <p>With the installer complete, log in and complete these post-install steps:</p>
+    <div class="grid-2">
+      <div class="card">
+        <h4>🔑 Log In</h4>
+        <p>Go to <code>https://yourdomain.com/login</code> and sign in with the admin email and password you just created.</p>
+      </div>
+      <div class="card">
+        <h4>⚙️ Admin Panel</h4>
+        <p>Access the super-admin panel at <code>https://yourdomain.com/admin</code>. This is separate from the user dashboard and has additional management tools.</p>
+      </div>
+      <div class="card">
+        <h4>📋 Create a Plan</h4>
+        <p>Go to Admin → Plans and create at least one subscription plan. Users need a plan to create widgets. You can also make a free plan with generous limits.</p>
+      </div>
+      <div class="card">
+        <h4>🏷️ Branding</h4>
+        <p>Go to Admin → Settings → Branding. Set your app name, upload a logo, and configure support email. This applies site-wide.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Keys -->
+  <div class="section-block" id="ai-keys">
+    <h2><span class="section-num">8</span> Connect AI Providers</h2>
+    <p>The platform needs at least one AI provider API key to power conversations. Go to <strong>Admin → Settings → AI Configuration</strong>.</p>
+    <table class="req-table">
+      <thead><tr><th>Provider</th><th>Where to Get Key</th><th>Recommended For</th></tr></thead>
+      <tbody>
+        <tr><td>OpenAI (GPT-4o)</td><td>platform.openai.com → API Keys</td><td>Best quality responses, most feature-complete</td></tr>
+        <tr><td>Anthropic (Claude)</td><td>console.anthropic.com → API Keys</td><td>Excellent for long documents and nuanced answers</td></tr>
+        <tr><td>Google (Gemini)</td><td>aistudio.google.com → Get API Key</td><td>Fast and cost-effective at scale</td></tr>
+        <tr><td>Groq (Llama)</td><td>console.groq.com → API Keys</td><td>Ultra-fast inference, good for high-traffic sites</td></tr>
+      </tbody>
+    </table>
+    <div class="callout info"><span class="callout-icon">ℹ️</span><p>You can configure multiple providers and let each widget choose its own. You do not need all four — a single OpenAI key is enough to start.</p></div>
+    <p>The platform also uses OpenAI embeddings for the knowledge base. Your OpenAI key covers both chat and embeddings.</p>
+  </div>
+
+  <!-- Push Notifications -->
+  <div class="section-block" id="push-notifications">
+    <h2><span class="section-num">9</span> Push Notifications (VAPID Keys)</h2>
+    <p>Browser push notifications let your team receive real-time alerts — new leads, escalated conversations, and chat events — without keeping the dashboard tab open. They require a pair of <strong>VAPID keys</strong> (Voluntary Application Server Identification), which prove your server is allowed to send pushes to subscribed browsers.</p>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <p><strong>Auto-generated during installation.</strong> The web installer generates your VAPID keys automatically during the Environment Configuration step and writes them directly into your <code>.env</code> file. On most Linux servers you do not need to do anything manually — the keys are ready the moment installation completes.</p>
+    </div>
+
+    <h3>Verify the Keys Were Generated</h3>
+    <p>Open your <code>.env</code> file and look for these three lines. They should contain values, not be empty:</p>
+    <div class="code-block"><span class="key">VAPID_PUBLIC_KEY</span>=<span class="value">BNxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
+<span class="key">VAPID_PRIVATE_KEY</span>=<span class="value">xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
+<span class="key">VAPID_SUBJECT</span>=<span class="value">mailto:admin@yourdomain.com</span>
+<span class="key">VITE_VAPID_PUBLIC_KEY</span>=<span class="value">"${VAPID_PUBLIC_KEY}"</span></div>
+
+    <h3>Generate Keys Manually (if empty)</h3>
+    <p>On some servers (older PHP builds or restrictive hosting), the installer may not be able to generate VAPID keys automatically. If the lines above are blank, generate them manually by running this single command via SSH or your host's terminal:</p>
+    <div class="code-block">php artisan webpush:vapid</div>
+    <p>The command generates a fresh key pair and writes all three values (<code>VAPID_PUBLIC_KEY</code>, <code>VAPID_PRIVATE_KEY</code>, <code>VAPID_SUBJECT</code>) directly into your <code>.env</code> file. It also prints the public key to the terminal so you can confirm it was set.</p>
+    <p>After running the command, clear the config cache so the app picks up the new values immediately:</p>
+    <div class="code-block">php artisan config:clear</div>
+
+    <div class="callout warning">
+      <span class="callout-icon">⚠️</span>
+      <p><strong>Never reuse VAPID keys across multiple apps.</strong> Each deployment should have its own unique key pair. Reusing keys can cause push delivery failures because the browser associates the public key with a specific server identity. If you re-run the installer on a clean install, new keys are generated automatically.</p>
+    </div>
+
+    <h3>Requirements for Key Generation</h3>
+    <table class="req-table">
+      <thead><tr><th>Requirement</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>OpenSSL extension (PHP)</td><td>Used to generate the EC P-256 key pair that VAPID requires</td></tr>
+        <tr><td>OpenSSL compiled with EC support</td><td>Must support the <code>prime256v1</code> elliptic curve — standard on all modern Linux distributions</td></tr>
+        <tr><td>HTTPS on your domain</td><td>Browsers only allow push subscriptions on HTTPS origins</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <p>Push notifications work entirely in the browser — no app store, no native app required. Users visit your dashboard, allow notifications when prompted, and then receive alerts as standard OS notifications even when the tab is closed.</p>
+    </div>
+  </div>
+
+  <!-- Reverb / Real-time -->
+  <div class="section-block" id="reverb">
+    <h2><span class="section-num">10</span> Real-time Chat (Reverb WebSocket)</h2>
+    <p>Live chat between your agents and visitors is powered by <strong>Laravel Reverb</strong>, a self-hosted WebSocket server. The installer generates random Reverb credentials automatically — you just need to start the server process.</p>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <p><strong>Auto-generated during installation.</strong> <code>REVERB_APP_ID</code>, <code>REVERB_APP_KEY</code>, and <code>REVERB_APP_SECRET</code> are all generated with cryptographically random values when you run the installer. You do not need to create or copy these values manually.</p>
+    </div>
+
+    <h3>Verify the Credentials Were Generated</h3>
+    <p>Open your <code>.env</code> file. These should contain random values, not the placeholders <code>your-app-id</code> / <code>your-app-key</code>:</p>
+    <div class="code-block"><span class="key">BROADCAST_CONNECTION</span>=<span class="value">reverb</span>
+<span class="key">REVERB_APP_ID</span>=<span class="value">481293</span>         <span class="comment"># a random 6-digit number</span>
+<span class="key">REVERB_APP_KEY</span>=<span class="value">qyzmxnftaelwbdcr</span>  <span class="comment"># 20-character random string</span>
+<span class="key">REVERB_APP_SECRET</span>=<span class="value">hkpvdnzocrmfsate</span> <span class="comment"># 20-character random string</span>
+<span class="key">REVERB_HOST</span>=<span class="value">"localhost"</span>
+<span class="key">REVERB_PORT</span>=<span class="value">8080</span>
+<span class="key">REVERB_SCHEME</span>=<span class="value">http</span></div>
+
+    <h3>Starting the Reverb Server</h3>
+    <p>Reverb is a long-running process — run it on your server via SSH and keep it alive with Supervisor or a process manager:</p>
+    <div class="code-block">php artisan reverb:start</div>
+
+    <h3>Production Reverb Setup (Supervisor)</h3>
+    <p>On a VPS or dedicated server, add this to your Supervisor config so Reverb restarts automatically if it crashes:</p>
+    <div class="code-block">[program:reverb]
+process_name=%(program_name)s
+command=php /var/www/html/artisan reverb:start
+autostart=true
+autorestart=true
+user=www-data
+redirect_stderr=true
+stdout_logfile=/var/log/reverb.log</div>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <p><strong>Shared hosting:</strong> Most shared hosting providers do not allow long-running processes. If you are on shared hosting, real-time chat delivery via WebSocket may not be available. Contact your host to check whether persistent processes are supported, or upgrade to a VPS plan.</p>
+    </div>
+  </div>
+
+  <!-- Stripe -->
+  <div class="section-block" id="stripe">
+    <h2><span class="section-num">11</span> Connect Stripe Billing (Optional)</h2>
+    <p>If you plan to charge users a subscription fee, connect Stripe. If you are using this for yourself only, you can skip this step.</p>
+    <ol class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Create a Stripe Account</h4>
+          <p>Sign up at <a href="https://stripe.com" target="_blank">stripe.com</a> and verify your business details to enable payouts.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Get API Keys</h4>
+          <p>In Stripe Dashboard → Developers → API Keys. Copy the <strong>Publishable key</strong> and <strong>Secret key</strong>.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Add Keys to .env</h4>
+          <div class="code-block"><span class="key">STRIPE_KEY</span>=<span class="value">pk_live_xxxxxxxxxxxx</span>
+<span class="key">STRIPE_SECRET</span>=<span class="value">sk_live_xxxxxxxxxxxx</span>
+<span class="key">STRIPE_WEBHOOK_SECRET</span>=<span class="value">whsec_xxxxxxxxxxxx</span></div>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Set Up Webhook</h4>
+          <p>In Stripe Dashboard → Developers → Webhooks → Add endpoint. Set the URL to <code>https://yourdomain.com/stripe/webhook</code>. Select events: <code>customer.subscription.created</code>, <code>customer.subscription.updated</code>, <code>customer.subscription.deleted</code>, <code>invoice.payment_succeeded</code>, <code>invoice.payment_failed</code>.</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  <!-- Troubleshooting -->
+  <div class="section-block" id="troubleshoot">
+    <h2><span class="section-num">12</span> Troubleshooting</h2>
+
+    <h3>Common Problems and Fixes</h3>
+    <table class="req-table">
+      <thead><tr><th>Problem</th><th>Most Likely Cause</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr><td>White page / 500 error</td><td>APP_DEBUG=false hides details</td><td>Temporarily set <code>APP_DEBUG=true</code> in .env, refresh, read the error, then set back to false</td></tr>
+        <tr><td>404 on /install</td><td>mod_rewrite not enabled or .htaccess missing</td><td>Ask host to enable mod_rewrite; confirm .htaccess is in the root</td></tr>
+        <tr><td>Database connection failed</td><td>Wrong credentials or host</td><td>Verify DB_DATABASE, DB_USERNAME, DB_PASSWORD in .env; check DB_HOST (often <code>localhost</code>)</td></tr>
+        <tr><td>Permission denied error</td><td>storage/ not writable</td><td>Set storage/ and bootstrap/cache/ to permission 775 recursively</td></tr>
+        <tr><td>Installer runs again after completion</td><td>INSTALLATION_COMPLETE missing from .env</td><td>Add <code>INSTALLATION_COMPLETE=true</code> to .env manually</td></tr>
+        <tr><td>Missing CSS / JS (blank-looking pages)</td><td>Build assets missing</td><td>Check that <code>public/build/</code> folder exists. If missing, run <code>npm run build</code> locally or re-upload it.</td></tr>
+        <tr><td>Email not sending</td><td>SMTP not configured</td><td>Set MAIL_HOST, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD in .env. Use SMTP from your host or a service like Mailgun or Postmark.</td></tr>
+        <tr><td>AI not responding</td><td>Invalid or missing API key</td><td>Go to Admin → Settings → AI Configuration and verify your API key. Test with the "Test AI" button.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Getting More Help</h3>
+    <div class="callout info"><span class="callout-icon">ℹ️</span><p>For detailed solutions to common post-install problems — widget not showing, PDF training failures, queue worker setup, training timeouts, and automation errors — see the <a href="troubleshooting.html"><strong>Troubleshooting Guide</strong></a>. If your issue is not covered there, contact PoriFyx support with your PHP version, hosting provider name, and the full error message (with <code>APP_DEBUG=true</code> enabled temporarily).</p></div>
+  </div>
+
+  <div class="cta-block">
+    <h2>Installation Complete — What Next?</h2>
+    <p>Read the User Guide to create your first widget, train it on your content, and embed it on your site.</p>
+    <div class="cta-buttons">
+      <a href="user-guide.html" class="btn-primary">👤 Read User Guide</a>
+      <a href="features.html" class="btn-secondary">✨ Explore Features</a>
+    </div>
+  </div>
+
+  <footer class="docs-footer">
+    <span>Installation Guide — PoriFyx Widget</span>
+    <span><a href="index.html">Home</a> · <a href="user-guide.html">User Guide</a> · <a href="admin-guide.html">Admin Guide</a></span>
+  </footer>
+
+</article>
+</div>
+</body>
+</html>

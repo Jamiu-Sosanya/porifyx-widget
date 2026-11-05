@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PWA Guide | PoriFyx Widget</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page-shell">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">💬</div>
+    <div>
+      <div class="logo-text">PoriFyx Widget</div>
+      <div class="logo-sub">Documentation v2.0</div>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Getting Started</div>
+    <nav>
+      <a href="index.html"><span class="nav-icon">🏠</span> Home</a>
+      <a href="installation.html"><span class="nav-icon">⚙️</span> Installation</a>
+    </nav>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Reference</div>
+    <nav>
+      <a href="features.html"><span class="nav-icon">✨</span> Features</a>
+      <a href="user-guide.html"><span class="nav-icon">👤</span> User Guide</a>
+      <a href="admin-guide.html"><span class="nav-icon">🛡️</span> Admin Guide</a>
+    </nav>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Technical</div>
+    <nav>
+      <a href="developer-guide.html"><span class="nav-icon">🔧</span> Developer Guide</a>
+      <a href="pwa-guide.html" class="active"><span class="nav-icon">📱</span> PWA Guide</a>
+      <a href="pwa-checklist.html"><span class="nav-icon">✅</span> PWA Checklist</a>
+    </nav>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Support</div>
+    <nav>
+      <a href="troubleshooting.html"><span class="nav-icon">🛠️</span> Troubleshooting</a>
+    </nav>
+  </div>
+  <div class="sidebar-footer">PoriFyx Widget &copy; 2026</div>
+</aside>
+
+<!-- MAIN -->
+<article class="main-content">
+
+  <section class="hero">
+    <div class="hero-eyebrow">📱 Progressive Web App</div>
+    <h1>PWA Guide</h1>
+    <p>PoriFyx Widget is a fully compliant Progressive Web App. This means your team can install the dashboard directly on their phone, tablet, or desktop computer — it will look and feel just like a native app, with push notifications for new leads and conversations, and full offline access to recent data.</p>
+    <div class="badge-row">
+      <span class="badge">iOS Safari</span>
+      <span class="badge">Android Chrome</span>
+      <span class="badge">Windows / macOS Desktop</span>
+      <span class="badge">Push Notifications</span>
+      <span class="badge">Offline Mode</span>
+    </div>
+  </section>
+
+  <nav class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><a href="#what-is-pwa">What Is a PWA?</a></li>
+      <li><a href="#benefits">Why Install It as an App?</a></li>
+      <li><a href="#install-android">Install on Android</a></li>
+      <li><a href="#install-ios">Install on iPhone / iPad (iOS)</a></li>
+      <li><a href="#install-desktop">Install on Desktop (Windows &amp; Mac)</a></li>
+      <li><a href="#push-notifications">Enabling Push Notifications</a></li>
+      <li><a href="#notification-types">Notification Types</a></li>
+      <li><a href="#offline">Offline Mode</a></li>
+      <li><a href="#uninstall">Uninstalling the App</a></li>
+      <li><a href="#troubleshooting">Troubleshooting</a></li>
+    </ol>
+  </nav>
+
+  <!-- 1. What Is a PWA? -->
+  <div class="section-block" id="what-is-pwa">
+    <h2><span class="section-num">1</span> What Is a PWA?</h2>
+    <p>A <strong>Progressive Web App (PWA)</strong> is a website that has been enhanced to behave like a native mobile or desktop application. You do not download it from the App Store or Google Play — you install it directly from your browser in seconds.</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-icon">🌐</div>
+        <h4>It Is Still a Website</h4>
+        <p>The app runs on your server — there is nothing extra to install on the server side. Updates happen automatically the next time a user opens the app. No manual app store updates required.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📲</div>
+        <h4>It Feels Like a Native App</h4>
+        <p>It gets its own icon on your home screen, launches full-screen (no browser chrome), and can receive push notifications even when the browser is closed.</p>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <p><strong>Think of it like this:</strong> Installing the PWA is like pinning a smart shortcut to your phone's home screen — except it can vibrate your phone when a hot lead comes in, even at 2am when you are not looking at it.</p>
+    </div>
+  </div>
+
+  <!-- 2. Benefits -->
+  <div class="section-block" id="benefits">
+    <h2><span class="section-num">2</span> Why Install It as an App?</h2>
+    <table class="feat-table">
+      <thead><tr><th>Benefit</th><th>Without PWA</th><th>With PWA Installed</th></tr></thead>
+      <tbody>
+        <tr><td>Lead notifications</td><td>Only if browser is open and tab is active</td><td>Push notification straight to your phone, any time</td></tr>
+        <tr><td>Launching the dashboard</td><td>Open browser, type URL, wait for login</td><td>Tap the home screen icon, opens instantly</td></tr>
+        <tr><td>Offline access</td><td>No access if internet is down</td><td>Recent conversations and leads readable offline</td></tr>
+        <tr><td>Conversation alerts</td><td>Manual refresh or email only</td><td>Real-time badge on the app icon</td></tr>
+        <tr><td>Screen space</td><td>Browser tabs, address bar take up space</td><td>Full-screen, distraction-free interface</td></tr>
+        <tr><td>Response speed</td><td>Full page load every visit</td><td>Assets cached locally — opens faster than a website</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 3. Install on Android -->
+  <div class="section-block" id="install-android">
+    <h2><span class="section-num">3</span> Install on Android</h2>
+    <p>Android offers the best PWA support — the installation prompt appears automatically when you visit the dashboard.</p>
+
+    <h3>Method 1: Automatic Install Banner (Recommended)</h3>
+    <ol class="step-list">
+      <li class="step-item">
+        <div class="step-num">1</div>
+        <div>Open <strong>Google Chrome</strong> on your Android device.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">2</div>
+        <div>Navigate to your dashboard URL (e.g. <code>https://yourdomain.com/dashboard</code>) and log in.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">3</div>
+        <div>After a few seconds, a banner will appear at the bottom of the screen: <strong>"Add PoriFyx Widget to Home screen"</strong>.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">4</div>
+        <div>Tap <strong>Add</strong>. The app icon appears on your home screen immediately.</div>
+      </li>
+    </ol>
+
+    <h3>Method 2: Browser Menu (if banner did not appear)</h3>
+    <ol class="step-list">
+      <li class="step-item">
+        <div class="step-num">1</div>
+        <div>While on the dashboard in Chrome, tap the <strong>three-dot menu</strong> (⋮) in the top-right corner.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">2</div>
+        <div>Tap <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong>.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">3</div>
+        <div>Confirm by tapping <strong>Add</strong> in the dialog that appears.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">4</div>
+        <div>Find the icon on your home screen or app drawer. Tap it to launch the full-screen dashboard.</div>
+      </li>
+    </ol>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <p><strong>Compatible browsers on Android:</strong> Google Chrome (best support), Microsoft Edge, and Samsung Internet all support PWA installation. Firefox for Android does not currently support PWA install.</p>
+    </div>
+  </div>
+
+  <!-- 4. Install on iOS -->
+  <div class="section-block" id="install-ios">
+    <h2><span class="section-num">4</span> Install on iPhone / iPad (iOS)</h2>
+    <p>On iOS, you must use <strong>Safari</strong> to install PWAs — Chrome and other iOS browsers cannot install them. The process uses Safari's "Add to Home Screen" feature.</p>
+
+    <ol class="step-list">
+      <li class="step-item">
+        <div class="step-num">1</div>
+        <div>Open <strong>Safari</strong> (not Chrome, not Firefox — must be Safari) on your iPhone or iPad.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">2</div>
+        <div>Navigate to your dashboard URL and log in.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">3</div>
+        <div>Tap the <strong>Share button</strong> — the square icon with an arrow pointing upward. On iPhone it is at the bottom of the screen; on iPad it is at the top.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">4</div>
+        <div>Scroll down in the Share sheet and tap <strong>"Add to Home Screen"</strong>.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">5</div>
+        <div>Optionally rename the app, then tap <strong>Add</strong> in the top-right corner.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">6</div>
+        <div>The icon appears on your home screen. Tap it to launch the dashboard full-screen in standalone mode (no Safari address bar).</div>
+      </li>
+    </ol>
+
+    <div class="callout warning">
+      <span class="callout-icon">⚠️</span>
+      <p><strong>iOS Push Notification Note:</strong> Push notifications on iOS require iOS 16.4 or later. After installing the PWA, you will be prompted to allow notifications the first time you open it from the home screen icon. If you installed it with an older iOS version, update iOS and re-install the PWA to enable notifications.</p>
+    </div>
+
+    <h3>iOS PWA Limitations</h3>
+    <ul>
+      <li>The PWA must be opened from the <strong>home screen icon</strong> (not from Safari) for notifications to work.</li>
+      <li>Background sync is limited on iOS — real-time updates may take a few seconds longer than on Android.</li>
+      <li>iOS Safari does not show an automatic install banner — you must use the Share menu manually every time you want to install.</li>
+    </ul>
+  </div>
+
+  <!-- 5. Install on Desktop -->
+  <div class="section-block" id="install-desktop">
+    <h2><span class="section-num">5</span> Install on Desktop (Windows &amp; Mac)</h2>
+    <p>On desktop, the PWA installs as a standalone window application. It gets its own taskbar/dock icon and launches without a browser address bar — perfect for agents who use the dashboard all day.</p>
+
+    <h3>Google Chrome (Windows &amp; Mac)</h3>
+    <ol class="step-list">
+      <li class="step-item">
+        <div class="step-num">1</div>
+        <div>Open the dashboard in <strong>Google Chrome</strong> on your computer.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">2</div>
+        <div>Look for the <strong>install icon</strong> (a computer monitor with a down arrow ⊕) in the browser's address bar on the right side. Click it.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">3</div>
+        <div>Click <strong>"Install"</strong> in the popup that appears.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">4</div>
+        <div>The app opens in its own window. A shortcut is added to your Desktop and Start Menu (Windows) or Applications folder (Mac).</div>
+      </li>
+    </ol>
+
+    <h3>Microsoft Edge (Windows)</h3>
+    <ol class="step-list">
+      <li class="step-item">
+        <div class="step-num">1</div>
+        <div>Open the dashboard in <strong>Microsoft Edge</strong>.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">2</div>
+        <div>Click the <strong>three-dot menu</strong> (…) in the top-right corner.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">3</div>
+        <div>Select <strong>Apps → Install this site as an app</strong>.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">4</div>
+        <div>Confirm the name and click <strong>Install</strong>. The app is pinned to your taskbar automatically.</div>
+      </li>
+    </ol>
+
+    <h3>Safari (Mac)</h3>
+    <ol class="step-list">
+      <li class="step-item">
+        <div class="step-num">1</div>
+        <div>Open the dashboard in <strong>Safari</strong> on macOS Sonoma (14) or later.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">2</div>
+        <div>From the menu bar, go to <strong>File → Add to Dock</strong>.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">3</div>
+        <div>Confirm by clicking <strong>Add</strong>. The app icon appears in your Dock.</div>
+      </li>
+    </ol>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <p><strong>For team-wide deployment:</strong> IT administrators can pre-install the PWA on company computers using Chrome's enterprise management policies (<code>WebAppInstallForceList</code>). This ensures every agent has the app without asking them to manually install it.</p>
+    </div>
+  </div>
+
+  <!-- 6. Push Notifications -->
+  <div class="section-block" id="push-notifications">
+    <h2><span class="section-num">6</span> Enabling Push Notifications</h2>
+    <p>Push notifications alert your team to important events — new leads, live conversation escalations, or messages above a certain urgency threshold — even when the dashboard is not open in a browser tab.</p>
+
+    <h3>Enabling Notifications (User)</h3>
+    <ol class="step-list">
+      <li class="step-item">
+        <div class="step-num">1</div>
+        <div><strong>Install the PWA first</strong> (see above). Push notifications require the app to be installed; they do not work from a regular browser tab on most devices.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">2</div>
+        <div>Open the installed app from your home screen or desktop icon.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">3</div>
+        <div>The app will show a permission prompt: <strong>"PoriFyx Widget wants to send you notifications."</strong> Click or tap <strong>Allow</strong>.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">4</div>
+        <div>Go to <strong>Dashboard → Settings → Notifications</strong> to choose exactly which events trigger notifications (see Notification Types below).</div>
+      </li>
+    </ol>
+
+    <h3>If You Accidentally Clicked "Block"</h3>
+    <p>If you denied the notification permission, you need to re-enable it in your device's browser/app settings:</p>
+    <ul>
+      <li><strong>Android Chrome:</strong> Settings → Site Settings → Notifications → find your domain → Allow</li>
+      <li><strong>iOS (Safari PWA):</strong> Settings app → [App Name] → Notifications → Allow Notifications</li>
+      <li><strong>Desktop Chrome:</strong> Click the lock icon in the address bar → Notifications → Allow</li>
+      <li><strong>Desktop Edge:</strong> Address bar lock → Permissions → Notifications → Allow</li>
+    </ul>
+
+    <h3>Admin: Configuring Push (VAPID Keys)</h3>
+    <p>For push notifications to work, an administrator must configure VAPID keys in the server's <code>.env</code> file. VAPID (Voluntary Application Server Identification) is the standard for web push authentication.</p>
+    <ol class="step-list">
+      <li class="step-item">
+        <div class="step-num">1</div>
+        <div>Generate VAPID keys by running: <code>php artisan webpush:vapid</code></div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">2</div>
+        <div>Copy the output into your <code>.env</code> file:</div>
+      </li>
+    </ol>
+    <div class="code-block">VAPID_PUBLIC_KEY=BGz...   # Long public key string
+VAPID_PRIVATE_KEY=4a8...  # Long private key string
+VAPID_SUBJECT=mailto:admin@yourdomain.com</div>
+    <ol class="step-list" start="3">
+      <li class="step-item">
+        <div class="step-num">3</div>
+        <div>Run <code>php artisan config:cache</code> to apply the new keys.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">4</div>
+        <div>Push notifications are now active. Users who have given permission will start receiving them immediately.</div>
+      </li>
+    </ol>
+
+    <div class="callout warning">
+      <span class="callout-icon">⚠️</span>
+      <p><strong>VAPID keys are sensitive.</strong> The private key should never be shared or committed to version control. If a key is compromised, regenerate new keys and run <code>php artisan config:cache</code> again — all users will need to re-subscribe to notifications after a key rotation.</p>
+    </div>
+  </div>
+
+  <!-- 7. Notification Types -->
+  <div class="section-block" id="notification-types">
+    <h2><span class="section-num">7</span> Notification Types</h2>
+    <p>Each user can configure which events they want to be notified about from <strong>Dashboard → Settings → Notifications</strong>.</p>
+
+    <table class="feat-table">
+      <thead><tr><th>Notification Event</th><th>Triggered When</th><th>Default</th></tr></thead>
+      <tbody>
+        <tr><td>🎯 New Lead Captured</td><td>The AI extracts a name/email/phone from a conversation</td><td>On</td></tr>
+        <tr><td>🔥 Hot Lead (Score ≥ 80)</td><td>A lead is captured with a quality score of 80 or higher</td><td>On</td></tr>
+        <tr><td>🆘 Conversation Escalated</td><td>The AI or a visitor requests a human agent</td><td>On</td></tr>
+        <tr><td>💬 New Conversation Started</td><td>A visitor opens the chat widget for the first time</td><td>Off (can be noisy)</td></tr>
+        <tr><td>⭐ Low CSAT Score</td><td>A visitor rates the conversation 1 or 2 out of 5</td><td>On</td></tr>
+        <tr><td>📊 Daily Summary</td><td>End-of-day report: leads, conversations, top questions</td><td>On</td></tr>
+        <tr><td>⚡ Automation Triggered</td><td>An automation rule fires (e.g. high-value lead webhook)</td><td>Off</td></tr>
+        <tr><td>🔧 Channel Error</td><td>A channel webhook fails or a token expires</td><td>On</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Per-Widget Notification Settings</h3>
+    <p>You can also configure notifications per widget. For example, if you have 5 widgets but only care about leads from the "Pricing Page" widget, you can mute notifications from the other four without disabling them globally. Go to <strong>Widget Settings → Notifications tab</strong>.</p>
+
+    <h3>Team Members and Notifications</h3>
+    <p>Each team member on your account manages their own notification preferences independently. An agent can choose to receive escalation notifications for widgets they are assigned to, without being notified about all new leads. Managers typically enable all notifications; agents typically enable only escalations and their assigned widget leads.</p>
+  </div>
+
+  <!-- 8. Offline Mode -->
+  <div class="section-block" id="offline">
+    <h2><span class="section-num">8</span> Offline Mode</h2>
+    <p>The PWA includes a service worker that caches key resources locally. This means certain parts of the app remain usable even when your internet connection drops.</p>
+
+    <h3>What Works Offline</h3>
+    <ul>
+      <li>Viewing recent conversations (last 50 loaded before going offline)</li>
+      <li>Viewing the leads list (last 100 leads loaded before going offline)</li>
+      <li>Reading the knowledge base item list</li>
+      <li>Accessing your account settings page</li>
+      <li>The app shell (navigation, layout) renders instantly with no network</li>
+    </ul>
+
+    <h3>What Requires Internet</h3>
+    <ul>
+      <li>Sending or receiving new chat messages (the AI requires internet)</li>
+      <li>Loading new conversations or leads that were not cached</li>
+      <li>Saving any settings changes</li>
+      <li>Viewing analytics charts (live data)</li>
+      <li>Uploading knowledge base documents</li>
+    </ul>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <p>When your connection is restored, the PWA automatically syncs any queued actions (e.g. a lead status update you made offline) in the background. You will see a brief "Syncing…" indicator in the bottom-left of the dashboard.</p>
+    </div>
+
+    <h3>Offline Indicator</h3>
+    <p>When the app detects you have lost internet connectivity, a yellow banner appears at the top of the screen: <strong>"You are offline — showing cached data."</strong> The banner disappears automatically when the connection returns.</p>
+
+    <h3>Clearing the Cache</h3>
+    <p>If you experience stale data after an app update, clear the service worker cache:</p>
+    <ul>
+      <li><strong>Android:</strong> Chrome Settings → Privacy → Clear browsing data → Cached images and files</li>
+      <li><strong>iOS:</strong> Settings → Safari → Advanced → Website Data → find your domain → Delete</li>
+      <li><strong>Desktop:</strong> Chrome DevTools → Application → Service Workers → click "Unregister", then refresh</li>
+    </ul>
+  </div>
+
+  <!-- 9. Uninstalling -->
+  <div class="section-block" id="uninstall">
+    <h2><span class="section-num">9</span> Uninstalling the App</h2>
+    <p>Uninstalling the PWA removes the home screen icon and clears the local cache. Your account data on the server is not affected.</p>
+
+    <h3>Android</h3>
+    <p>Long-press the app icon on your home screen → tap <strong>Uninstall</strong> (or drag to the "Remove" area at the top of the screen). Alternatively, go to Android Settings → Apps → find the app → Uninstall.</p>
+
+    <h3>iOS</h3>
+    <p>Long-press the app icon on your home screen until icons start jiggling → tap the <strong>×</strong> button in the corner of the icon → confirm deletion.</p>
+
+    <h3>Desktop (Chrome / Edge)</h3>
+    <p>Open the installed app → click the three-dot menu in the app's title bar → select <strong>Uninstall</strong>. On Windows, you can also uninstall from the Start Menu or Control Panel → Apps.</p>
+  </div>
+
+  <!-- 10. Troubleshooting -->
+  <div class="section-block" id="troubleshooting">
+    <h2><span class="section-num">10</span> Troubleshooting</h2>
+    <table class="feat-table">
+      <thead><tr><th>Problem</th><th>Likely Cause</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>"Install" option not appearing in browser</td>
+          <td>Site is not served over HTTPS, or manifest/service worker has an error</td>
+          <td>Ensure the site uses HTTPS (required for PWA). Check browser console for manifest errors.</td>
+        </tr>
+        <tr>
+          <td>Push notifications not arriving</td>
+          <td>VAPID keys not configured, or notification permission blocked</td>
+          <td>Check VAPID keys in .env; check device notification permissions for the browser/app.</td>
+        </tr>
+        <tr>
+          <td>App shows old/stale content</td>
+          <td>Service worker serving cached files after an update</td>
+          <td>Open the app, wait 30 seconds for the new service worker to activate, then reload. Or clear cache manually.</td>
+        </tr>
+        <tr>
+          <td>iOS: No notification permission prompt</td>
+          <td>App was opened from browser tab, not home screen icon</td>
+          <td>Close the browser. Open the app from the home screen icon. The permission prompt only shows when launched as a standalone PWA.</td>
+        </tr>
+        <tr>
+          <td>Offline mode shows blank screen</td>
+          <td>Service worker not registered (first visit, no cache yet)</td>
+          <td>Visit the dashboard online at least once to populate the cache before going offline.</td>
+        </tr>
+        <tr>
+          <td>Desktop: Install icon not visible in Chrome address bar</td>
+          <td>App already installed, or browser recently dismissed the prompt</td>
+          <td>Go to Chrome Settings → Apps → find the dashboard → or check chrome://apps/</td>
+        </tr>
+        <tr>
+          <td>Android: Banner appeared but I dismissed it accidentally</td>
+          <td>Chrome hides the banner for 90 days after a dismissal</td>
+          <td>Use the manual install method: Chrome menu (⋮) → Add to Home screen.</td>
+        </tr>
+        <tr>
+          <td>Notifications arrive but tapping them does nothing</td>
+          <td>PWA is not set as the default handler for the notification click</td>
+          <td>Uninstall and reinstall the PWA. On Android, ensure Chrome is not in "lite" mode.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <p>If you are a developer debugging PWA issues, open Chrome DevTools → <strong>Application</strong> tab → check the Manifest, Service Workers, and Storage sections. This shows the exact state of the PWA installation and any errors.</p>
+    </div>
+  </div>
+
+  <div class="cta-block">
+    <h2>Next: PWA Checklist</h2>
+    <p>Use the PWA Checklist to verify that every PWA capability is correctly enabled on your platform before launching to users.</p>
+    <div class="cta-buttons">
+      <a href="pwa-checklist.html" class="btn-primary">✅ PWA Checklist</a>
+      <a href="developer-guide.html" class="btn-secondary">🔧 Developer Guide</a>
+    </div>
+  </div>
+
+  <footer class="docs-footer">
+    <span>PoriFyx Widget Documentation</span>
+    <span>
+      <a href="installation.html">Installation</a> ·
+      <a href="user-guide.html">User Guide</a> ·
+      <a href="developer-guide.html">Developer Guide</a> ·
+      <a href="pwa-guide.html">PWA Guide</a> ·
+      <a href="pwa-checklist.html">PWA Checklist</a>
+    </span>
+  </footer>
+
+</article>
+</div>
+</body>
+</html>

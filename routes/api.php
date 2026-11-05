@@ -1,0 +1,89 @@
+<?php
+
+use App\Http\Controllers\Api\WidgetApiController;
+use App\Http\Controllers\Api\ChannelApiController;
+use App\Http\Controllers\StripeWebhookController;
+use App\Http\Middleware\WidgetRateLimit;
+use Illuminate\Support\Facades\Route;
+
+// Stripe webhook (no auth, no CSRF — API routes are exempt by default)
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])
+    ->name('stripe.webhook');
+
+// Widget API (public, CORS-enabled, rate-limited)
+Route::prefix('widget')->middleware([WidgetRateLimit::class])->group(function () {
+
+    // Configuration
+    Route::get('/{widgetUuid}/config', [WidgetApiController::class, 'config']);
+
+    // Conversations
+    Route::post('/{widgetUuid}/conversations', [WidgetApiController::class, 'startConversation']);
+
+    // Messaging
+    Route::post('/{widgetUuid}/conversations/{conversationUuid}/messages', [WidgetApiController::class, 'sendMessage']);
+    Route::post('/{widgetUuid}/conversations/{conversationUuid}/stream', [WidgetApiController::class, 'streamMessage']);
+
+    // Polling for agent messages (real-time delivery without WebSockets)
+    Route::get('/{widgetUuid}/conversations/{conversationUuid}/poll', [WidgetApiController::class, 'pollMessages']);
+
+    // Handoff
+    Route::post('/{widgetUuid}/conversations/{conversationUuid}/handoff', [WidgetApiController::class, 'requestHumanHandoff']);
+
+    // CSAT Feedback
+    Route::post('/{widgetUuid}/conversations/{conversationUuid}/feedback', [WidgetApiController::class, 'submitFeedback']);
+
+    // Offline messages (when visitor leaves email)
+    Route::post('/{widgetUuid}/offline', [WidgetApiController::class, 'submitOfflineMessage']);
+
+    // Message reactions (emoji)
+    Route::post('/{widgetUuid}/conversations/{conversationUuid}/messages/{messageUuid}/react', [WidgetApiController::class, 'reactToMessage']);
+
+    // Proactive message tracking
+    Route::post('/{widgetUuid}/proactive/track', [WidgetApiController::class, 'trackProactive']);
+});
+
+// PWA Routes (authenticated)
+Route::middleware(['auth'])->prefix('pwa')->group(function () {
+    Route::get('/status', [\App\Http\Controllers\PwaController::class, 'status']);
+    Route::post('/install', [\App\Http\Controllers\PwaController::class, 'trackInstall']);
+    
+    // Push notifications
+    Route::post('/push/subscribe', [\App\Http\Controllers\PwaController::class, 'subscribePush']);
+    Route::post('/push/unsubscribe', [\App\Http\Controllers\PwaController::class, 'unsubscribePush']);
+    Route::post('/push/test', [\App\Http\Controllers\PwaController::class, 'sendTestNotification']);
+});
+
+// Channel Management (authenticated)
+Route::middleware(['auth'])->prefix('channels')->group(function () {
+    // Channel configuration
+    Route::get('/types', [ChannelApiController::class, 'getChannelTypes']);
+    Route::get('/{widgetId}', [ChannelApiController::class, 'listChannels']);
+    Route::post('/{widgetId}/configure', [ChannelApiController::class, 'configureChannel']);
+    Route::put('/{channelId}', [ChannelApiController::class, 'updateChannel']);
+    Route::delete('/{channelId}', [ChannelApiController::class, 'deleteChannel']);
+    Route::post('/{channelId}/test', [ChannelApiController::class, 'testChannel']);
+    Route::get('/{channelId}/status', [ChannelApiController::class, 'getChannelStatus']);
+    
+    // Channel messages
+    Route::get('/{channelId}/messages', [ChannelApiController::class, 'getChannelMessages']);
+    Route::post('/{channelId}/messages', [ChannelApiController::class, 'sendChannelMessage']);
+    
+    // Channel contacts
+    Route::get('/{channelId}/contacts', [ChannelApiController::class, 'getChannelContacts']);
+});
+
+// Channel Webhooks (public, no auth required)
+Route::prefix('webhooks')->group(function () {
+    Route::post('/whatsapp', [ChannelApiController::class, 'handleWhatsAppWebhook']);
+    Route::post('/facebook', [ChannelApiController::class, 'handleFacebookWebhook']);
+    Route::post('/instagram', [ChannelApiController::class, 'handleInstagramWebhook']);
+    Route::post('/telegram', [ChannelApiController::class, 'handleTelegramWebhook']);
+    Route::post('/discord', [ChannelApiController::class, 'handleDiscordWebhook']);
+    Route::post('/slack', [ChannelApiController::class, 'handleSlackWebhook']);
+    Route::post('/twitter', [ChannelApiController::class, 'handleTwitterWebhook']);
+    Route::post('/email', [ChannelApiController::class, 'handleEmailWebhook']);
+    Route::post('/sms', [ChannelApiController::class, 'handleSmsWebhook']);
+});
+
+// Health check (no auth required)
+Route::get('/health', [\App\Http\Controllers\PwaController::class, 'health']);

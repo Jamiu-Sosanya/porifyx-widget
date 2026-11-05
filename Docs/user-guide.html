@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Guide | PoriFyx Widget</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page-shell">
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">💬</div>
+    <div><div class="logo-text">PoriFyx Widget</div><div class="logo-sub">Documentation v2.0</div></div>
+  </div>
+  <div class="nav-section"><div class="nav-section-label">Getting Started</div>
+    <nav><a href="index.html"><span class="nav-icon">🏠</span> Home</a><a href="installation.html"><span class="nav-icon">⚙️</span> Installation</a></nav>
+  </div>
+  <div class="nav-section"><div class="nav-section-label">Reference</div>
+    <nav>
+      <a href="features.html"><span class="nav-icon">✨</span> Features</a>
+      <a href="user-guide.html" class="active"><span class="nav-icon">👤</span> User Guide</a>
+      <a href="admin-guide.html"><span class="nav-icon">🛡️</span> Admin Guide</a>
+    </nav>
+  </div>
+  <div class="nav-section"><div class="nav-section-label">Technical</div>
+    <nav>
+      <a href="developer-guide.html"><span class="nav-icon">🔧</span> Developer Guide</a>
+      <a href="pwa-guide.html"><span class="nav-icon">📱</span> PWA Guide</a>
+      <a href="pwa-checklist.html"><span class="nav-icon">✅</span> PWA Checklist</a>
+    </nav>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Support</div>
+    <nav>
+      <a href="troubleshooting.html"><span class="nav-icon">🛠️</span> Troubleshooting</a>
+    </nav>
+  </div>
+  <div class="sidebar-footer">PoriFyx Widget &copy; 2026</div>
+</aside>
+
+<article class="main-content">
+  <div class="breadcrumb"><a href="index.html">Home</a> <span>/</span> User Guide</div>
+
+  <section class="hero">
+    <div class="hero-eyebrow">👤 User Guide</div>
+    <h1>Using PoriFyx Widget</h1>
+    <p>This guide is written for business users — no technical knowledge required. It walks through every screen in your dashboard from first login to advanced features, with clear explanations of what each setting does and why it matters.</p>
+    <div class="badge-row">
+      <span class="badge">Non-Technical</span>
+      <span class="badge">Step-by-Step</span>
+      <span class="badge">All Features</span>
+      <span class="badge new">Channels Included</span>
+    </div>
+  </section>
+
+  <div class="toc">
+    <h4>On This Page</h4>
+    <ol>
+      <li><a href="#login">Logging In</a></li>
+      <li><a href="#dashboard">Your Dashboard</a></li>
+      <li><a href="#create-widget">Creating a Widget</a></li>
+      <li><a href="#widget-settings">Widget Settings</a></li>
+      <li><a href="#embed">Embedding the Widget</a></li>
+      <li><a href="#knowledge-base">Training the Knowledge Base</a></li>
+      <li><a href="#channels">Connecting Channels</a></li>
+      <li><a href="#conversations">Managing Conversations</a></li>
+      <li><a href="#leads">Managing Leads</a></li>
+      <li><a href="#analytics">Reading Analytics</a></li>
+      <li><a href="#automations">Setting Up Automations</a></li>
+      <li><a href="#ab-tests">Running A/B Tests</a></li>
+      <li><a href="#settings">Account Settings</a></li>
+    </ol>
+  </div>
+
+  <!-- Login -->
+  <div class="section-block" id="login">
+    <h2><span class="section-num">1</span> Logging In</h2>
+    <p>Navigate to your platform's login page — your administrator will have given you the URL (usually <code>https://yourdomain.com/login</code>). Enter your email and password.</p>
+    <div class="callout tip"><span class="callout-icon">💡</span><p>If you have forgotten your password, click <strong>Forgot Password</strong> on the login page. A reset link will be sent to your email within a minute.</p></div>
+
+    <h3>Two-Factor Authentication (2FA)</h3>
+    <p>If your administrator has enabled 2FA, after entering your password you will be asked for a 6-digit code from an authenticator app (Google Authenticator or Authy). Open the app, find the entry for this platform, and enter the current code. Codes change every 30 seconds.</p>
+    <p>To enable 2FA yourself, go to <strong>Settings → Security → Two-Factor Authentication</strong> and follow the on-screen instructions.</p>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="section-block" id="dashboard">
+    <h2><span class="section-num">2</span> Your Dashboard</h2>
+    <p>The dashboard is the first page you see after logging in. It gives you a real-time snapshot of your platform performance.</p>
+
+    <h3>What Each Section Shows</h3>
+    <div class="grid-2">
+      <div class="card"><h4>📊 Today's Stats</h4><p>Conversations started, messages exchanged, leads captured, and visitors who opened a widget — all for today so far.</p></div>
+      <div class="card"><h4>🔥 Recent Hot Leads</h4><p>The most recently created leads with a score of 80 or above. These need your attention first.</p></div>
+      <div class="card"><h4>💬 Recent Conversations</h4><p>The last few conversations across all your widgets. Click any row to open the full conversation.</p></div>
+      <div class="card"><h4>📈 7-Day Trend</h4><p>A line chart showing conversations, messages, and leads over the past week to help you spot patterns.</p></div>
+      <div class="card"><h4>🔔 Notifications</h4><p>The bell icon in the top bar shows recent alerts — new leads, handoff requests, and system notices. Click to mark as read.</p></div>
+      <div class="card"><h4>🏷️ Plan Usage</h4><p>How many widgets, messages, and team members you have used out of your plan's limits this month.</p></div>
+    </div>
+
+    <h3>Left Sidebar Navigation</h3>
+    <table class="req-table">
+      <thead><tr><th>Menu Item</th><th>What It Does</th></tr></thead>
+      <tbody>
+        <tr><td>🏠 Dashboard</td><td>Real-time overview stats and recent activity</td></tr>
+        <tr><td>🤖 Widgets</td><td>Create and manage your AI chat widgets</td></tr>
+        <tr><td>💬 Conversations</td><td>Inbox of all conversations across all widgets</td></tr>
+        <tr><td>🎯 Leads</td><td>All captured leads with scores, status, and notes</td></tr>
+        <tr><td>📊 Analytics</td><td>Detailed charts, channel breakdown, sentiment, heatmaps</td></tr>
+        <tr><td>⚡ Automations</td><td>Create "if this then that" automation rules</td></tr>
+        <tr><td>⚙️ Settings</td><td>Profile, team members, billing, notifications, API keys</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Create Widget -->
+  <div class="section-block" id="create-widget">
+    <h2><span class="section-num">3</span> Creating Your First Widget</h2>
+    <p>A widget is your AI chat agent. Each widget can be customised independently, connected to different channels, and embedded on different websites. You can have as many widgets as your plan allows.</p>
+
+    <ol class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Go to Widgets</h4>
+          <p>Click <strong>Widgets</strong> in the left sidebar, then click the <strong>+ New Widget</strong> button in the top right.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Give It a Name</h4>
+          <p>The name is internal — your visitors will not see it. Use something descriptive like "Main Website" or "Support Bot — UK". This helps you identify widgets in your list.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Choose an AI Provider</h4>
+          <p>Select which AI model should power this widget. If you are unsure, leave it on <strong>OpenAI GPT-4o</strong> — it is the most capable option.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Set a Greeting Message</h4>
+          <p>This is the first message visitors see when they open the chat. Make it warm and specific: "Hi! I'm Alex, your [Company Name] AI assistant. How can I help you today?" is much better than a generic "Hello".</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h4>Click Create Widget</h4>
+          <p>Your widget is created. You are taken directly to its Settings page where you can configure appearance, behaviour, and connect channels.</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  <!-- Widget Settings -->
+  <div class="section-block" id="widget-settings">
+    <h2><span class="section-num">4</span> Widget Settings — Full Reference</h2>
+    <p>Click a widget from your list, then click <strong>Edit</strong> (or the pencil icon) to open the settings editor. The editor has several tabs across the top.</p>
+
+    <h3>Tab: General</h3>
+    <ul>
+      <li><strong>Widget Name</strong> — internal label for your reference</li>
+      <li><strong>AI Provider &amp; Model</strong> — choose OpenAI, Claude, Gemini, or Groq and the specific model version</li>
+      <li><strong>AI Personality / Tone</strong> — Friendly (casual and warm), Professional (formal business language), Sales (enthusiastic, conversion-focused), or Technical (precise and detailed)</li>
+      <li><strong>Custom System Prompt</strong> — optional advanced instructions for the AI (e.g. "You are a support agent for Acme Corp. Never discuss competitors. Always ask for the customer's order number before troubleshooting.")</li>
+      <li><strong>Greeting Message</strong> — what the AI says when a conversation starts</li>
+      <li><strong>Conversation Starters</strong> — 3–5 quick question buttons shown to visitors so they do not have to think of what to ask first</li>
+    </ul>
+
+    <h3>Tab: Appearance</h3>
+    <ul>
+      <li><strong>Theme</strong> — choose from Light, Dark, Minimal, Bold, Ocean, Nature</li>
+      <li><strong>Primary Colour</strong> — your brand hex colour (e.g. <code>#2f5ee8</code>). Applied to the header, send button, and active elements</li>
+      <li><strong>Font</strong> — select a typeface that matches your website</li>
+      <li><strong>Launcher Position</strong> — Bottom Right (default), Bottom Left, Top Right, or Top Left</li>
+      <li><strong>Launcher Style</strong> — circle, rounded square, or wide pill</li>
+      <li><strong>AI Name &amp; Avatar</strong> — the display name and avatar image shown in the chat header</li>
+      <li><strong>Hide on Mobile</strong> — toggle to prevent the widget from appearing on phones if you prefer</li>
+    </ul>
+
+    <h3>Tab: Behaviour</h3>
+    <ul>
+      <li><strong>Auto-Open</strong> — automatically pop open the widget after N seconds of page visit</li>
+      <li><strong>Proactive Message</strong> — send a timed message to grab visitor attention before they open the chat manually</li>
+      <li><strong>Offline Form</strong> — when your team is offline, show a form so visitors can leave their details and message</li>
+      <li><strong>Collect Name / Email / Phone</strong> — choose which fields the AI asks for during lead capture</li>
+      <li><strong>Sound</strong> — enable a notification sound for new messages</li>
+      <li><strong>Allowed Domains</strong> — whitelist specific domain names so your widget only works on your own site</li>
+      <li><strong>Rate Limit</strong> — maximum messages per minute a single visitor can send</li>
+    </ul>
+
+    <h3>Tab: Notifications</h3>
+    <ul>
+      <li><strong>Email Notifications</strong> — enter one or more email addresses that receive alerts for new leads and handoff requests</li>
+      <li><strong>Slack Webhook URL</strong> — paste a Slack incoming webhook URL to get real-time notifications in a Slack channel</li>
+      <li><strong>Discord Webhook URL</strong> — same as Slack but for Discord</li>
+      <li><strong>CSAT</strong> — enable end-of-conversation satisfaction ratings and configure the prompt message</li>
+    </ul>
+
+    <h3>Tab: Channels <span class="badge new" style="font-size:0.65rem;vertical-align:middle">NEW</span></h3>
+    <p>See <a href="#channels">Section 7 — Connecting Channels</a> for the full walkthrough.</p>
+  </div>
+
+  <!-- Embed -->
+  <div class="section-block" id="embed">
+    <h2><span class="section-num">5</span> Embedding the Widget on Your Website</h2>
+    <p>Once your widget is configured, you need to add one small piece of code to your website to make it appear.</p>
+
+    <ol class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Find the Embed Code</h4>
+          <p>Open your widget's settings and click the <strong>Embed Code</strong> tab (or go to Widgets → click the <code>&lt;/&gt;</code> icon next to your widget). You will see a script tag like this:</p>
+          <div class="code-block">&lt;script src="https://yourdomain.com/widget.js?id=abc123def456" defer&gt;&lt;/script&gt;</div>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Copy the Code</h4>
+          <p>Click the <strong>Copy</strong> button next to the code block. The entire script tag is now on your clipboard.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Paste into Your Website</h4>
+          <p>Paste the script tag just before the closing <code>&lt;/body&gt;</code> tag in your website's HTML. The method depends on your platform:</p>
+          <ul>
+            <li><strong>WordPress:</strong> Install the "Insert Headers and Footers" plugin → paste in Footer</li>
+            <li><strong>Shopify:</strong> Online Store → Themes → Edit Code → <code>theme.liquid</code> → paste before <code>&lt;/body&gt;</code></li>
+            <li><strong>Webflow:</strong> Project Settings → Custom Code → Footer Code → paste</li>
+            <li><strong>Wix:</strong> Settings → Advanced → Custom Code → paste in Body (end)</li>
+            <li><strong>Squarespace:</strong> Settings → Advanced → Code Injection → Footer → paste</li>
+            <li><strong>Plain HTML:</strong> Open your HTML file in a text editor and paste before <code>&lt;/body&gt;</code></li>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Verify It Works</h4>
+          <p>Visit your website in a browser (not just a preview). You should see the chat launcher button (usually bottom right). Click it — the chat window should open with your greeting message.</p>
+          <div class="callout warning"><span class="callout-icon">⚠️</span><p>If the widget does not appear, check that your domain is either empty or matches exactly what is in <strong>Allowed Domains</strong> in widget settings.</p></div>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  <!-- Knowledge Base -->
+  <div class="section-block" id="knowledge-base">
+    <h2><span class="section-num">6</span> Training the Knowledge Base</h2>
+    <p>The knowledge base is the library of information your AI uses to answer questions. An untrained AI gives generic answers; a trained AI gives answers specific to your business.</p>
+
+    <ol class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Open the Knowledge Base</h4>
+          <p>Go to <strong>Widgets → your widget → Knowledge Base</strong>. Click <strong>+ New Knowledge Base</strong> and give it a name (e.g. "Product FAQs 2026").</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Add Training Sources</h4>
+          <p>Click <strong>Add Source</strong> and choose the type of content:</p>
+          <ul>
+            <li><strong>PDF Upload</strong> — browse and upload a document file. Best for manuals, brochures, policies</li>
+            <li><strong>Website URL</strong> — paste a web page URL. The system fetches and extracts all the text from that page</li>
+            <li><strong>Sitemap</strong> — paste your sitemap.xml URL to crawl your entire website at once</li>
+            <li><strong>Text</strong> — type or paste content directly — great for FAQs, product descriptions</li>
+          </ul>
+          <p>Add as many sources as you need. The more comprehensive your content, the better the AI performs.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Click Train</h4>
+          <p>Once all sources are added, click <strong>Train Knowledge Base</strong>. The system processes each source in the background — breaking it into paragraphs and converting them into searchable embeddings. This typically takes 30 seconds to 5 minutes depending on the amount of content.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Activate the Knowledge Base</h4>
+          <p>Once training is complete (green status), click <strong>Set as Active</strong>. Your widget will now use this knowledge base for all future conversations.</p>
+        </div>
+      </li>
+    </ol>
+
+    <div class="callout tip"><span class="callout-icon">💡</span><p><strong>Best practice:</strong> Start with your most important FAQ document and your main product/service pages. Test the widget by asking common customer questions. Add more sources over time to fill any gaps in the AI's knowledge.</p></div>
+
+    <h3>When to Retrain</h3>
+    <p>Retrain your knowledge base when:</p>
+    <ul>
+      <li>You update your pricing or product details</li>
+      <li>You launch a new product or service</li>
+      <li>Your return/refund policy changes</li>
+      <li>You notice the AI giving outdated answers</li>
+    </ul>
+    <p>You can run a new training at any time without affecting the current live knowledge base — it only goes live when you click <strong>Set as Active</strong>.</p>
+  </div>
+
+  <!-- Channels -->
+  <div class="section-block" id="channels">
+    <h2><span class="section-num">7</span> Connecting Channels <span class="badge new" style="font-size:0.65rem;vertical-align:middle">NEW</span></h2>
+    <p>Channels let your AI respond to customers on WhatsApp, Telegram, Facebook Messenger, Instagram, SMS, and more — using the same AI and the same knowledge base as your website widget.</p>
+
+    <div class="callout info"><span class="callout-icon">ℹ️</span><p>The number of channels you can connect depends on your subscription plan. Check your plan limits under <strong>Settings → Billing</strong>.</p></div>
+
+    <h3>Accessing Channel Settings</h3>
+    <p>Go to <strong>Widgets → your widget → Edit → Channels tab</strong>. You will see:</p>
+    <ul>
+      <li>A plan usage bar showing how many of your allowed channels you have connected</li>
+      <li>Cards for each connected channel showing status, message counts, and controls</li>
+      <li>An <strong>Add Channel</strong> button</li>
+    </ul>
+
+    <h3>Step-by-Step: Adding a Telegram Bot</h3>
+    <p>Telegram is the easiest channel to start with because it requires only a free bot token.</p>
+    <ol class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Create a Telegram Bot</h4>
+          <p>Open Telegram and search for <strong>@BotFather</strong>. Send the command <code>/newbot</code>. Follow the prompts to choose a name and username. BotFather gives you a token like <code>1234567890:ABCdef...</code>. Copy it.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Add Telegram Channel</h4>
+          <p>In your widget's Channels tab, click <strong>Add Channel</strong> → select <strong>Telegram</strong>. Paste the bot token in the field provided. Click <strong>Save Channel</strong>.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Register the Webhook</h4>
+          <p>After saving, you will see a <strong>Webhook URL</strong> for your Telegram channel. The platform automatically registers this with Telegram's API when you save — no extra steps needed for Telegram specifically.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Test the Connection</h4>
+          <p>Click the <strong>Test</strong> button (lightning icon). If you see "Connection successful", your bot is working. Open Telegram, find your bot by its username, and send it a message — the AI should respond!</p>
+        </div>
+      </li>
+    </ol>
+
+    <h3>Step-by-Step: Adding WhatsApp</h3>
+    <div class="callout warning"><span class="callout-icon">⚠️</span><p>WhatsApp requires a verified Meta Business account and an approved WhatsApp Business API phone number. This process can take 1–3 days. Personal WhatsApp numbers cannot be used.</p></div>
+    <ol class="step-list">
+      <li><div class="step-num">1</div><div class="step-body"><h4>Create a Meta App</h4><p>Go to developers.facebook.com → Create App → select Business → add the WhatsApp product. Follow the setup flow to link your WhatsApp Business number.</p></div></li>
+      <li><div class="step-num">2</div><div class="step-body"><h4>Get Your Credentials</h4><p>From your Meta App Dashboard, copy: <strong>Phone Number ID</strong>, <strong>Access Token</strong> (a temporary or permanent token), and create a <strong>Verify Token</strong> (any random string you choose, e.g. "mysecret123").</p></div></li>
+      <li><div class="step-num">3</div><div class="step-body"><h4>Add WhatsApp Channel</h4><p>In your widget Channels tab → Add Channel → WhatsApp. Fill in all three fields and save. The platform shows you a Webhook URL.</p></div></li>
+      <li><div class="step-num">4</div><div class="step-body"><h4>Register Webhook in Meta</h4><p>In your Meta App → WhatsApp → Configuration → Webhook. Paste the Webhook URL and your Verify Token. Click Verify. Select <code>messages</code> as the subscribed field. Click Save.</p></div></li>
+    </ol>
+
+    <h3>Managing Your Channels</h3>
+    <p>Each channel card shows:</p>
+    <ul>
+      <li><strong>Status toggle</strong> — enable/disable the channel instantly without deleting the configuration</li>
+      <li><strong>Message stats</strong> — total sent, total received, and today's message count</li>
+      <li><strong>Last activity</strong> — when the most recent message was sent or received</li>
+      <li><strong>Copy Webhook URL</strong> — quickly copy the webhook URL for pasting into platform developer consoles</li>
+      <li><strong>Test button</strong> — send a test ping to verify the connection is still working</li>
+      <li><strong>Edit button</strong> — update the credentials (e.g. if you rotate a token)</li>
+      <li><strong>Delete button</strong> — permanently remove the channel (requires confirmation)</li>
+    </ul>
+  </div>
+
+  <!-- Conversations -->
+  <div class="section-block" id="conversations">
+    <h2><span class="section-num">8</span> Managing Conversations</h2>
+    <p>Every message your AI exchanges with a visitor — across any channel — creates a conversation record. Go to <strong>Conversations</strong> in the sidebar to see your inbox.</p>
+
+    <h3>The Conversations Inbox</h3>
+    <p>The inbox shows all conversations with filters for:</p>
+    <ul>
+      <li>Status: Open, AI Active, Human Active, Resolved, Spam</li>
+      <li>Widget: filter by a specific widget</li>
+      <li>Read / Unread</li>
+      <li>Starred</li>
+    </ul>
+    <p>Click any conversation to open the full chat view.</p>
+
+    <h3>Conversation Detail View</h3>
+    <p>Inside a conversation you can:</p>
+    <ul>
+      <li><strong>Read the full message history</strong> with timestamps, who sent each message (visitor, AI, or agent), and AI confidence scores</li>
+      <li><strong>Take over from AI</strong> — click <strong>Take Over</strong> and type a reply as a human agent. The visitor sees it as a response in the same chat window</li>
+      <li><strong>Hand back to AI</strong> — once you have resolved the human part, click <strong>Switch to AI</strong> to let the AI continue</li>
+      <li><strong>Apply labels</strong> — tag the conversation for reporting (e.g. "billing", "feature request", "complaint")</li>
+      <li><strong>Star</strong> — mark important conversations</li>
+      <li><strong>Resolve</strong> — close the conversation when it is complete. The visitor may be prompted for a CSAT rating</li>
+      <li><strong>View the AI-generated summary</strong> — scroll to the bottom of the conversation to see bullet points of the key discussion and suggested next actions</li>
+      <li><strong>View the lead record</strong> — a sidebar panel shows the lead extracted from this conversation (if any) with score, contact details, and notes</li>
+    </ul>
+  </div>
+
+  <!-- Leads -->
+  <div class="section-block" id="leads">
+    <h2><span class="section-num">9</span> Managing Leads</h2>
+    <p>Go to <strong>Leads</strong> in the sidebar. This shows every identified lead across all your widgets, sorted by most recent.</p>
+
+    <h3>Leads Table</h3>
+    <ul>
+      <li>Filter by status, temperature (hot/warm/cold), score range, date, and widget</li>
+      <li>Sort by score, date, name, or company</li>
+      <li>Search by name, email, phone, or company</li>
+    </ul>
+
+    <h3>Lead Detail Page</h3>
+    <p>Click a lead to open their profile. You will see:</p>
+    <ul>
+      <li>Contact details extracted from the conversation</li>
+      <li>Lead score with a visual gauge</li>
+      <li>Temperature badge (Hot / Warm / Cold) and quality grade (A / B / C / D)</li>
+      <li>Status dropdown — update from New to Contacted, Qualified, Won, or Lost</li>
+      <li>The original conversation that generated this lead (click to view)</li>
+      <li>Notes — add internal notes visible only to your team</li>
+      <li>Timeline of all interactions with this lead</li>
+    </ul>
+
+    <h3>Exporting Leads</h3>
+    <p>Click <strong>Export CSV</strong> at the top of the Leads page to download all leads (or filtered results) as a spreadsheet. This can be imported into any CRM — HubSpot, Pipedrive, Salesforce, Zoho, or a simple Excel file.</p>
+  </div>
+
+  <!-- Analytics -->
+  <div class="section-block" id="analytics">
+    <h2><span class="section-num">10</span> Reading Your Analytics</h2>
+    <p>Go to <strong>Analytics</strong> in the sidebar. Use the period filter (7 / 30 / 90 days) and the widget dropdown to slice the data.</p>
+
+    <h3>Understanding Each Section</h3>
+    <table class="req-table">
+      <thead><tr><th>Section</th><th>What to Look For</th><th>Action If Low</th></tr></thead>
+      <tbody>
+        <tr><td>AI Accuracy %</td><td>Should be above 80%. This is the % of responses where AI answered confidently.</td><td>Add more training content to your knowledge base</td></tr>
+        <tr><td>Resolution Rate %</td><td>Should be above 70%. % of conversations resolved without human help.</td><td>Improve AI system prompt and add more FAQ content</td></tr>
+        <tr><td>Conversion Funnel</td><td>Check where visitors drop off: Visitor → Conversation is the first drop; Conversation → Lead is the key one</td><td>Improve the greeting message and conversation starters</td></tr>
+        <tr><td>Sentiment Trend</td><td>Positive scores mean visitors are happy. Negative spikes need investigation.</td><td>Read conversations from negative days to find the issue</td></tr>
+        <tr><td>Heatmap</td><td>Shows your busiest hours and days. Schedule human agent coverage to match.</td><td>Enable live chat handoff during peak hours</td></tr>
+        <tr><td>Channel Breakdown</td><td>See which channels drive the most messages. Invest more in what is working.</td><td>Add more channels if web widget is underperforming</td></tr>
+      </tbody>
+    </table>
+
+    <h3>AI Insights Panel</h3>
+    <p>At the bottom of the analytics page, the platform generates written insights automatically — things like "Lead conversion improved 22% week-over-week" or "Most fallbacks occur between 9pm and midnight — consider adding FAQ content for those query types." Read these weekly to guide your optimisation efforts.</p>
+  </div>
+
+  <!-- Automations -->
+  <div class="section-block" id="automations">
+    <h2><span class="section-num">11</span> Setting Up Automations</h2>
+    <p>Go to <strong>Automations</strong> in the sidebar. Click <strong>+ New Automation</strong>.</p>
+    <ol class="step-list">
+      <li><div class="step-num">1</div><div class="step-body"><h4>Name the Automation</h4><p>Give it a clear name like "Notify Sales — Hot Lead" so future team members understand its purpose.</p></div></li>
+      <li><div class="step-num">2</div><div class="step-body"><h4>Set the Trigger</h4><p>Choose when this automation fires. Example: <strong>Lead Captured</strong> with condition <strong>Lead Score ≥ 80</strong>.</p></div></li>
+      <li><div class="step-num">3</div><div class="step-body"><h4>Choose an Action</h4><p>Select what happens. Example: <strong>Send Slack Notification</strong>. Paste your Slack webhook URL and write the message template using variables like <code>{{lead.name}}</code>, <code>{{lead.email}}</code>, <code>{{lead.score}}</code>.</p></div></li>
+      <li><div class="step-num">4</div><div class="step-body"><h4>Save and Enable</h4><p>Click <strong>Save</strong>. Toggle the automation to <strong>Active</strong>. It will now fire every time the trigger condition is met.</p></div></li>
+    </ol>
+    <div class="callout tip"><span class="callout-icon">💡</span><p><strong>Useful automation ideas:</strong> Send a webhook to Zapier to add hot leads to HubSpot automatically. Send an email to your sales team with a link to the conversation. Post to a Discord channel when any new lead is created.</p></div>
+  </div>
+
+  <!-- A/B Tests -->
+  <div class="section-block" id="ab-tests">
+    <h2><span class="section-num">12</span> Running A/B Tests</h2>
+    <p>Go to your widget's settings → click the <strong>A/B Test</strong> tab (or from Widgets list, click the beaker icon).</p>
+    <ol class="step-list">
+      <li><div class="step-num">1</div><div class="step-body"><h4>Create a Test</h4><p>Click <strong>+ New A/B Test</strong>. Give it a descriptive name like "Greeting Message Test Feb 2026".</p></div></li>
+      <li><div class="step-num">2</div><div class="step-body"><h4>Configure Variant A</h4><p>Variant A is your <em>control</em> — the current version. Confirm its greeting message and tone.</p></div></li>
+      <li><div class="step-num">3</div><div class="step-body"><h4>Configure Variant B</h4><p>Variant B is your <em>challenger</em>. Change the greeting message, tone, or other settings. Keep changes small — test one thing at a time for clear results.</p></div></li>
+      <li><div class="step-num">4</div><div class="step-body"><h4>Set Traffic Split</h4><p>50/50 is the default and usually best. This means half your visitors see A and half see B.</p></div></li>
+      <li><div class="step-num">5</div><div class="step-body"><h4>Start the Test</h4><p>Click <strong>Start Test</strong>. Leave it running for at least 1–2 weeks or until you have 200+ conversations per variant for statistical significance.</p></div></li>
+      <li><div class="step-num">6</div><div class="step-body"><h4>Apply the Winner</h4><p>When the analytics show a clear winner (the platform shows a confidence score), click <strong>Apply Winner</strong> to make that variant permanent.</p></div></li>
+    </ol>
+  </div>
+
+  <!-- Settings -->
+  <div class="section-block" id="settings">
+    <h2><span class="section-num">13</span> Account Settings</h2>
+
+    <h3>Profile Settings</h3>
+    <p>Go to <strong>Settings → Profile</strong>. Update your name, email, password, and profile picture.</p>
+
+    <h3>Team Members</h3>
+    <p>Go to <strong>Settings → Team</strong>. Click <strong>Invite Member</strong>, enter their email address and role. They receive an email with a link to set their password. Roles:</p>
+    <ul>
+      <li><strong>Owner</strong> — full access including billing and team management</li>
+      <li><strong>Manager</strong> — can manage widgets, conversations, and leads but not billing</li>
+      <li><strong>Agent</strong> — can view and respond to conversations only</li>
+    </ul>
+
+    <h3>Notifications</h3>
+    <p>Go to <strong>Settings → Notifications</strong>. Toggle which emails you want to receive: new lead alerts, weekly report summaries, system announcements, etc.</p>
+
+    <h3>Billing</h3>
+    <p>Go to <strong>Settings → Billing</strong> to see your current plan, usage statistics, and manage your subscription. Click <strong>Change Plan</strong> to upgrade or downgrade.</p>
+
+    <h3>API Keys</h3>
+    <p>Go to <strong>Settings → API Keys</strong> to create personal API keys for use with external integrations. Give each key a descriptive name and store it securely — it is shown only once.</p>
+  </div>
+
+  <div class="cta-block">
+    <h2>Need More Details?</h2>
+    <p>The Admin Guide covers platform-wide management, user oversight, and super-admin controls.</p>
+    <div class="cta-buttons">
+      <a href="admin-guide.html" class="btn-primary">🛡️ Admin Guide</a>
+      <a href="features.html" class="btn-secondary">✨ Feature Reference</a>
+    </div>
+  </div>
+
+  <footer class="docs-footer">
+    <span>User Guide — PoriFyx Widget</span>
+    <span><a href="index.html">Home</a> · <a href="installation.html">Installation</a> · <a href="admin-guide.html">Admin Guide</a></span>
+  </footer>
+</article>
+</div>
+</body>
+</html>

@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Guide | PoriFyx Widget</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page-shell">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">💬</div>
+    <div>
+      <div class="logo-text">PoriFyx Widget</div>
+      <div class="logo-sub">Documentation v2.0</div>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Getting Started</div>
+    <nav>
+      <a href="index.html"><span class="nav-icon">🏠</span> Home</a>
+      <a href="installation.html"><span class="nav-icon">⚙️</span> Installation</a>
+    </nav>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Reference</div>
+    <nav>
+      <a href="features.html"><span class="nav-icon">✨</span> Features</a>
+      <a href="user-guide.html"><span class="nav-icon">👤</span> User Guide</a>
+      <a href="admin-guide.html" class="active"><span class="nav-icon">🛡️</span> Admin Guide</a>
+    </nav>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Technical</div>
+    <nav>
+      <a href="developer-guide.html"><span class="nav-icon">🔧</span> Developer Guide</a>
+      <a href="pwa-guide.html"><span class="nav-icon">📱</span> PWA Guide</a>
+      <a href="pwa-checklist.html"><span class="nav-icon">✅</span> PWA Checklist</a>
+    </nav>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Support</div>
+    <nav>
+      <a href="troubleshooting.html"><span class="nav-icon">🛠️</span> Troubleshooting</a>
+    </nav>
+  </div>
+  <div class="sidebar-footer">PoriFyx Widget &copy; 2026</div>
+</aside>
+
+<!-- MAIN -->
+<article class="main-content">
+
+  <section class="hero">
+    <div class="hero-eyebrow">🛡️ Platform Administration</div>
+    <h1>Admin Guide</h1>
+    <p>The Super-Admin panel gives you complete control over every user, plan, channel, widget, conversation, and system setting on your platform. This guide explains every screen in plain language so you can run your SaaS business confidently — no technical background required.</p>
+    <div class="badge-row">
+      <span class="badge">Super-Admin Only</span>
+      <span class="badge">User Management</span>
+      <span class="badge">Billing Plans</span>
+      <span class="badge">System Health</span>
+      <span class="badge new">Channel Overview NEW</span>
+    </div>
+  </section>
+
+  <nav class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><a href="#access">Accessing the Admin Panel</a></li>
+      <li><a href="#dashboard">Admin Dashboard Overview</a></li>
+      <li><a href="#users">User Management</a></li>
+      <li><a href="#plans">Billing Plan Management</a></li>
+      <li><a href="#widgets">Widget Oversight</a></li>
+      <li><a href="#channels">Channel Overview (NEW)</a></li>
+      <li><a href="#conversations">Conversation Management</a></li>
+      <li><a href="#reports">Platform-Wide Reports</a></li>
+      <li><a href="#broadcasts">Broadcasts</a></li>
+      <li><a href="#system">System Health &amp; Queues</a></li>
+      <li><a href="#settings">Admin Settings</a></li>
+      <li><a href="#branding">White-Label &amp; Branding</a></li>
+      <li><a href="#security">Security &amp; Audit Logs</a></li>
+    </ol>
+  </nav>
+
+  <!-- 1. Accessing the Admin Panel -->
+  <div class="section-block" id="access">
+    <h2><span class="section-num">1</span> Accessing the Admin Panel</h2>
+    <p>The admin panel is a completely separate area of the application, accessible only to accounts that have been granted the <strong>super-admin</strong> role during installation or by another super-admin.</p>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <p><strong>Where is it?</strong> Navigate to <code>https://yourdomain.com/admin</code>. If you are already logged in as a regular user, you will be redirected — the admin panel does not share a session with the regular dashboard.</p>
+    </div>
+
+    <h3>Logging In</h3>
+    <ol class="step-list">
+      <li class="step-item">
+        <div class="step-num">1</div>
+        <div>Go to <code>https://yourdomain.com/admin/login</code>.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">2</div>
+        <div>Enter the super-admin email and password you set during installation. These are different from regular user credentials.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">3</div>
+        <div>If Two-Factor Authentication is enabled for your admin account, you will be prompted for the 6-digit TOTP code from your authenticator app.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">4</div>
+        <div>You land on the Admin Dashboard. A dark sidebar on the left shows all admin navigation sections.</div>
+      </li>
+    </ol>
+
+    <div class="callout warning">
+      <span class="callout-icon">⚠️</span>
+      <p><strong>Protect your admin credentials.</strong> Use a unique, long password for the super-admin account. Enable Two-Factor Authentication immediately after first login. Anyone with admin access can read all user data, change billing plans, and delete accounts.</p>
+    </div>
+
+    <h3>Promoting a User to Super-Admin</h3>
+    <p>You can grant admin access to additional team members from <strong>Admin → Users → Edit User → Role → Super Admin</strong>. Only do this for trusted team members — there is no partial admin role; super-admin has full access to everything.</p>
+  </div>
+
+  <!-- 2. Admin Dashboard Overview -->
+  <div class="section-block" id="dashboard">
+    <h2><span class="section-num">2</span> Admin Dashboard Overview</h2>
+    <p>The admin dashboard gives you a real-time bird's-eye view of your entire platform. You do not need to visit individual user accounts to see platform health.</p>
+
+    <table class="feat-table">
+      <thead><tr><th>Stat Card</th><th>What It Shows</th><th>Why It Matters</th></tr></thead>
+      <tbody>
+        <tr><td>Total Users</td><td>All registered accounts (active + suspended)</td><td>Tracks overall platform growth</td></tr>
+        <tr><td>Active Users (30d)</td><td>Users who logged in within the last 30 days</td><td>Measures retention and engagement</td></tr>
+        <tr><td>Total Widgets</td><td>All widgets created across all users</td><td>Indicates how deeply users adopt the platform</td></tr>
+        <tr><td>Active Channels</td><td>Channel connections currently enabled</td><td>Shows omnichannel adoption rate</td></tr>
+        <tr><td>Messages Today</td><td>Conversations processed in the last 24 hours</td><td>Real-time load indicator</td></tr>
+        <tr><td>Total Leads</td><td>Cumulative leads captured across all users</td><td>Core value metric for the platform</td></tr>
+        <tr><td>MRR (Monthly Revenue)</td><td>Recurring subscription revenue this month</td><td>Business health at a glance</td></tr>
+        <tr><td>Queue Size</td><td>Background jobs waiting to be processed</td><td>Early warning for server overload</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Charts on the Dashboard</h3>
+    <ul>
+      <li><strong>User Signups (30 days)</strong> — Daily bar chart showing new registrations. Spikes indicate marketing campaigns working.</li>
+      <li><strong>Message Volume (30 days)</strong> — Line chart of total messages per day. Downward trends may indicate service issues.</li>
+      <li><strong>Revenue by Plan</strong> — Doughnut chart showing what percentage of MRR comes from each billing tier.</li>
+      <li><strong>Channel Distribution</strong> — Bar chart showing which channels (WhatsApp, Telegram, Web, etc.) are most used platform-wide.</li>
+    </ul>
+
+    <h3>Recent Activity Feed</h3>
+    <p>The bottom of the dashboard shows the last 20 platform events: new signups, plan upgrades/downgrades, widget creations, and channel connections. Click any event to jump to the relevant record.</p>
+  </div>
+
+  <!-- 3. User Management -->
+  <div class="section-block" id="users">
+    <h2><span class="section-num">3</span> User Management</h2>
+    <p>Go to <strong>Admin → Users</strong> to see every account registered on your platform. This is where you manage subscriptions, resolve account issues, and handle support requests that require admin access.</p>
+
+    <h3>The Users Table</h3>
+    <p>The table shows: Name, Email, Plan, Status (Active / Suspended / Unverified), Number of Widgets, Joined Date, and Last Login. You can:</p>
+    <ul>
+      <li><strong>Search</strong> — type in the search box to find users by name or email instantly.</li>
+      <li><strong>Filter by Plan</strong> — use the dropdown to show only Free, Starter, Pro, or Enterprise users.</li>
+      <li><strong>Filter by Status</strong> — show only active, suspended, or unverified accounts.</li>
+      <li><strong>Sort</strong> — click any column header to sort ascending/descending.</li>
+      <li><strong>Export</strong> — download the full user list as a CSV file for external reporting.</li>
+    </ul>
+
+    <h3>Viewing a User's Profile</h3>
+    <p>Click any user's name to open their full profile page. This shows:</p>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-icon">📋</div>
+        <h4>Account Details</h4>
+        <p>Name, email, registration date, last login, IP address, timezone, and email verification status.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">💳</div>
+        <h4>Billing Info</h4>
+        <p>Current plan, billing cycle, Stripe Customer ID, next renewal date, payment history, and any active discounts.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🤖</div>
+        <h4>Widgets &amp; Channels</h4>
+        <p>All widgets the user has created, their channel connections, and total message counts per widget.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <h4>Usage Stats</h4>
+        <p>Total messages used this billing period, leads captured, knowledge base entries, and storage used.</p>
+      </div>
+    </div>
+
+    <h3>Editing a User</h3>
+    <p>Click the <strong>Edit</strong> button on a user profile to change:</p>
+    <table class="feat-table">
+      <thead><tr><th>Field</th><th>What It Does</th></tr></thead>
+      <tbody>
+        <tr><td>Name / Email</td><td>Update contact information (email change requires re-verification)</td></tr>
+        <tr><td>Plan</td><td>Manually upgrade or downgrade without going through Stripe checkout</td></tr>
+        <tr><td>Plan Expiry</td><td>Extend or shorten a user's billing period manually</td></tr>
+        <tr><td>Role</td><td>Set to User or Super Admin</td></tr>
+        <tr><td>Status</td><td>Active, Suspended, or Banned</td></tr>
+        <tr><td>Message Limit Override</td><td>Grant extra messages beyond the plan limit for a specific user</td></tr>
+        <tr><td>Notes</td><td>Internal admin notes (never shown to the user)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Suspending a User</h3>
+    <p>Suspending an account immediately prevents that user from logging in and stops their widgets from responding to visitors. Their data is preserved — you can re-activate at any time. Use suspension for:</p>
+    <ul>
+      <li>Failed payments (while waiting for the user to update their card)</li>
+      <li>Abuse reports or terms-of-service violations</li>
+      <li>Pending verification on high-risk signups</li>
+    </ul>
+
+    <div class="callout warning">
+      <span class="callout-icon">⚠️</span>
+      <p><strong>Suspension vs. Deletion:</strong> Suspension is reversible. Deletion permanently removes the account, all widgets, all conversations, all leads, and all knowledge base data. There is no undo. Always suspend first, delete only after confirming the user does not want their data back.</p>
+    </div>
+
+    <h3>Impersonating a User</h3>
+    <p>Click <strong>Login as User</strong> on any user's profile to temporarily log into the dashboard as that user. This lets you:</p>
+    <ul>
+      <li>Reproduce issues the user reported without needing their password</li>
+      <li>Configure things on their behalf as a managed service</li>
+      <li>Verify that billing changes took effect correctly</li>
+    </ul>
+    <p>A red banner at the top of the screen reminds you that you are in impersonation mode. Click <strong>Return to Admin</strong> to exit. All impersonation sessions are logged in the Audit Log.</p>
+
+    <h3>Sending a Password Reset</h3>
+    <p>Click <strong>Send Password Reset Email</strong> on a user's profile to trigger a reset link to their inbox. Useful when a user is locked out and cannot use the "forgot password" flow themselves.</p>
+
+    <h3>Manually Verifying Email</h3>
+    <p>If a user did not receive their verification email, click <strong>Mark Email Verified</strong> to verify their address manually and allow them to log in.</p>
+  </div>
+
+  <!-- 4. Billing Plan Management -->
+  <div class="section-block" id="plans">
+    <h2><span class="section-num">4</span> Billing Plan Management</h2>
+    <p>Go to <strong>Admin → Plans</strong> to create, edit, and delete the subscription tiers that users purchase. Plans define what features users can access and how many resources (messages, widgets, channels) they get.</p>
+
+    <h3>Creating a New Plan</h3>
+    <ol class="step-list">
+      <li class="step-item">
+        <div class="step-num">1</div>
+        <div>Go to <strong>Admin → Plans → Create Plan</strong>.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">2</div>
+        <div>Fill in the plan name (e.g. "Starter"), a short description, and a display colour/icon.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">3</div>
+        <div>Set the monthly price and (optionally) a discounted annual price. Both values are in your configured currency.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">4</div>
+        <div>Create the matching product and price in your Stripe dashboard, then paste the Stripe Price ID into the plan form.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">5</div>
+        <div>Set the plan limits (see table below).</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">6</div>
+        <div>Toggle the feature switches — enable or disable specific features for this plan tier.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">7</div>
+        <div>Click <strong>Save Plan</strong>. The plan immediately appears on the public pricing page and in checkout.</div>
+      </li>
+    </ol>
+
+    <h3>Plan Limit Fields</h3>
+    <table class="feat-table">
+      <thead><tr><th>Limit Field</th><th>What It Controls</th><th>Example Values</th></tr></thead>
+      <tbody>
+        <tr><td>Max Widgets</td><td>How many chat widgets the user can create</td><td>1, 5, 25, Unlimited</td></tr>
+        <tr><td>Messages / Month</td><td>AI-processed messages before the plan throttles</td><td>500, 5,000, 50,000, Unlimited</td></tr>
+        <tr><td>Max Channels</td><td>How many channel connections per widget</td><td>1, 3, 10</td></tr>
+        <tr><td>Knowledge Base Entries</td><td>Number of URLs, PDFs, and FAQ items the user can train on</td><td>10, 100, 1,000</td></tr>
+        <tr><td>Team Members</td><td>Number of additional agent/manager seats</td><td>0, 5, 25, Unlimited</td></tr>
+        <tr><td>Lead Retention (days)</td><td>How long lead records are kept before auto-deletion</td><td>30, 90, 365, Forever</td></tr>
+        <tr><td>Conversation History (days)</td><td>How far back users can search conversations</td><td>30, 90, 365, Forever</td></tr>
+        <tr><td>Storage (MB)</td><td>File storage for uploaded PDFs and images</td><td>50, 500, 5,000</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Plan Feature Toggles</h3>
+    <table class="feat-table">
+      <thead><tr><th>Feature Toggle</th><th>When Enabled</th></tr></thead>
+      <tbody>
+        <tr><td>A/B Testing</td><td>User can run split tests on widget variants</td></tr>
+        <tr><td>Automations</td><td>User can create email/webhook/Slack triggers</td></tr>
+        <tr><td>Advanced Analytics</td><td>User sees heatmaps, sentiment, funnel charts</td></tr>
+        <tr><td>White-Label Branding</td><td>User can remove "Powered by" branding</td></tr>
+        <tr><td>API Access</td><td>User can generate API keys and use the REST API</td></tr>
+        <tr><td>Custom Domain</td><td>User can embed widget on their custom domain</td></tr>
+        <tr><td>Priority Support</td><td>User's tickets are flagged for faster response</td></tr>
+        <tr><td>Omnichannel Channels</td><td>User can connect WhatsApp, Telegram, and other external channels</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Editing and Deleting Plans</h3>
+    <p>You can edit any plan at any time. Changes to limits take effect immediately for all users on that plan. Changing the price does <em>not</em> affect existing subscribers; it only affects new signups.</p>
+
+    <div class="callout warning">
+      <span class="callout-icon">⚠️</span>
+      <p><strong>Deleting a Plan:</strong> You cannot delete a plan that has active subscribers. First move all subscribers to another plan, then delete. Alternatively, mark the plan as "Hidden" to prevent new signups while keeping existing subscribers.</p>
+    </div>
+
+    <h3>Free Plan</h3>
+    <p>Every platform has a default "Free" plan. Users who do not purchase a subscription are automatically placed on this plan. Configure it conservatively — for example 1 widget, 100 messages/month, no external channels — to incentivise upgrades.</p>
+  </div>
+
+  <!-- 5. Widget Oversight -->
+  <div class="section-block" id="widgets">
+    <h2><span class="section-num">5</span> Widget Oversight</h2>
+    <p>Go to <strong>Admin → Widgets</strong> to see every widget created across all user accounts. This is useful for spotting misuse, helping users debug, and understanding which widgets are most active.</p>
+
+    <h3>Widget List</h3>
+    <p>The table shows: Widget Name, Owner (user), Status (Active/Paused), Total Conversations, Total Messages, Channel Count, and Creation Date. You can search by widget name or filter by owner.</p>
+
+    <h3>Widget Detail View</h3>
+    <p>Click a widget to open its read-only detail view. The detail view shows:</p>
+    <ul>
+      <li>All widget settings (appearance, AI model, system prompt)</li>
+      <li>Knowledge base items linked to the widget</li>
+      <li>Active channels and their connection status</li>
+      <li>Recent conversations (last 20)</li>
+      <li>Lead capture summary</li>
+    </ul>
+
+    <h3>Disabling a Widget</h3>
+    <p>If a widget is being used to spread spam or violate terms, you can disable it from the admin panel without suspending the whole user account. Go to <strong>Widget Detail → Disable Widget</strong>. The widget stops responding immediately. The user sees a notice in their dashboard.</p>
+  </div>
+
+  <!-- 6. Channel Overview -->
+  <div class="section-block" id="channels">
+    <h2><span class="section-num">6</span> Channel Overview <span class="badge new" style="vertical-align:middle;font-size:0.7rem">NEW</span></h2>
+    <p>Go to <strong>Admin → Channels</strong> to see all omnichannel connections across every user on your platform. This is the command centre for the platform's messaging infrastructure.</p>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <p>This screen was introduced with the omnichannel update. It gives you visibility into all 10 channel types — Web Widget, WhatsApp, Telegram, Facebook, Instagram, Slack, Discord, SMS, Twitter/X, and Email — in one place.</p>
+    </div>
+
+    <h3>Channel Overview Table</h3>
+    <table class="feat-table">
+      <thead><tr><th>Column</th><th>What It Shows</th></tr></thead>
+      <tbody>
+        <tr><td>Channel Type</td><td>Icon and name of the platform (WhatsApp, Telegram, etc.)</td></tr>
+        <tr><td>Owner</td><td>Which user account owns this channel configuration</td></tr>
+        <tr><td>Widget</td><td>Which of the user's widgets this channel is linked to</td></tr>
+        <tr><td>Status</td><td>Enabled (green) or Disabled (grey)</td></tr>
+        <tr><td>Messages Sent</td><td>Cumulative outbound messages from this channel</td></tr>
+        <tr><td>Messages Received</td><td>Cumulative inbound messages to this channel</td></tr>
+        <tr><td>Today</td><td>Messages processed in the last 24 hours</td></tr>
+        <tr><td>Last Active</td><td>Timestamp of the most recent message on this channel</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Platform-Wide Channel Stats</h3>
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-icon">📡</div>
+        <h4>Total Channels</h4>
+        <p>All channel connections ever created across all users.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">✅</div>
+        <h4>Active Channels</h4>
+        <p>Channels currently enabled and processing messages.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">💬</div>
+        <h4>Messages Today</h4>
+        <p>Total messages across all channels in the last 24 hours.</p>
+      </div>
+    </div>
+
+    <h3>Disabling a Channel</h3>
+    <p>If a channel is causing abuse or excessive traffic, you can disable it from the admin panel. The user's widget continues on other channels; only the specific problematic channel is stopped.</p>
+
+    <h3>Webhook Health Check</h3>
+    <p>For each external channel (WhatsApp, Telegram, Facebook, etc.), the admin panel shows the webhook status: <span class="pill pill-green">Connected</span>, <span class="pill pill-amber">Pending Verification</span>, or <span class="pill pill-red">Failed</span>. A "Failed" webhook means messages are not reaching the AI. Click <strong>Re-register Webhook</strong> to attempt automatic re-registration.</p>
+  </div>
+
+  <!-- 7. Conversation Management -->
+  <div class="section-block" id="conversations">
+    <h2><span class="section-num">7</span> Conversation Management</h2>
+    <p>Go to <strong>Admin → Conversations</strong> to search and view any conversation on the platform. This is used for support escalations, abuse investigations, and quality audits.</p>
+
+    <div class="callout warning">
+      <span class="callout-icon">⚠️</span>
+      <p><strong>Privacy Notice:</strong> Reading user conversations for reasons other than support, abuse investigation, or legal compliance may violate privacy regulations (GDPR, CCPA). Always document why you accessed a conversation.</p>
+    </div>
+
+    <h3>Search and Filters</h3>
+    <ul>
+      <li>Search by conversation ID, visitor email/phone, or message keyword</li>
+      <li>Filter by date range, channel type, widget owner, status (open/closed/escalated)</li>
+      <li>Filter by sentiment (positive, neutral, negative) — useful for finding problem conversations</li>
+      <li>Filter by CSAT score — find low-rated conversations to identify AI quality issues</li>
+    </ul>
+
+    <h3>Conversation Detail View</h3>
+    <p>Each conversation shows the full message thread, timestamps, the channel it came from, the AI model used, the knowledge base items retrieved, and any leads captured. You can add an admin note that is never shown to the user.</p>
+
+    <h3>Deleting Conversations</h3>
+    <p>Under GDPR's "right to be forgotten", you may need to delete conversations containing a visitor's personal data. Go to the conversation, click <strong>Delete Permanently</strong>. This removes the conversation and all associated lead records. The action is logged in the Audit Log.</p>
+  </div>
+
+  <!-- 8. Platform-Wide Reports -->
+  <div class="section-block" id="reports">
+    <h2><span class="section-num">8</span> Platform-Wide Reports</h2>
+    <p>Go to <strong>Admin → Reports</strong> to view aggregated analytics across the entire platform.</p>
+
+    <h3>Available Reports</h3>
+    <table class="feat-table">
+      <thead><tr><th>Report</th><th>What It Shows</th><th>Use Case</th></tr></thead>
+      <tbody>
+        <tr><td>Growth Report</td><td>New signups, churned users, and net change per month</td><td>Investor reporting, marketing ROI</td></tr>
+        <tr><td>Revenue Report</td><td>MRR, ARR, revenue by plan, refunds, chargebacks</td><td>Financial reporting, plan optimisation</td></tr>
+        <tr><td>Usage Report</td><td>Messages, leads, and conversations per user per month</td><td>Identify power users, find who is over-limit</td></tr>
+        <tr><td>Channel Report</td><td>Message volume by channel type platform-wide</td><td>Understand which integrations are most popular</td></tr>
+        <tr><td>AI Performance Report</td><td>Average response quality score, escalation rate, CSAT</td><td>Benchmark AI quality across all users</td></tr>
+        <tr><td>Lead Quality Report</td><td>Average lead score, conversion rate, top-performing widgets</td><td>Showcase platform ROI to prospects</td></tr>
+        <tr><td>System Load Report</td><td>Queue depth, job failure rate, API latency over time</td><td>Capacity planning, infrastructure scaling</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Exporting &amp; Scheduling Reports</h3>
+    <p>Every report can be exported as CSV or PDF. You can also schedule reports to be emailed automatically — go to <strong>Reports → Schedule</strong>, choose the report, set the frequency (daily/weekly/monthly), and enter admin email addresses.</p>
+  </div>
+
+  <!-- 9. Broadcasts -->
+  <div class="section-block" id="broadcasts">
+    <h2><span class="section-num">9</span> Broadcasts</h2>
+    <p>Go to <strong>Admin → Broadcasts</strong> to send in-dashboard notification banners to all users or a specific segment.</p>
+
+    <h3>Creating a Broadcast</h3>
+    <ol class="step-list">
+      <li class="step-item">
+        <div class="step-num">1</div>
+        <div>Go to <strong>Admin → Broadcasts → New Broadcast</strong>.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">2</div>
+        <div>Write your message (supports bold and links). Choose a type: <strong>Info</strong> (blue), <strong>Success</strong> (green), <strong>Warning</strong> (amber), or <strong>Alert</strong> (red).</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">3</div>
+        <div>Choose the audience: All Users, Users on a Specific Plan, or Users who signed up before/after a date.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">4</div>
+        <div>Set an optional expiry date — after this date the banner disappears automatically.</div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">5</div>
+        <div>Click <strong>Send Broadcast</strong>. The banner appears for all targeted users on their next page load.</div>
+      </li>
+    </ol>
+  </div>
+
+  <!-- 10. System Health -->
+  <div class="section-block" id="system">
+    <h2><span class="section-num">10</span> System Health &amp; Queues</h2>
+    <p>Go to <strong>Admin → System</strong> to monitor your server and the background job workers that process AI requests, webhooks, emails, and analytics.</p>
+
+    <h3>Queue Dashboard</h3>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-icon">✅</div>
+        <h4>Completed Jobs</h4>
+        <p>Background jobs that finished successfully. A healthy platform processes thousands per hour.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⏳</div>
+        <h4>Pending Jobs</h4>
+        <p>Jobs waiting to be processed. A growing backlog means workers cannot keep up — scale up your server.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">❌</div>
+        <h4>Failed Jobs</h4>
+        <p>Jobs that threw an error. Click to see the error and retry. Common causes: expired API keys, rate limits, invalid data.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <h4>Throughput</h4>
+        <p>Jobs processed per minute. A sudden drop means a queue worker has crashed.</p>
+      </div>
+    </div>
+
+    <h3>Server Health Panel</h3>
+    <table class="feat-table">
+      <thead><tr><th>Metric</th><th>Healthy Range</th><th>Action if Outside</th></tr></thead>
+      <tbody>
+        <tr><td>CPU Usage</td><td>Below 70%</td><td>Identify high-load jobs or upgrade server CPU</td></tr>
+        <tr><td>RAM Usage</td><td>Below 80%</td><td>Restart queue workers; increase server RAM</td></tr>
+        <tr><td>Disk Usage</td><td>Below 80%</td><td>Clear old logs; increase disk capacity</td></tr>
+        <tr><td>Queue Workers</td><td>All running</td><td>Restart Horizon: <code>php artisan horizon:terminate &amp;&amp; php artisan horizon</code></td></tr>
+        <tr><td>Cache (Redis)</td><td>Connected</td><td>Check Redis is running; verify REDIS_HOST in .env</td></tr>
+        <tr><td>Database</td><td>Connected &lt; 50ms</td><td>Check MySQL running; run <code>php artisan migrate:status</code></td></tr>
+        <tr><td>AI Provider</td><td>Responding</td><td>Check API key; verify account has quota</td></tr>
+        <tr><td>Mail (SMTP)</td><td>Connected</td><td>Verify SMTP credentials in Admin Settings → Mail</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Maintenance Commands</h3>
+    <p>Common operations triggerable from the admin panel without needing terminal access:</p>
+    <ul>
+      <li><strong>Clear Cache</strong> — flushes the application cache. Run if config changes are not taking effect.</li>
+      <li><strong>Clear Queue</strong> — removes all pending jobs. Use only during maintenance windows.</li>
+      <li><strong>Rebuild Search Index</strong> — re-indexes all knowledge base content for AI retrieval.</li>
+      <li><strong>Run Pending Migrations</strong> — applies any database migrations needed after an update.</li>
+      <li><strong>Storage Link</strong> — re-creates the public/storage symlink if uploaded files are not accessible.</li>
+    </ul>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <p>If a user reports something "not working", check <strong>System → Logs</strong> filtered to "error" level around the time of the reported issue — that is almost always where you will find the cause.</p>
+    </div>
+  </div>
+
+  <!-- 11. Admin Settings -->
+  <div class="section-block" id="settings">
+    <h2><span class="section-num">11</span> Admin Settings</h2>
+    <p>Go to <strong>Admin → Settings</strong> to configure all platform-level defaults and integrations.</p>
+
+    <h3>General Settings</h3>
+    <table class="feat-table">
+      <thead><tr><th>Setting</th><th>What It Does</th></tr></thead>
+      <tbody>
+        <tr><td>Platform Name</td><td>Appears in email footers, browser title, and metadata</td></tr>
+        <tr><td>Platform URL</td><td>Used to construct links in emails and webhooks</td></tr>
+        <tr><td>Default Timezone</td><td>Used for reports, scheduled emails, and log timestamps</td></tr>
+        <tr><td>Registration Mode</td><td>Open (anyone can sign up), Invite-Only, or Closed</td></tr>
+        <tr><td>Email Verification</td><td>Require users to verify their email before dashboard access</td></tr>
+        <tr><td>Maintenance Mode</td><td>Show a maintenance page to all non-admin visitors</td></tr>
+      </tbody>
+    </table>
+
+    <h3>AI Provider Settings</h3>
+    <table class="feat-table">
+      <thead><tr><th>Provider</th><th>Key Setting</th><th>Models Available</th></tr></thead>
+      <tbody>
+        <tr><td>OpenAI</td><td>OPENAI_API_KEY</td><td>GPT-4o, GPT-4o-mini, GPT-4-turbo</td></tr>
+        <tr><td>Anthropic (Claude)</td><td>ANTHROPIC_API_KEY</td><td>Claude Sonnet 4.6, Claude Haiku 4.5</td></tr>
+        <tr><td>Google Gemini</td><td>GEMINI_API_KEY</td><td>Gemini Pro, Gemini Flash</td></tr>
+        <tr><td>Groq</td><td>GROQ_API_KEY</td><td>Llama 3.1, Mixtral</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Mail (SMTP) Settings</h3>
+    <table class="feat-table">
+      <thead><tr><th>Field</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Mail Driver</td><td>smtp / mailgun / postmark / ses / sendgrid</td></tr>
+        <tr><td>SMTP Host</td><td>Your mail server hostname (e.g. smtp.mailgun.org)</td></tr>
+        <tr><td>SMTP Port</td><td>Usually 465 (SSL) or 587 (STARTTLS)</td></tr>
+        <tr><td>SMTP Username / Password</td><td>Your email account or API credentials</td></tr>
+        <tr><td>From Address</td><td>The "From" email visible to recipients</td></tr>
+        <tr><td>From Name</td><td>The sender name (e.g. "PoriFyx Widget")</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Stripe Billing Settings</h3>
+    <table class="feat-table">
+      <thead><tr><th>Field</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Stripe Publishable Key</td><td>Starts with pk_live_ (or pk_test_ for testing)</td></tr>
+        <tr><td>Stripe Secret Key</td><td>Starts with sk_live_ — keep this private</td></tr>
+        <tr><td>Stripe Webhook Secret</td><td>Starts with whsec_ — verifies incoming Stripe webhook events</td></tr>
+        <tr><td>Currency</td><td>ISO currency code (USD, EUR, GBP, etc.)</td></tr>
+        <tr><td>Trial Days</td><td>Number of free trial days on paid plans (0 to disable)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Feature Flags</h3>
+    <p>Turn platform-wide features on or off without deploying code:</p>
+    <ul>
+      <li><strong>Omnichannel Channels</strong> — disable to hide all channel settings platform-wide</li>
+      <li><strong>A/B Testing</strong> — disable to remove A/B test UI from all dashboards</li>
+      <li><strong>Knowledge Base RAG</strong> — disable to revert AI to base model only (no document retrieval)</li>
+      <li><strong>PWA Push Notifications</strong> — disable to stop all push notifications</li>
+      <li><strong>Lead Scoring</strong> — disable if the scoring model needs recalibration</li>
+    </ul>
+  </div>
+
+  <!-- 12. White-Label & Branding -->
+  <div class="section-block" id="branding">
+    <h2><span class="section-num">12</span> White-Label &amp; Branding</h2>
+    <p>Go to <strong>Admin → Branding</strong> to customise the platform so it appears under your own brand rather than "PoriFyx Widget".</p>
+
+    <h3>Branding Fields</h3>
+    <table class="feat-table">
+      <thead><tr><th>Field</th><th>Where It Appears</th></tr></thead>
+      <tbody>
+        <tr><td>Platform Name</td><td>Browser title, email subjects, dashboard header</td></tr>
+        <tr><td>Logo (Light)</td><td>Login page and email header</td></tr>
+        <tr><td>Logo (Dark)</td><td>Sidebar and dark-mode UI</td></tr>
+        <tr><td>Favicon</td><td>Browser tab icon — upload a 32×32 PNG or ICO</td></tr>
+        <tr><td>Primary Colour</td><td>Buttons, links, active states, progress bars</td></tr>
+        <tr><td>Login Page Background</td><td>Full-screen background on the login page</td></tr>
+        <tr><td>"Powered By" Text</td><td>Footer of the dashboard — leave blank to hide</td></tr>
+        <tr><td>Support Email</td><td>Appears in error messages and automated emails</td></tr>
+        <tr><td>Terms of Service URL</td><td>Linked from the registration page footer</td></tr>
+        <tr><td>Privacy Policy URL</td><td>Linked from the registration page footer</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Custom CSS</h3>
+    <p>Paste custom CSS into the <strong>Custom CSS</strong> textarea to change fonts, colours, or spacing on any page. It is injected after the default stylesheet so your rules take precedence.</p>
+
+    <h3>Email Templates</h3>
+    <p>Go to <strong>Admin → Branding → Email Templates</strong> to customise the HTML of every automated email: welcome, password reset, lead notification, plan upgrade, and payment receipt. Use placeholders like <code>{{user_name}}</code> and <code>{{platform_name}}</code> which are replaced with real values at send time.</p>
+  </div>
+
+  <!-- 13. Security & Audit Logs -->
+  <div class="section-block" id="security">
+    <h2><span class="section-num">13</span> Security &amp; Audit Logs</h2>
+
+    <h3>Audit Log</h3>
+    <p>Every sensitive action is recorded automatically: admin logins, impersonation sessions, user suspensions/deletions, plan changes, data exports, and settings changes. Each entry shows the date/time, admin user, action, affected resource, and IP address.</p>
+
+    <h3>Security Settings</h3>
+    <table class="feat-table">
+      <thead><tr><th>Setting</th><th>Recommendation</th></tr></thead>
+      <tbody>
+        <tr><td>Require 2FA for Admins</td><td>Always enable — prevents account takeover even with a stolen password</td></tr>
+        <tr><td>Admin Session Timeout</td><td>Set to 30–60 minutes of inactivity</td></tr>
+        <tr><td>IP Allowlist for Admin</td><td>Restrict admin login to your office or VPN IP addresses</td></tr>
+        <tr><td>Failed Login Lockout</td><td>Lock account after 5 failed attempts; send alert email</td></tr>
+        <tr><td>API Key Expiry</td><td>Expire user API keys every 90 days</td></tr>
+        <tr><td>CORS Policy</td><td>Restrict widget embed to specific domains to prevent unauthorised use</td></tr>
+      </tbody>
+    </table>
+
+    <h3>GDPR &amp; Data Compliance</h3>
+    <ul>
+      <li><strong>User Data Export</strong> — export all data for a user as a ZIP file (fulfils GDPR subject access requests)</li>
+      <li><strong>User Data Deletion</strong> — permanently delete all data for a user (fulfils GDPR right to erasure)</li>
+      <li><strong>Consent Log</strong> — the widget records a timestamp when a visitor gives consent, stored per conversation</li>
+      <li><strong>Data Retention Policy</strong> — configure automatic deletion of conversations and leads older than N days, per plan</li>
+    </ul>
+  </div>
+
+  <div class="cta-block">
+    <h2>Next: Developer Guide</h2>
+    <p>Ready to go deeper? The Developer Guide covers architecture, database schema, API endpoints, and how to extend the platform with new channels.</p>
+    <div class="cta-buttons">
+      <a href="developer-guide.html" class="btn-primary">🔧 Developer Guide</a>
+      <a href="user-guide.html" class="btn-secondary">👤 User Guide</a>
+    </div>
+  </div>
+
+  <footer class="docs-footer">
+    <span>PoriFyx Widget Documentation</span>
+    <span>
+      <a href="installation.html">Installation</a> ·
+      <a href="features.html">Features</a> ·
+      <a href="user-guide.html">User Guide</a> ·
+      <a href="admin-guide.html">Admin Guide</a> ·
+      <a href="developer-guide.html">Developer Guide</a>
+    </span>
+  </footer>
+
+</article>
+</div>
+</body>
+</html>
