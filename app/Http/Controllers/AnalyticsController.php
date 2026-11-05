@@ -126,7 +126,9 @@ class AnalyticsController extends Controller
         // ── Heatmap: conversations by hour and weekday ───────────────────────────
         $heatmapRaw = Conversation::whereIn('widget_id', $filteredWidgetIds)
             ->where('created_at', '>=', $startDate)
-            ->selectRaw('HOUR(created_at) as hour, DAYOFWEEK(created_at) as dow, COUNT(*) as cnt')
+            ->selectRaw(Conversation::query()->getConnection()->getDriverName() === 'sqlite'
+                ? "CAST(strftime('%H', created_at) AS INTEGER) as hour, CAST(strftime('%w', created_at) AS INTEGER) + 1 as dow, COUNT(*) as cnt"
+                : 'HOUR(created_at) as hour, DAYOFWEEK(created_at) as dow, COUNT(*) as cnt')
             ->groupBy('hour', 'dow')
             ->get();
 
@@ -134,7 +136,7 @@ class AnalyticsController extends Controller
         $heatmap = array_fill(0, 7, array_fill(0, 24, 0));
         foreach ($heatmapRaw as $row) {
             $dayIdx  = ($row->dow + 5) % 7; // Mon=0 … Sun=6
-            $heatmap[$dayIdx][$row->hour] = $row->cnt;
+            $heatmap[$dayIdx][(int) $row->hour] = (int) $row->cnt;
         }
         $heatmapMax = max(1, max(array_map(fn ($row) => max($row), $heatmap)));
 
