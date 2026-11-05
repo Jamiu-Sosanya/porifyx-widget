@@ -13,6 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Behind Cloudflare / load balancers: honour X-Forwarded-Proto so HTTPS URLs are generated.
+        $middleware->trustProxies(at: '*');
+
         // Redirect all web requests to /install/ until installation is complete
         $middleware->web(prepend: [
             \App\Http\Middleware\EnsureInstalled::class,
