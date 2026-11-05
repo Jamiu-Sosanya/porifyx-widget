@@ -175,6 +175,13 @@ class AiChatService
             $prompt .= "\n\nYou should naturally try to understand the visitor's needs. When appropriate, ask about their budget, timeline, company size, and main challenges. Be conversational, not interrogative.";
         }
 
+        $booking = \App\Support\Booking::settings($widget);
+        if ($booking['enabled'] && $booking['ai_booking']) {
+            $services = collect($booking['services'])->map(fn ($x) => $x['name'] . ' (' . $x['duration'] . ' min' . ($x['price'] ? ', ' . $x['price'] : '') . ')')->implode('; ');
+            $prompt .= "\n\nAppointments: visitors can book online with " . $booking['business_name'] . '. Services: ' . $services . '. '
+                . 'When the visitor wants to book, reschedule or check availability, answer briefly and end your reply with the exact token [[BOOKING]] on its own line. '
+                . 'The chat shows a booking button in its place. Never invent available times; the button shows real availability.';
+        }
         $prompt .= "\n\nRules:\n";
         $prompt .= "- Keep responses concise and helpful\n";
         $prompt .= "- Use markdown formatting when appropriate (bold, bullets, code blocks)\n";

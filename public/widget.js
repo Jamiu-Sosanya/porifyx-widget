@@ -130,6 +130,9 @@
      * Simple markdown renderer: bold, italic, code, links, lists, line breaks.
      */
     function renderMarkdown(text) {
+        // The assistant ends a reply with [[BOOKING]] to offer the booking button.
+        if (/\[\[BOOKING\]\]/.test(text)) { text = text.replace(/\s*\[\[BOOKING\]\]\s*/g, ''); addBookingChip(); }
+        text = text.replace(/\s*\[\[[A-Z]*\]?$/, ''); // hide a half-streamed marker
         let html = escapeHtml(text);
         // Code blocks
         html = html.replace(/```([\s\S]*?)```/g, '<pre class="pfx-pre"><code>$1</code></pre>');
@@ -351,7 +354,7 @@
         if (ho) ho.addEventListener('click', requestHandoff);
 
         const bookBtn = document.getElementById('pfx-book');
-        if (bookBtn) bookBtn.addEventListener('click', openBooking);
+        if (bookBtn) bookBtn.addEventListener('click', function () { bk.fromAi = false; openBooking(); });
 
         const themeBtn = document.getElementById('pfx-theme-toggle');
         if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
@@ -1012,23 +1015,36 @@
         const r = await bkApi('GET', '');
         if (!r.ok) { bkPanel(config.booking.label, '<div class="pfx-bk-muted">Booking is not available right now.</div>'); return; }
         bk.info = r.data;
-        if (bk.info.services.length === 1) { bk.service = bk.info.services[0]; return bkDates(); }
+        if (bk.info.services.length === 1) { bk.service = bk.info.services[0]; return bkStaff(); }
         bkServices();
+    }
+
+    function bkStaff() {
+        bk.staff = null;
+        const team = bk.service.staff || [];
+        if (team.length < 2) { bk.staff = team[0] ? team[0].id : null; return bkDates(); }
+        const back = bk.info.services.length > 1 ? bkServices : null;
+        const el = bkPanel('Who would you like?',
+            '<button type="button" class="pfx-bk-card" data-s=""><strong>Anyone available</strong><br><span class="pfx-bk-muted">Shows the most times</span></button>' +
+            team.map(function (m) { return '<button type="button" class="pfx-bk-card" data-s="' + escapeAttr(m.id) + '"><strong>' + escapeHtml(m.name) + '</strong></button>'; }).join(''), back);
+        el.querySelectorAll('.pfx-bk-card').forEach(function (b) {
+            b.onclick = function () { bk.staff = b.getAttribute('data-s') || null; bk.date = null; bkDates(); };
+        });
     }
 
     function bkServices() {
         const el = bkPanel('Choose a service', bk.info.services.map(function (s, i) {
             return '<button type="button" class="pfx-bk-card" data-i="' + i + '">' +
-                '<span class="pfx-bk-card-top"><strong>' + escapeHtml(s.name) + '</strong><span>' + escapeHtml(s.price || '') + '</span></span>' +
+                '<span class="pfx-bk-card-top"><strong>' + escapeHtml(s.name) + '</strong><span>' + escapeHtml(s.charge ? bk.info.currency + ' ' + Number(s.charge).toFixed(2) : (s.price || '')) + '</span></span>' +
                 '<span class="pfx-bk-muted">' + s.duration + ' min' + (s.description ? ' · ' + escapeHtml(s.description) : '') + '</span></button>';
         }).join(''));
         el.querySelectorAll('.pfx-bk-card').forEach(function (b) {
-            b.onclick = function () { bk.service = bk.info.services[+b.getAttribute('data-i')]; bk.date = null; bkDates(); };
+            b.onclick = function () { bk.service = bk.info.services[+b.getAttribute('data-i')]; bk.date = null; bkStaff(); };
         });
     }
 
     function bkDates() {
-        const back = bk.info.services.length > 1 ? bkServices : null;
+        const back = (bk.service.staff || []).length > 1 ? bkStaff : (bk.info.services.length > 1 ? bkServices : null);
         if (!bk.info.dates.length) { bkPanel(bk.service.name, '<div class="pfx-bk-muted">No dates are open for booking at the moment.</div>', back); return; }
         const chips = bk.info.dates.map(function (d) {
             const dt = new Date(d + 'T12:00:00');
@@ -1056,7 +1072,7 @@
         bk.date = date;
         const box = document.getElementById('pfx-bk-slots');
         box.innerHTML = '<div class="pfx-bk-muted">Loading times…</div>';
-        const r = await bkApi('GET', '/slots?service=' + encodeURIComponent(bk.service.id) + '&date=' + date);
+        const r = await bkApi('GET', '/slots?service=' + encodeURIComponent(bk.service.id) + '&date=' + date + (bk.staff ? '&staff=' + encodeURIComponent(bk.staff) : ''));
         if (bk.date !== date) return -1;
         bk.slots = (r.ok && r.data.slots) || [];
         box.innerHTML = bk.slots.length
@@ -1077,21 +1093,32 @@
             '<input id="pfx-bk-name" class="pfx-offline-input" autocomplete="name" placeholder="Your name *" value="' + escapeAttr(v.name || '') + '">' +
             '<input id="pfx-bk-email" type="email" class="pfx-offline-input" autocomplete="email" placeholder="Email address *" value="' + escapeAttr(v.email || '') + '">' +
             '<input id="pfx-bk-phone" type="tel" class="pfx-offline-input" autocomplete="tel" placeholder="Phone number' + (bk.info.require_phone ? ' *' : ' (optional)') + '" value="' + escapeAttr(v.phone || '') + '">' +
+            (bk.info.questions || []).map(function (q) {
+                const val = (v.answers || {})[q.id];
+                const ph = escapeAttr(q.label + (q.required ? ' *' : ''));
+                if (q.type === 'checkbox') return '<label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;margin-bottom:8px;"><input type="checkbox" data-q="' + escapeAttr(q.id) + '"' + (val ? ' checked' : '') + '> ' + escapeHtml(q.label) + (q.required ? ' *' : '') + '</label>';
+                if (q.type === 'select') return '<select data-q="' + escapeAttr(q.id) + '" class="pfx-offline-input"><option value="">' + ph + '</option>' + q.options.map(function (o) { return '<option' + (o === val ? ' selected' : '') + '>' + escapeHtml(o) + '</option>'; }).join('') + '</select>';
+                if (q.type === 'textarea') return '<textarea data-q="' + escapeAttr(q.id) + '" class="pfx-offline-input" rows="2" style="resize:none" placeholder="' + ph + '">' + escapeHtml(val || '') + '</textarea>';
+                return '<input data-q="' + escapeAttr(q.id) + '" class="pfx-offline-input" placeholder="' + ph + '" value="' + escapeAttr(val || '') + '">';
+            }).join('') +
             '<textarea id="pfx-bk-notes" class="pfx-offline-input" rows="2" style="resize:none" placeholder="Anything we should know? (optional)">' + escapeHtml(v.notes || '') + '</textarea>' +
-            '<button type="button" id="pfx-bk-go" class="pfx-btn-primary">' + (bk.info.auto_confirm ? 'Confirm booking' : 'Request booking') + '</button>', bkDates);
+            '<button type="button" id="pfx-bk-go" class="pfx-btn-primary">' + (bk.service.charge ? 'Continue to payment' : (bk.info.auto_confirm ? 'Confirm booking' : 'Request booking')) + '</button>', bkDates);
         el.querySelector('#pfx-bk-go').onclick = bkSubmit;
     }
 
     async function bkSubmit() {
         const val = function (id) { return ((document.getElementById(id) || {}).value || '').trim(); };
-        bk.form = { name: val('pfx-bk-name'), email: val('pfx-bk-email'), phone: val('pfx-bk-phone'), notes: val('pfx-bk-notes') };
-        if (!bk.form.name || !/^\S+@\S+\.\S+$/.test(bk.form.email) || (bk.info.require_phone && !bk.form.phone)) {
+        const answers = {};
+        document.querySelectorAll('#pfx-booking [data-q]').forEach(function (el) { answers[el.getAttribute('data-q')] = el.type === 'checkbox' ? el.checked : el.value.trim(); });
+        bk.form = { name: val('pfx-bk-name'), email: val('pfx-bk-email'), phone: val('pfx-bk-phone'), notes: val('pfx-bk-notes'), answers: answers };
+        const missing = (bk.info.questions || []).some(function (q) { return q.required && !answers[q.id]; });
+        if (missing || !bk.form.name || !/^\S+@\S+\.\S+$/.test(bk.form.email) || (bk.info.require_phone && !bk.form.phone)) {
             return bkDetails('Please fill in the required fields.');
         }
         const btn = document.getElementById('pfx-bk-go');
         btn.disabled = true; btn.textContent = 'Booking…';
         const r = await bkApi('POST', '', Object.assign({}, bk.form, {
-            service_id: bk.service.id, start: bk.slot.start,
+            service_id: bk.service.id, staff_id: bk.staff || undefined, start: bk.slot.start, source: bk.fromAi ? 'ai' : 'widget',
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || undefined,
             conversation_uuid: conversationUuid || undefined,
         }));
@@ -1102,28 +1129,44 @@
             return bkDetails(first || (r.status === 429 ? 'Too many attempts. Please wait a minute.' : 'Something went wrong. Please try again.'));
         }
         const d = r.data;
+        if (d.checkout_url) {
+            const pay = bkPanel('Almost done',
+                '<div class="pfx-bk-done"><div class="pfx-bk-tick">£</div>' +
+                '<strong>' + escapeHtml(d.service) + (d.staff ? ' with ' + escapeHtml(d.staff) : '') + '</strong><span>' + escapeHtml(d.when) + ' (' + escapeHtml(d.timezone) + ')</span>' +
+                '<p class="pfx-bk-muted">We are holding this time for 30 minutes. Pay ' + escapeHtml(d.amount) + ' securely with Stripe to confirm it.</p>' +
+                '<a href="' + escapeAttr(d.checkout_url) + '" target="_blank" rel="noopener" class="pfx-btn-primary" style="display:block;text-decoration:none;margin-top:8px;">Pay ' + escapeHtml(d.amount) + '</a>' +
+                '<a href="' + escapeAttr(d.manage_url) + '" target="_blank" rel="noopener" class="pfx-bk-link">View booking</a></div>');
+            pay.querySelector('.pfx-bk-tick').textContent = '💳';
+            bk.form = null;
+            return;
+        }
         bkPanel(d.status === 'pending' ? 'Request sent' : 'You are booked in',
             '<div class="pfx-bk-done"><div class="pfx-bk-tick">✓</div>' +
-            '<strong>' + escapeHtml(d.service) + '</strong><span>' + escapeHtml(d.when) + ' (' + escapeHtml(d.timezone) + ')</span>' +
+            '<strong>' + escapeHtml(d.service) + (d.staff ? ' with ' + escapeHtml(d.staff) : '') + '</strong><span>' + escapeHtml(d.when) + ' (' + escapeHtml(d.timezone) + ')</span>' +
             '<p class="pfx-bk-muted">' + (d.status === 'pending' ? 'We will confirm by email shortly.' : 'A confirmation and calendar invite are on their way to ' + escapeHtml(bk.form.email) + '.') + '</p>' +
             '<a href="' + escapeAttr(d.manage_url) + '" target="_blank" rel="noopener" class="pfx-bk-link">Manage or cancel</a></div>');
         bk.form = null;
     }
 
-    function maybeOfferBooking(text) {
-        if (!config.booking || !/\b(book|booking|appointments?|schedule|reserve|reservation|slots?|availability)\b/i.test(text)) return;
-        const wrap = document.getElementById('pfx-messages');
-        if (!wrap) return;
-        setTimeout(function () {
+    function addBookingChip(fromAi) {
+        if (!config || !config.booking || bk.chipTimer) return;
+        bk.chipTimer = setTimeout(function () {
+            bk.chipTimer = null;
+            const wrap = document.getElementById('pfx-messages');
+            if (!wrap || (wrap.lastElementChild && wrap.lastElementChild.classList.contains('pfx-bk-chip'))) return;
             const b = document.createElement('button');
             b.type = 'button';
-            b.className = 'pfx-chip';
+            b.className = 'pfx-chip pfx-bk-chip';
             b.style.alignSelf = 'flex-start';
             b.textContent = '📅 ' + config.booking.label;
-            b.onclick = openBooking;
+            b.onclick = function () { bk.fromAi = true; openBooking(); };
             wrap.appendChild(b);
             wrap.scrollTop = wrap.scrollHeight;
-        }, 1500);
+        }, 1200);
+    }
+
+    function maybeOfferBooking(text) {
+        if (config.booking && /\b(book|booking|appointments?|schedule|reserve|reservation|slots?|availability)\b/i.test(text)) addBookingChip();
     }
 
     // ── Proactive messaging ───────────────────────────────────────────────────

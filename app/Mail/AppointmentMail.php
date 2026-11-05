@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-/** One mailable for every booking email. $kind: booked, confirmed, cancelled, reminder, owner_new, owner_cancelled. */
+/** One mailable for every booking email. $kind: booked, confirmed, cancelled, reminder, rescheduled, owner_new, owner_cancelled, owner_rescheduled. */
 class AppointmentMail extends Mailable
 {
     use Queueable, SerializesModels;
@@ -33,6 +33,8 @@ class AppointmentMail extends Mailable
             'reminder'        => "Reminder: {$a->service_name}, {$when}",
             'owner_new'       => "New booking: {$a->name}, {$a->service_name}, {$when}",
             'owner_cancelled' => "Booking cancelled by {$a->name}: {$when}",
+            'rescheduled'       => "Booking moved: {$a->service_name}, now {$when}",
+            'owner_rescheduled' => "{$a->name} moved their booking to {$when}",
         };
 
         return new Envelope(subject: $subject, replyTo: $this->forOwner() ? [$a->email] : []);

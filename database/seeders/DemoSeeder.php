@@ -239,6 +239,14 @@ class DemoSeeder extends Seeder
                 ['id' => 'followup', 'name' => 'Follow-up call', 'duration' => 15, 'price' => '£15', 'description' => 'Phone or video'],
             ],
             'hours' => ['mon' => $weekday, 'tue' => $weekday, 'wed' => $weekday, 'thu' => $weekday, 'fri' => [['09:00', '15:00']], 'sat' => [['10:00', '13:00']], 'sun' => []],
+            'staff' => [
+                ['id' => 'priya', 'name' => 'Dr Priya Shah', 'email' => null, 'services' => [], 'days' => []],
+                ['id' => 'tom', 'name' => 'Tom Reed', 'email' => null, 'services' => ['physio', 'followup'], 'days' => ['mon', 'tue', 'wed', 'thu']],
+            ],
+            'questions' => [
+                ['id' => 'first', 'label' => 'Is this your first visit?', 'type' => 'select', 'options' => 'Yes, No', 'required' => true],
+            ],
+            'allow_reschedule' => true, 'cancel_notice' => 12, 'ai_booking' => true,
         ]]);
         if (! \App\Models\Appointment::where('widget_id', $widget1->id)->exists()) {
             $tz = 'Europe/London';

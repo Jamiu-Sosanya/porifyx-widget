@@ -37,6 +37,9 @@ Route::get('/contact', [SiteController::class, 'contact'])->name('contact');
 Route::post('/contact', [SiteController::class, 'sendContact'])->middleware('throttle:5,1')->name('contact.send');
 Route::get('/appointments/manage/{token}', [\App\Http\Controllers\AppointmentController::class, 'manage'])->name('appointments.manage');
 Route::post('/appointments/manage/{token}/cancel', [\App\Http\Controllers\AppointmentController::class, 'cancel'])->middleware('throttle:10,1')->name('appointments.cancel');
+Route::post('/appointments/manage/{token}/reschedule', [\App\Http\Controllers\AppointmentController::class, 'visitorReschedule'])->middleware('throttle:10,1')->name('appointments.reschedule.visitor');
+Route::get('/appointments/manage/{token}/pay', [\App\Http\Controllers\AppointmentController::class, 'pay'])->middleware('throttle:10,1')->name('appointments.pay');
+Route::get('/appointments/manage/{token}/paid', [\App\Http\Controllers\AppointmentController::class, 'paid'])->name('appointments.paid');
 
 // Admin login (separate from user login, IP-restricted)
 Route::middleware('admin.ip')->group(function () {
@@ -92,6 +95,15 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/appointments/{appointment}', [\App\Http\Controllers\AppointmentController::class, 'update'])->name('appointments.update');
         Route::get('/widgets/{widget}/booking', [\App\Http\Controllers\AppointmentController::class, 'settings'])->name('widgets.booking');
         Route::put('/widgets/{widget}/booking', [\App\Http\Controllers\AppointmentController::class, 'saveSettings'])->name('widgets.booking.update');
+        Route::post('/appointments', [\App\Http\Controllers\AppointmentController::class, 'store'])->name('appointments.store');
+        Route::patch('/appointments/{appointment}/reschedule', [\App\Http\Controllers\AppointmentController::class, 'reschedule'])->name('appointments.reschedule');
+        Route::get('/widgets/{widget}/booking/calendar/{provider}', [\App\Http\Controllers\BookingIntegrationController::class, 'connectCalendar'])->name('widgets.booking.calendar.connect');
+        Route::put('/widgets/{widget}/booking/calendar/{connection}', [\App\Http\Controllers\BookingIntegrationController::class, 'updateCalendar'])->name('widgets.booking.calendar.update');
+        Route::delete('/widgets/{widget}/booking/calendar/{connection}', [\App\Http\Controllers\BookingIntegrationController::class, 'disconnectCalendar'])->name('widgets.booking.calendar.disconnect');
+        Route::post('/widgets/{widget}/booking/crm', [\App\Http\Controllers\BookingIntegrationController::class, 'saveCrm'])->name('widgets.booking.crm.save');
+        Route::patch('/widgets/{widget}/booking/crm/{connection}', [\App\Http\Controllers\BookingIntegrationController::class, 'toggleCrm'])->name('widgets.booking.crm.toggle');
+        Route::delete('/widgets/{widget}/booking/crm/{connection}', [\App\Http\Controllers\BookingIntegrationController::class, 'deleteCrm'])->name('widgets.booking.crm.delete');
+        Route::get('/calendar/callback/{provider}', [\App\Http\Controllers\BookingIntegrationController::class, 'calendarCallback'])->name('calendar.callback');
         Route::post('/widgets/{widget}/duplicate', [WidgetController::class, 'duplicate'])->name('widgets.duplicate');
         Route::post('/widgets/{widget}/toggle', [WidgetController::class, 'toggleActive'])->name('widgets.toggle');
         Route::post('/widgets/{widget}/regenerate-token', [WidgetController::class, 'regenerateToken'])->name('widgets.regenerateToken');

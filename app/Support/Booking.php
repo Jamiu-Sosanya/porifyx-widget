@@ -4,52 +4,85 @@ namespace App\Support;
 
 use App\Models\Appointment;
 use App\Models\Widget;
+use App\Services\CalendarService;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Crypt;
 
 /**
- * Booking rules for one widget: settings, open days and free time slots.
+ * Booking rules for one widget: settings, open days, staff and free time slots.
  * Times are stored in UTC and worked out in the business's timezone.
  */
 class Booking
 {
     public const DAYS = ['mon' => 'Monday', 'tue' => 'Tuesday', 'wed' => 'Wednesday', 'thu' => 'Thursday', 'fri' => 'Friday', 'sat' => 'Saturday', 'sun' => 'Sunday'];
 
+    public const QUESTION_TYPES = ['text' => 'Short answer', 'textarea' => 'Long answer', 'select' => 'Dropdown', 'checkbox' => 'Tick box'];
+
     public static function defaults(): array
     {
         $weekday = [['09:00', '17:00']];
 
         return [
-            'enabled'          => false,
-            'business_name'    => '',
-            'button_label'     => 'Book an appointment',
-            'timezone'         => config('app.timezone', 'UTC'),
-            'slot_step'        => 30,   // minutes between possible start times
-            'buffer'           => 0,    // minutes kept free after each appointment
-            'min_notice'       => 2,    // hours
-            'max_days_ahead'   => 30,
-            'daily_limit'      => 0,    // 0 = no limit
-            'auto_confirm'     => true,
-            'require_phone'    => false,
-            'reminder_hours'   => 24,
-            'services'         => [['id' => 'consult', 'name' => 'Consultation', 'duration' => 30, 'price' => '', 'description' => '']],
-            'hours'            => ['mon' => $weekday, 'tue' => $weekday, 'wed' => $weekday, 'thu' => $weekday, 'fri' => $weekday, 'sat' => [], 'sun' => []],
-            'blocked_dates'    => [],
+            'enabled'        => false,
+            'business_name'  => '',
+            'button_label'   => 'Book an appointment',
+            'timezone'       => config('app.timezone', 'UTC'),
+            'slot_step'      => 30,   // minutes between possible start times
+            'buffer'         => 0,    // minutes kept free after each appointment
+            'min_notice'     => 2,    // hours
+            'max_days_ahead' => 30,
+            'daily_limit'    => 0,    // 0 = no limit
+            'auto_confirm'   => true,
+            'require_phone'  => false,
+            'reminder_hours' => 24,
+            'allow_reschedule' => true,
+            'cancel_notice'  => 0,    // hours before start after which visitors can no longer cancel/reschedule
+            'ai_booking'     => true, // let the AI offer the booking button in conversation
+            // charge: amount in major units (e.g. 40 = 40.00), 0 = free
+            'services'       => [['id' => 'consult', 'name' => 'Consultation', 'duration' => 30, 'price' => '', 'description' => '', 'charge' => 0]],
+            // staff: [{id, name, email, services: [ids] (empty = all), days: [mon..] (empty = every open day)}]
+            'staff'          => [],
+            // questions: [{id, label, type, options: "a, b", required}]
+            'questions'      => [],
+            'payments'       => ['enabled' => false, 'currency' => 'gbp', 'secret' => null, 'refund_on_cancel' => true],
+            'hours'          => ['mon' => $weekday, 'tue' => $weekday, 'wed' => $weekday, 'thu' => $weekday, 'fri' => $weekday, 'sat' => [], 'sun' => []],
+            'blocked_dates'  => [],
         ];
     }
 
     public static function settings(Widget $widget): array
     {
         $s = array_replace(self::defaults(), (array) $widget->booking);
+        $s['payments'] = array_replace(self::defaults()['payments'], (array) $s['payments']);
         $s['business_name'] = $s['business_name'] ?: $widget->name;
 
         return $s;
     }
 
-    public static function service(array $settings, string $id): ?array
+    /** Stripe secret key for this widget, decrypted. */
+    public static function stripeSecret(array $s): ?string
     {
-        foreach ($settings['services'] as $service) {
-            if ((string) $service['id'] === $id) {
+        if (empty($s['payments']['enabled']) || empty($s['payments']['secret'])) {
+            return null;
+        }
+        try {
+            return Crypt::decryptString($s['payments']['secret']);
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /** Amount to charge for a service in minor units (0 when payments are off). */
+    public static function chargeFor(array $s, array $service): int
+    {
+        return self::stripeSecret($s) ? (int) round(((float) ($service['charge'] ?? 0)) * 100) : 0;
+    }
+
+    public static function service(array $s, ?string $id): ?array
+    {
+        foreach ($s['services'] as $service) {
+            if ((string) $service['id'] === (string) $id) {
                 return $service;
             }
         }
@@ -57,11 +90,21 @@ class Booking
         return null;
     }
 
+    /** Staff who can deliver a service. Empty array means the business has no staff list. */
+    public static function staffFor(array $s, array $service, ?string $staffId = null): array
+    {
+        $staff = array_values(array_filter($s['staff'], fn ($m) => empty($m['services']) || in_array($service['id'], (array) $m['services'], true)));
+        if ($staffId && $staffId !== 'any') {
+            $staff = array_values(array_filter($staff, fn ($m) => (string) $m['id'] === $staffId));
+        }
+
+        return $staff;
+    }
+
     /** Dates (Y-m-d, business timezone) inside the booking window that have opening hours. */
     public static function openDates(array $s): array
     {
-        $tz = $s['timezone'];
-        $day = CarbonImmutable::now($tz)->startOfDay();
+        $day = CarbonImmutable::now($s['timezone'])->startOfDay();
         $dates = [];
         for ($i = 0; $i <= (int) $s['max_days_ahead']; $i++, $day = $day->addDay()) {
             if (self::windows($s, $day) !== []) {
@@ -78,9 +121,8 @@ class Booking
         if (in_array($day->toDateString(), (array) $s['blocked_dates'], true)) {
             return [];
         }
-        $key = strtolower($day->format('D'));
         $out = [];
-        foreach ((array) ($s['hours'][$key] ?? []) as [$from, $to]) {
+        foreach ((array) ($s['hours'][strtolower($day->format('D'))] ?? []) as [$from, $to]) {
             $start = $day->setTimeFromTimeString($from);
             $end = $day->setTimeFromTimeString($to);
             if ($end > $start) {
@@ -92,11 +134,36 @@ class Booking
     }
 
     /**
-     * Free start times for one service on one date.
+     * Busy intervals per resource for a time range: bookings plus connected calendars.
      *
-     * @return array<int, array{start: string, label: string}> start is UTC ISO-8601
+     * @return array<string, array<int, array{0: Carbon, 1: Carbon}>> keyed by staff id ('' when no staff list)
      */
-    public static function slots(Widget $widget, array $service, string $date, ?int $ignoreId = null): array
+    private static function busy(Widget $widget, array $resources, CarbonImmutable $from, CarbonImmutable $to, ?int $ignoreId): array
+    {
+        $appointments = Appointment::where('widget_id', $widget->id)->holdingSlot()
+            ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
+            ->where('starts_at', '<', $to->utc())->where('ends_at', '>', $from->utc())
+            ->get(['staff_id', 'starts_at', 'ends_at']);
+
+        $calendars = app(CalendarService::class);
+        $shared = $calendars->busyFor($widget, null, $from, $to);
+        $busy = [];
+        foreach ($resources as $key) {
+            $own = $appointments->filter(fn ($a) => $key === '' || (string) $a->staff_id === $key)
+                ->map(fn ($a) => [Carbon::parse($a->starts_at), Carbon::parse($a->ends_at)])->values()->all();
+            $busy[$key] = array_merge($own, $shared, $key === '' ? [] : $calendars->busyFor($widget, $key, $from, $to));
+        }
+
+        return $busy;
+    }
+
+    /**
+     * Free start times for one service on one date.
+     * $staffId: a staff id, 'any' / null for whoever is free.
+     *
+     * @return array<int, array{start: string, label: string, staff: array<int, string>}> start is UTC ISO-8601
+     */
+    public static function slots(Widget $widget, array $service, string $date, ?string $staffId = null, ?int $ignoreId = null): array
     {
         $s = self::settings($widget);
         $tz = $s['timezone'];
@@ -117,20 +184,27 @@ class Booking
             return [];
         }
 
-        $taken = Appointment::where('widget_id', $widget->id)
-            ->whereIn('status', Appointment::ACTIVE)
-            ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
-            ->where('starts_at', '<', $day->addDay()->addHours(24)->utc())
-            ->where('ends_at', '>', $day->subHours(24)->utc())
-            ->get(['starts_at', 'ends_at']);
+        // Resources: each eligible staff member working that day, or the business as one diary.
+        $dayKey = strtolower($day->format('D'));
+        $resources = $s['staff'] === []
+            ? ['' => null]
+            : collect(self::staffFor($s, $service, $staffId))
+                ->filter(fn ($m) => empty($m['days']) || in_array($dayKey, (array) $m['days'], true))
+                ->keyBy(fn ($m) => (string) $m['id'])->all();
+        if ($resources === []) {
+            return [];
+        }
 
         if ($s['daily_limit'] > 0) {
-            $sameDay = $taken->filter(fn ($a) => $a->starts_at->copy()->setTimezone($tz)->toDateString() === $date)->count();
-            if ($sameDay >= $s['daily_limit']) {
+            $count = Appointment::where('widget_id', $widget->id)->holdingSlot()
+                ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
+                ->whereBetween('starts_at', [$day->utc(), $day->addDay()->utc()])->count();
+            if ($count >= $s['daily_limit']) {
                 return [];
             }
         }
 
+        $busy = self::busy($widget, array_map('strval', array_keys($resources)), $day->subDay(), $day->addDays(2), $ignoreId);
         $duration = max(5, (int) $service['duration']);
         $step = max(5, (int) $s['slot_step']);
         $buffer = max(0, (int) $s['buffer']);
@@ -139,14 +213,25 @@ class Booking
 
         foreach ($windows as [$open, $close]) {
             for ($start = $open; $start->addMinutes($duration) <= $close; $start = $start->addMinutes($step)) {
-                $end = $start->addMinutes($duration);
                 if ($start < $earliest) {
                     continue;
                 }
-                $clash = $taken->contains(fn ($a) => $start < Carbon::parse($a->ends_at)->addMinutes($buffer)
-                    && $end->addMinutes($buffer) > Carbon::parse($a->starts_at));
-                if (! $clash) {
-                    $slots[] = ['start' => $start->utc()->toIso8601ZuluString(), 'label' => $start->format('g:i A')];
+                $end = $start->addMinutes($duration);
+                $free = [];
+                foreach ($busy as $key => $intervals) {
+                    $clash = false;
+                    foreach ($intervals as [$b0, $b1]) {
+                        if ($start < $b1->copy()->addMinutes($buffer) && $end->addMinutes($buffer) > $b0) {
+                            $clash = true;
+                            break;
+                        }
+                    }
+                    if (! $clash) {
+                        $free[] = (string) $key;
+                    }
+                }
+                if ($free) {
+                    $slots[] = ['start' => $start->utc()->toIso8601ZuluString(), 'label' => $start->format('g:i A'), 'staff' => $free];
                 }
             }
         }
@@ -154,12 +239,37 @@ class Booking
         return $slots;
     }
 
-    /** True when the exact start time is still free for this service. */
-    public static function isFree(Widget $widget, array $service, CarbonImmutable $startUtc, ?int $ignoreId = null): bool
+    /**
+     * Returns the resource that can take this exact start time, or false.
+     * Resource is a staff array, or null when the business has no staff list.
+     * With "any", picks the staff member with the fewest bookings that day.
+     */
+    public static function claim(Widget $widget, array $service, CarbonImmutable $startUtc, ?string $staffId = null, ?int $ignoreId = null): array|null|false
     {
-        $date = $startUtc->setTimezone(self::settings($widget)['timezone'])->toDateString();
+        $s = self::settings($widget);
+        $date = $startUtc->setTimezone($s['timezone'])->toDateString();
+        $slot = collect(self::slots($widget, $service, $date, $staffId, $ignoreId))
+            ->firstWhere('start', $startUtc->utc()->toIso8601ZuluString());
+        if (! $slot) {
+            return false;
+        }
+        if ($s['staff'] === []) {
+            return null;
+        }
 
-        return collect(self::slots($widget, $service, $date, $ignoreId))
-            ->contains(fn ($slot) => $slot['start'] === $startUtc->utc()->toIso8601ZuluString());
+        $load = Appointment::where('widget_id', $widget->id)->holdingSlot()
+            ->whereIn('staff_id', $slot['staff'])
+            ->whereBetween('starts_at', [$startUtc->startOfDay(), $startUtc->endOfDay()])
+            ->selectRaw('staff_id, count(*) as n')->groupBy('staff_id')->pluck('n', 'staff_id');
+        $pick = collect($slot['staff'])->sortBy(fn ($id) => $load[$id] ?? 0)->first();
+
+        return collect($s['staff'])->first(fn ($m) => (string) $m['id'] === $pick) ?? false;
+    }
+
+    /** True when visitors may still change this booking themselves. */
+    public static function visitorCanChange(Appointment $a, array $s): bool
+    {
+        return in_array($a->status, Appointment::ACTIVE, true)
+            && $a->starts_at->isAfter(now()->addHours((int) $s['cancel_notice']));
     }
 }

@@ -33,6 +33,7 @@ class DemoMode
         'api/widget/*/proactive',
         'api/widget/*/booking',
         'appointments/manage/*/cancel',
+        'appointments/manage/*/reschedule',
     ];
 
     public function handle(Request $request, Closure $next): Response

@@ -133,6 +133,16 @@ class Widget extends Model
         return $this->hasMany(Appointment::class);
     }
 
+    public function calendarConnections(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CalendarConnection::class);
+    }
+
+    public function crmConnections(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CrmConnection::class);
+    }
+
     /** Booking settings merged over defaults (see App\Support\Booking). */
     public function bookingSettings(): array
     {

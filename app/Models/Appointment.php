@@ -20,7 +20,8 @@ class Appointment extends Model
     public const ACTIVE = ['pending', 'confirmed'];
 
     protected $fillable = [
-        'widget_id', 'user_id', 'conversation_id', 'lead_id', 'service_id', 'service_name', 'duration',
+        'widget_id', 'user_id', 'conversation_id', 'lead_id', 'service_id', 'staff_id', 'staff_name', 'service_name', 'duration', 'answers',
+        'payment_status', 'amount', 'currency', 'payment_ref', 'external_refs', 'source',
         'name', 'email', 'phone', 'notes', 'starts_at', 'ends_at', 'visitor_timezone', 'status', 'token', 'reminder_sent_at',
     ];
 
@@ -28,7 +29,31 @@ class Appointment extends Model
         'starts_at'        => 'datetime',
         'ends_at'          => 'datetime',
         'reminder_sent_at' => 'datetime',
+        'answers'          => 'array',
+        'external_refs'    => 'array',
     ];
+
+    /** Minutes an unpaid booking holds its slot while the visitor pays. */
+    public const PAYMENT_HOLD = 30;
+
+    /** Bookings that currently block their time slot. */
+    public function scopeHoldingSlot($q)
+    {
+        return $q->whereIn('status', self::ACTIVE)->where(fn ($w) => $w->where('payment_status', '!=', 'unpaid')
+            ->orWhere('created_at', '>', now()->subMinutes(self::PAYMENT_HOLD)));
+    }
+
+    public function setRef(string $key, mixed $value): void
+    {
+        $refs = $this->external_refs ?? [];
+        if ($value === null) { unset($refs[$key]); } else { $refs[$key] = $value; }
+        $this->forceFill(['external_refs' => $refs])->saveQuietly();
+    }
+
+    public function priceLabel(): ?string
+    {
+        return $this->amount ? strtoupper($this->currency) . ' ' . number_format($this->amount / 100, 2) : null;
+    }
 
     protected static function booted(): void
     {

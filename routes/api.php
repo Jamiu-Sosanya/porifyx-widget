@@ -91,4 +91,15 @@ Route::prefix('webhooks')->group(function () {
 });
 
 // Health check (no auth required)
+// REST API for CRMs / Zapier / Make (API key auth)
+Route::prefix('v1')->middleware(\App\Http\Middleware\AuthenticateApiKey::class)->group(function () {
+    Route::get('/widgets/{widget}/booking', [\App\Http\Controllers\Api\V1\AppointmentApiController::class, 'services']);
+    Route::get('/widgets/{widget}/availability', [\App\Http\Controllers\Api\V1\AppointmentApiController::class, 'availability']);
+    Route::get('/appointments', [\App\Http\Controllers\Api\V1\AppointmentApiController::class, 'index']);
+    Route::post('/appointments', [\App\Http\Controllers\Api\V1\AppointmentApiController::class, 'store']);
+    Route::get('/appointments/{id}', [\App\Http\Controllers\Api\V1\AppointmentApiController::class, 'show'])->whereNumber('id');
+    Route::patch('/appointments/{id}', [\App\Http\Controllers\Api\V1\AppointmentApiController::class, 'update'])->whereNumber('id');
+    Route::delete('/appointments/{id}', [\App\Http\Controllers\Api\V1\AppointmentApiController::class, 'destroy'])->whereNumber('id');
+});
+
 Route::get('/health', [\App\Http\Controllers\PwaController::class, 'health']);

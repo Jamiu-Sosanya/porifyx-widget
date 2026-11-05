@@ -10,6 +10,8 @@
         'reminder'        => 'See you soon',
         'owner_new'       => 'New booking',
         'owner_cancelled' => 'A booking was cancelled',
+        'rescheduled'       => 'Your booking has moved',
+        'owner_rescheduled' => 'A booking was moved',
     ][$kind];
     $lead = [
         'booked'          => $a->status === 'pending' ? 'Thanks, ' . $a->name . '. ' . $s['business_name'] . ' will confirm your time shortly.' : 'Thanks, ' . $a->name . '. The details are below and a calendar invite is attached.',
@@ -18,6 +20,8 @@
         'reminder'        => 'This is a reminder of your appointment with ' . $s['business_name'] . '.',
         'owner_new'       => $a->name . ' booked through ' . $a->widget->name . '.' . ($a->status === 'pending' ? ' It is waiting for you to confirm it.' : ''),
         'owner_cancelled' => $a->name . ' cancelled their appointment. The time is free again.',
+        'rescheduled'       => 'Your appointment with ' . $s['business_name'] . ' now has a new time. An updated calendar invite is attached.',
+        'owner_rescheduled' => $a->name . ' moved their appointment to the new time below.',
     ][$kind];
 @endphp
 @section('subject', $heading)
@@ -31,12 +35,15 @@
 <div class="card-body">
     <table class="data-table">
         <tr class="data-row"><td class="data-label">Service</td><td class="data-value">{{ $a->service_name }} ({{ $a->duration }} min)</td></tr>
+        @if($a->staff_name)<tr class="data-row"><td class="data-label">With</td><td class="data-value">{{ $a->staff_name }}</td></tr>@endif
+        @if($a->amount)<tr class="data-row"><td class="data-label">Payment</td><td class="data-value">{{ $a->priceLabel() }} ({{ $a->payment_status }})</td></tr>@endif
         <tr class="data-row"><td class="data-label">When</td><td class="data-value">{{ $a->localStart()->format('l j F Y, g:i A') }} ({{ $s['timezone'] }})</td></tr>
         @if($owner)
         <tr class="data-row"><td class="data-label">Name</td><td class="data-value">{{ $a->name }}</td></tr>
         <tr class="data-row"><td class="data-label">Email</td><td class="data-value">{{ $a->email }}</td></tr>
         @if($a->phone)<tr class="data-row"><td class="data-label">Phone</td><td class="data-value">{{ $a->phone }}</td></tr>@endif
         @if($a->notes)<tr class="data-row"><td class="data-label">Notes</td><td class="data-value">{{ $a->notes }}</td></tr>@endif
+        @foreach($a->answers ?? [] as $q => $v)<tr class="data-row"><td class="data-label">{{ $q }}</td><td class="data-value">{{ is_bool($v) ? ($v ? 'Yes' : 'No') : $v }}</td></tr>@endforeach
         @else
         <tr class="data-row"><td class="data-label">With</td><td class="data-value">{{ $s['business_name'] }}</td></tr>
         @endif

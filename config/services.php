@@ -35,6 +35,17 @@ return [
         ],
     ],
 
+    // Calendar sync for bookings (OAuth apps). Redirect URI: {APP_URL}/calendar/callback/google or /microsoft
+    'google' => [
+        'client_id'     => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+    ],
+
+    'microsoft' => [
+        'client_id'     => env('MICROSOFT_CLIENT_ID'),
+        'client_secret' => env('MICROSOFT_CLIENT_SECRET'),
+    ],
+
     'vapid' => [
         'public_key'  => env('VAPID_PUBLIC_KEY'),
         'private_key' => env('VAPID_PRIVATE_KEY'),
