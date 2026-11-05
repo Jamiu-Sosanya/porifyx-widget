@@ -187,6 +187,12 @@
     // Replay any calls that were queued before the script loaded
     _queue.forEach(function (args) { window.pfx.apply(null, args); });
 
+    // Script-tag install: <script src=".../widget.js" data-widget-id="UUID" async></script>
+    const _cs = document.currentScript;
+    if (_cs && _cs.getAttribute("data-widget-id") && !_queue.some(function (a) { return a[0] === "init"; })) {
+        init({ widgetId: _cs.getAttribute("data-widget-id"), apiBase: _cs.getAttribute("data-api-base") || new URL(_cs.src).origin + "/api/widget" });
+    }
+
     // ── Initialization ────────────────────────────────────────────────────────
     async function init(options) {
         options = options || {};

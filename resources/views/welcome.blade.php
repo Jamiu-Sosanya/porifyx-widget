@@ -287,7 +287,7 @@
     </ol>
     <div class="mt-4 rounded-2xl bg-[#0b1324] ring-1 ring-white/10 p-5 sm:p-6 min-w-0">
         <p class="text-xs font-semibold text-slate-400 mb-3">Your entire installation:</p>
-        <code class="block text-[13px] sm:text-sm text-accent-300 break-all leading-6">&lt;script src="{{ url('widget.js') }}" data-widget="YOUR-ID" async&gt;&lt;/script&gt;</code>
+        <code class="block text-[13px] sm:text-sm text-accent-300 break-all leading-6">&lt;script src="{{ url('widget.js') }}" data-widget-id="YOUR-WIDGET-ID" async&gt;&lt;/script&gt;</code>
     </div>
 </section>
 
