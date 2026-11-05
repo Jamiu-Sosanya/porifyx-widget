@@ -31,7 +31,11 @@
         .pfx-dot { animation: pfxDot 1.2s infinite; }
         .pfx-dot:nth-child(2) { animation-delay: .15s; } .pfx-dot:nth-child(3) { animation-delay: .3s; }
         @keyframes pfxDot { 0%, 60%, 100% { opacity: .3; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
-        @media (prefers-reduced-motion: reduce) { .pfx-rise, .pfx-dot { animation: none; } }
+        .pfx-marquee { mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+        .pfx-marquee-track { animation: pfxMarquee 45s linear infinite; }
+        .pfx-marquee:hover .pfx-marquee-track { animation-play-state: paused; }
+        @keyframes pfxMarquee { to { transform: translateX(calc(-50% - .5rem)); } }
+        @media (prefers-reduced-motion: reduce) { .pfx-rise, .pfx-dot, .pfx-marquee-track { animation: none; } .pfx-marquee-track { flex-wrap: wrap; width: auto; justify-content: center; } }
     </style>
 </head>
 @php
@@ -164,13 +168,32 @@
 
 {{-- ================= WORKS WITH + STATS ================= --}}
 <section class="border-y border-slate-200 bg-white dark:border-white/10 dark:bg-white/[0.02]">
-    <div class="max-w-6xl mx-auto px-5 py-8 flex flex-col md:flex-row md:items-center gap-4 md:gap-10">
-        <p class="text-xs font-bold uppercase tracking-widest text-slate-400 shrink-0">Works on any site</p>
-        <div class="flex flex-wrap gap-x-8 gap-y-3 text-base font-bold text-slate-400 dark:text-slate-500">
-            @foreach(['WordPress', 'Shopify', 'Webflow', 'Wix', 'Squarespace', 'React', 'Plain HTML'] as $p)<span>{{ $p }}</span>@endforeach
+    @php
+        $platforms = ['wordpress' => 'WordPress', 'woocommerce' => 'WooCommerce', 'shopify' => 'Shopify', 'webflow' => 'Webflow', 'wix' => 'Wix',
+            'squarespace' => 'Squarespace', 'framer' => 'Framer', 'react' => 'React', 'nextdotjs' => 'Next.js', 'vuedotjs' => 'Vue', 'nuxt' => 'Nuxt',
+            'angular' => 'Angular', 'svelte' => 'Svelte', 'laravel' => 'Laravel', 'bigcommerce' => 'BigCommerce', 'prestashop' => 'PrestaShop',
+            'drupal' => 'Drupal', 'joomla' => 'Joomla', 'ghost' => 'Ghost', 'hubspot' => 'HubSpot', 'gatsby' => 'Gatsby', 'html5' => 'HTML'];
+        $monoLogos = ['nextdotjs', 'framer', 'wix', 'ghost', 'squarespace', 'bigcommerce'];
+    @endphp
+    <div class="max-w-6xl mx-auto px-5 pt-8 pb-2">
+        <p class="text-xs font-bold uppercase tracking-widest text-slate-400 text-center">Works on any site — {{ count($platforms) }}+ platforms and frameworks</p>
+    </div>
+    {{-- Infinite logo marquee: list rendered twice, track slides -50%. Pauses on hover; static for reduced motion. --}}
+    <div class="pfx-marquee relative overflow-hidden py-6" role="list" aria-label="Supported platforms">
+        <div class="pfx-marquee-track flex w-max gap-4">
+            @foreach([false, true] as $copy)
+                @foreach($platforms as $slug => $label)
+                <div role="listitem" @if($copy) aria-hidden="true" @endif
+                     class="group flex items-center gap-2.5 shrink-0 rounded-2xl px-5 py-3 bg-slate-50 border border-slate-200 dark:bg-white/[0.04] dark:border-white/10">
+                    <img src="{{ asset('images/platforms/' . $slug . '.svg') }}" alt="" height="24" loading="lazy"
+                         class="h-6 w-auto max-w-[48px] transition group-hover:scale-110 {{ in_array($slug, $monoLogos) ? 'dark:invert' : '' }}">
+                    <span class="text-sm font-semibold text-slate-700 group-hover:text-slate-900 dark:text-slate-300 dark:group-hover:text-white whitespace-nowrap">{{ $label }}</span>
+                </div>
+                @endforeach
+            @endforeach
         </div>
     </div>
-    <div class="max-w-6xl mx-auto px-5 pb-10 grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="max-w-6xl mx-auto px-5 pt-4 pb-10 grid grid-cols-2 md:grid-cols-4 gap-4">
         @foreach([['24/7', 'Answers without extra hires'], ['5', 'AI providers, one switch'], ['10', 'Channels, one inbox'], ['1 line', 'Of code to go live']] as [$big, $small])
         <div class="rounded-2xl bg-slate-50 dark:bg-white/[0.03] p-5"><p class="text-2xl sm:text-3xl font-extrabold tracking-tight text-brand-600 dark:text-brand-400">{{ $big }}</p><p class="text-sm mt-1 {{ $muted }}">{{ $small }}</p></div>
         @endforeach
