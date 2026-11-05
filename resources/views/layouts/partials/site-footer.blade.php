@@ -21,13 +21,13 @@
                 'Product'   => [['Features', $home . '#features'], ['Use cases', $home . '#use-cases'], ['Pricing', $home . '#pricing'], ['Live demo', $home . '#demo'], ['Changelog', route('changelog')], ['Roadmap', route('roadmap')]],
                 'Resources' => [['Documentation', route('documentation')], ['API reference', route('api.reference')], ['Blog', route('blog')], ['System status', route('status')]],
                 'Company'   => [['About', route('about')], ['Careers', route('careers')], ['Talk to sales', route('contact', ['topic' => 'sales'])], ['Contact', route('contact')]],
-                'Legal'     => [['Privacy policy', route('privacy')], ['Terms of service', route('terms')]],
+                'Legal'     => [['Privacy policy', route('privacy')], ['Terms of service', route('terms')], ['Cookie settings', null]],
             ] as $heading => $links)
             <nav aria-label="{{ $heading }}">
                 <p class="text-sm font-bold">{{ $heading }}</p>
                 <ul class="mt-4 space-y-3 text-sm {{ $muted }}">
                     @foreach($links as [$label, $href])
-                    <li><a href="{{ $href }}" class="hover:text-brand-600 dark:hover:text-brand-300">{{ $label }}</a></li>
+                    <li>@if($href)<a href="{{ $href }}" class="hover:text-brand-600 dark:hover:text-brand-300">{{ $label }}</a>@else<button type="button" onclick="window.dispatchEvent(new Event('pfx-consent-open'))" class="hover:text-brand-600 dark:hover:text-brand-300">{{ $label }}</button>@endif</li>
                     @endforeach
                 </ul>
             </nav>

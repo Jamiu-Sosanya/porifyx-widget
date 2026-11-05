@@ -191,6 +191,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/stop-impersonating', [AdminController::class, 'stopImpersonating'])->name('stopImpersonating');
         Route::get('/plans', [AdminController::class, 'plans'])->name('plans');
         Route::get('/inbox', [SiteController::class, 'inbox'])->name('inbox');
+        Route::get('/cookie-consent', [\App\Http\Controllers\Admin\ConsentController::class, 'edit'])->name('consent');
+        Route::put('/cookie-consent', [\App\Http\Controllers\Admin\ConsentController::class, 'update'])->name('consent.update');
         Route::patch('/inbox/{contactRequest}', [SiteController::class, 'toggleHandled'])->name('inbox.toggle');
         Route::post('/plans', [AdminController::class, 'storePlan'])->name('plans.store');
         Route::put('/plans/{plan}', [AdminController::class, 'updatePlan'])->name('plans.update');
