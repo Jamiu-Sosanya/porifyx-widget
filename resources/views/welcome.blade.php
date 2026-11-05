@@ -33,7 +33,6 @@
         @keyframes pfxDot { 0%, 60%, 100% { opacity: .3; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
         .pfx-marquee { mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
         .pfx-marquee-track { animation: pfxMarquee 45s linear infinite; }
-        .pfx-marquee:hover .pfx-marquee-track { animation-play-state: paused; }
         @keyframes pfxMarquee { to { transform: translateX(calc(-50% - .5rem)); } }
         @media (prefers-reduced-motion: reduce) { .pfx-rise, .pfx-dot, .pfx-marquee-track { animation: none; } .pfx-marquee-track { flex-wrap: wrap; width: auto; justify-content: center; } }
     </style>
