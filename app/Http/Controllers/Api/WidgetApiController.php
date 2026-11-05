@@ -116,6 +116,9 @@ class WidgetApiController extends Controller
                 // A/B Testing
                 'ab_test' => $this->getActiveAbTest($widget, request()->get('fingerprint')),
 
+                // Bookings
+                'booking' => ($b = \App\Support\Booking::settings($widget))['enabled'] ? ['label' => $b['button_label']] : null,
+
                 // Language info
                 'detected_language' => $userLanguage,
             ],

@@ -227,6 +227,40 @@ class DemoSeeder extends Seeder
             );
         }
 
+        // ── Bookings demo ────────────────────────────────────────────────────
+        $weekday = [['09:00', '12:30'], ['13:30', '17:30']];
+        $widget1->update(['booking' => [
+            'enabled' => true, 'business_name' => 'Acme Wellness Clinic', 'button_label' => 'Book an appointment',
+            'timezone' => 'Europe/London', 'slot_step' => 30, 'buffer' => 10, 'min_notice' => 2, 'max_days_ahead' => 30,
+            'daily_limit' => 0, 'auto_confirm' => true, 'require_phone' => false, 'reminder_hours' => 24, 'blocked_dates' => [],
+            'services' => [
+                ['id' => 'consult', 'name' => 'First consultation', 'duration' => 30, 'price' => 'Free', 'description' => 'Talk through what you need'],
+                ['id' => 'physio', 'name' => 'Physiotherapy session', 'duration' => 60, 'price' => '£55', 'description' => 'One-to-one treatment'],
+                ['id' => 'followup', 'name' => 'Follow-up call', 'duration' => 15, 'price' => '£15', 'description' => 'Phone or video'],
+            ],
+            'hours' => ['mon' => $weekday, 'tue' => $weekday, 'wed' => $weekday, 'thu' => $weekday, 'fri' => [['09:00', '15:00']], 'sat' => [['10:00', '13:00']], 'sun' => []],
+        ]]);
+        if (! \App\Models\Appointment::where('widget_id', $widget1->id)->exists()) {
+            $tz = 'Europe/London';
+            foreach ([
+                [0, '15:00', 'physio', 'Sarah Johnson', 'sarah@example.com', 'confirmed', 'Lower back pain after running'],
+                [1, '09:30', 'consult', 'Mike Chen', 'mike@techcorp.io', 'pending', null],
+                [1, '14:00', 'followup', 'Emma Williams', 'emma@startup.co', 'confirmed', null],
+                [3, '10:00', 'physio', 'James Wilson', 'james@biz.net', 'confirmed', 'Shoulder, second session'],
+                [-2, '11:00', 'consult', 'Lisa Davis', 'lisa@agency.com', 'completed', null],
+                [-3, '16:00', 'followup', 'Robert Brown', 'robert@corp.com', 'no_show', null],
+            ] as [$day, $time, $sid, $name, $email, $status, $notes]) {
+                $svc = collect($widget1->fresh()->booking['services'])->firstWhere('id', $sid);
+                $start = \Carbon\Carbon::parse(now($tz)->addDays($day)->toDateString() . ' ' . $time, $tz)->utc();
+                \App\Models\Appointment::create([
+                    'widget_id' => $widget1->id, 'user_id' => $widget1->user_id, 'service_id' => $sid, 'service_name' => $svc['name'],
+                    'duration' => $svc['duration'], 'name' => $name, 'email' => $email, 'notes' => $notes, 'status' => $status,
+                    'lead_id' => \App\Models\Lead::where('email', $email)->value('id'),
+                    'starts_at' => $start, 'ends_at' => $start->copy()->addMinutes($svc['duration']),
+                ]);
+            }
+        }
+
         $this->command->info('Demo accounts created:');
         $this->command->info('  Admin  → admin@demo.com / demo1234');
         $this->command->info('  User   → user@demo.com  / demo1234  (Pro plan, 2 widgets, 8 convs, 5 leads)');

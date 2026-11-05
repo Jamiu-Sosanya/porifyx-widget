@@ -182,6 +182,7 @@
         if (action === 'init') init(options);
         if (action === 'open' && config) { if (!isOpen) toggleChat(); }
         if (action === 'close' && config) { if (isOpen) toggleChat(); }
+        if (action === 'book' && config) openBooking();
     };
 
     // Replay any calls that were queued before the script loaded
@@ -285,9 +286,13 @@
             '</div></div>' +
             '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">' +
             (showHO ? '<button id="pfx-handoff" type="button" style="background:rgba(255,255,255,0.18);border:none;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:600;color:white;cursor:pointer;white-space:nowrap;transition:background 0.2s;">' + hoLabel + '</button>' : '') +
+            (config.booking ? '<button id="pfx-book" type="button" title="' + escapeAttr(config.booking.label) + '" aria-label="' + escapeAttr(config.booking.label) + '" style="background:rgba(255,255,255,0.15);border:none;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:14px;transition:background 0.2s;">📅</button>' : '') +
             '<button id="pfx-theme-toggle" type="button" title="Toggle theme" style="background:rgba(255,255,255,0.15);border:none;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:14px;transition:background 0.2s;">🌙</button>' +
             '<button id="pfx-close" type="button" style="background:rgba(255,255,255,0.15);border:none;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:16px;line-height:1;transition:background 0.2s;">✕</button>' +
             '</div></div>' +
+
+            // ── Booking panel ──
+            '<div id="pfx-booking" class="pfx-bk" style="display:none;"></div>' +
 
             // ── Messages ──
             '<div id="pfx-messages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;"></div>' +
@@ -344,6 +349,9 @@
 
         const ho = document.getElementById('pfx-handoff');
         if (ho) ho.addEventListener('click', requestHandoff);
+
+        const bookBtn = document.getElementById('pfx-book');
+        if (bookBtn) bookBtn.addEventListener('click', openBooking);
 
         const themeBtn = document.getElementById('pfx-theme-toggle');
         if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
@@ -443,6 +451,29 @@
 .pfx-offline-input:focus { border-color:${pri}; }
 .pfx-btn-primary { background:${pri}; color:white; border:none; border-radius:10px; padding:10px 16px; font-size:13px; font-weight:600; cursor:pointer; width:100%; transition:opacity 0.2s; }
 .pfx-btn-primary:hover { opacity:0.85; }
+.pfx-bk { position:absolute; left:0; right:0; bottom:0; top:70px; z-index:5; display:flex; flex-direction:column; background:${t.bg}; color:${t.text}; }
+.pfx-bk-head { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:12px 14px; border-bottom:1px solid ${t.border}; }
+.pfx-bk-title { font-size:14px; font-weight:700; text-align:center; flex:1; }
+.pfx-bk-icon { width:30px; height:30px; border-radius:8px; border:none; background:${t.surface}; color:${t.text}; cursor:pointer; font-size:16px; }
+.pfx-bk-body { flex:1; overflow-y:auto; padding:14px; }
+.pfx-bk-muted { font-size:12px; color:${t.textDim}; }
+.pfx-bk-label { font-size:12px; font-weight:700; margin:4px 0 8px; }
+.pfx-bk-card { display:block; width:100%; text-align:left; padding:12px 14px; margin-bottom:8px; border-radius:12px; border:1px solid ${t.border}; background:${t.surface}; color:${t.text}; cursor:pointer; font-family:inherit; font-size:13px; }
+.pfx-bk-card:hover { border-color:${pri}; }
+.pfx-bk-card-top { display:flex; justify-content:space-between; gap:8px; margin-bottom:3px; }
+.pfx-bk-dates { display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; margin-bottom:10px; }
+.pfx-bk-date { flex:0 0 auto; width:54px; padding:7px 0; border-radius:12px; border:1px solid ${t.border}; background:${t.surface}; color:${t.text}; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:1px; font-size:10px; font-family:inherit; }
+.pfx-bk-date strong { font-size:16px; }
+.pfx-bk-date.on { background:${pri}; border-color:${pri}; color:white; }
+.pfx-bk-slots { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+.pfx-bk-slots .pfx-bk-muted { grid-column:1/-1; }
+.pfx-bk-slot { padding:9px 0; border-radius:10px; border:1px solid ${t.border}; background:${t.surface}; color:${t.text}; cursor:pointer; font-size:12px; font-weight:600; font-family:inherit; }
+.pfx-bk-slot:hover { background:${pri}; border-color:${pri}; color:white; }
+.pfx-bk-summary { display:flex; flex-direction:column; gap:2px; padding:10px 12px; margin-bottom:10px; border-radius:12px; background:${t.surface}; font-size:12px; }
+.pfx-bk-error { font-size:12px; color:#ef4444; margin-bottom:8px; }
+.pfx-bk-done { display:flex; flex-direction:column; align-items:center; text-align:center; gap:4px; padding:24px 8px; font-size:13px; }
+.pfx-bk-tick { width:52px; height:52px; border-radius:50%; background:${pri}; color:white; display:flex; align-items:center; justify-content:center; font-size:24px; margin-bottom:8px; }
+.pfx-bk-link { margin-top:10px; font-size:12px; font-weight:600; color:${pri}; }
 
 .pfx-csat-stars button { font-size:22px; background:none; border:none; cursor:pointer; padding:2px 4px; transition:transform 0.15s; }
 .pfx-csat-stars button:hover { transform:scale(1.25); }
@@ -649,6 +680,7 @@
         input.style.height = 'auto';
 
         appendMessage('visitor', content, null, new Date().toISOString());
+        maybeOfferBooking(content);
         showTyping();
         isLoading = true;
 
@@ -940,6 +972,158 @@
         } catch (e) {
             console.warn('PFX: Offline form failed', e);
         }
+    }
+
+    // ── Bookings ──────────────────────────────────────────────────────────────
+    const bk = { info: null, service: null, date: null, slot: null, slots: [], form: null };
+
+    async function bkApi(method, path, body) {
+        const opts = { method, headers: { 'Content-Type': 'application/json', Accept: 'application/json' } };
+        if (body) opts.body = JSON.stringify(body);
+        const res = await fetch(apiBase + '/' + config.uuid + '/booking' + path, opts);
+        let data = {};
+        try { data = await res.json(); } catch (e) {}
+        return { ok: res.ok, status: res.status, data };
+    }
+
+    function bkPanel(title, body, back) {
+        const el = document.getElementById('pfx-booking');
+        el.innerHTML =
+            '<div class="pfx-bk-head">' +
+            (back ? '<button type="button" class="pfx-bk-icon" data-bk="back" aria-label="Back">‹</button>' : '<span style="width:30px"></span>') +
+            '<div class="pfx-bk-title">' + escapeHtml(title) + '</div>' +
+            '<button type="button" class="pfx-bk-icon" data-bk="close" aria-label="Close">✕</button></div>' +
+            '<div class="pfx-bk-body">' + body + '</div>';
+        el.style.display = 'flex';
+        el.querySelector('[data-bk=close]').onclick = closeBooking;
+        if (back) el.querySelector('[data-bk=back]').onclick = back;
+        return el;
+    }
+
+    function closeBooking() {
+        const el = document.getElementById('pfx-booking');
+        if (el) el.style.display = 'none';
+    }
+
+    async function openBooking() {
+        if (!config || !config.booking) return;
+        if (!isOpen) await toggleChat();
+        bkPanel(config.booking.label, '<div class="pfx-bk-muted">Loading…</div>');
+        const r = await bkApi('GET', '');
+        if (!r.ok) { bkPanel(config.booking.label, '<div class="pfx-bk-muted">Booking is not available right now.</div>'); return; }
+        bk.info = r.data;
+        if (bk.info.services.length === 1) { bk.service = bk.info.services[0]; return bkDates(); }
+        bkServices();
+    }
+
+    function bkServices() {
+        const el = bkPanel('Choose a service', bk.info.services.map(function (s, i) {
+            return '<button type="button" class="pfx-bk-card" data-i="' + i + '">' +
+                '<span class="pfx-bk-card-top"><strong>' + escapeHtml(s.name) + '</strong><span>' + escapeHtml(s.price || '') + '</span></span>' +
+                '<span class="pfx-bk-muted">' + s.duration + ' min' + (s.description ? ' · ' + escapeHtml(s.description) : '') + '</span></button>';
+        }).join(''));
+        el.querySelectorAll('.pfx-bk-card').forEach(function (b) {
+            b.onclick = function () { bk.service = bk.info.services[+b.getAttribute('data-i')]; bk.date = null; bkDates(); };
+        });
+    }
+
+    function bkDates() {
+        const back = bk.info.services.length > 1 ? bkServices : null;
+        if (!bk.info.dates.length) { bkPanel(bk.service.name, '<div class="pfx-bk-muted">No dates are open for booking at the moment.</div>', back); return; }
+        const chips = bk.info.dates.map(function (d) {
+            const dt = new Date(d + 'T12:00:00');
+            return '<button type="button" class="pfx-bk-date" data-d="' + d + '">' +
+                '<span>' + dt.toLocaleDateString(undefined, { weekday: 'short' }) + '</span><strong>' + dt.getDate() + '</strong><span>' + dt.toLocaleDateString(undefined, { month: 'short' }) + '</span></button>';
+        }).join('');
+        const el = bkPanel(bk.service.name,
+            '<div class="pfx-bk-label">Pick a day</div><div class="pfx-bk-dates">' + chips + '</div>' +
+            '<div class="pfx-bk-label">Pick a time <span class="pfx-bk-muted">(' + escapeHtml(bk.info.timezone) + ')</span></div><div id="pfx-bk-slots" class="pfx-bk-slots"></div>', back);
+        const pick = function (d, auto) {
+            el.querySelectorAll('.pfx-bk-date').forEach(function (x) { x.classList.toggle('on', x.getAttribute('data-d') === d); });
+            bkSlots(d).then(function (count) {
+                // On first open, skip ahead to the first day that still has free times.
+                const next = bk.info.dates[bk.info.dates.indexOf(d) + 1];
+                if (auto && count === 0 && next && auto < 14) pick(next, auto + 1);
+                const on = el.querySelector('.pfx-bk-date.on');
+                if (on) on.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+            });
+        };
+        el.querySelectorAll('.pfx-bk-date').forEach(function (b) { b.onclick = function () { pick(b.getAttribute('data-d')); }; });
+        if (bk.date && bk.info.dates.indexOf(bk.date) > -1) pick(bk.date); else pick(bk.info.dates[0], 1);
+    }
+
+    async function bkSlots(date) {
+        bk.date = date;
+        const box = document.getElementById('pfx-bk-slots');
+        box.innerHTML = '<div class="pfx-bk-muted">Loading times…</div>';
+        const r = await bkApi('GET', '/slots?service=' + encodeURIComponent(bk.service.id) + '&date=' + date);
+        if (bk.date !== date) return -1;
+        bk.slots = (r.ok && r.data.slots) || [];
+        box.innerHTML = bk.slots.length
+            ? bk.slots.map(function (s, i) { return '<button type="button" class="pfx-bk-slot" data-i="' + i + '">' + escapeHtml(s.label) + '</button>'; }).join('')
+            : '<div class="pfx-bk-muted">No free times on this day. Try another day.</div>';
+        box.querySelectorAll('.pfx-bk-slot').forEach(function (b) {
+            b.onclick = function () { bk.slot = bk.slots[+b.getAttribute('data-i')]; bkDetails(); };
+        });
+        return bk.slots.length;
+    }
+
+    function bkDetails(error) {
+        const when = new Date(bk.date + 'T12:00:00').toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' }) + ', ' + bk.slot.label;
+        const v = bk.form || {};
+        const el = bkPanel('Your details',
+            '<div class="pfx-bk-summary"><strong>' + escapeHtml(bk.service.name) + '</strong><span>' + escapeHtml(when) + ' (' + escapeHtml(bk.info.timezone) + ')</span></div>' +
+            (error ? '<div class="pfx-bk-error">' + escapeHtml(error) + '</div>' : '') +
+            '<input id="pfx-bk-name" class="pfx-offline-input" autocomplete="name" placeholder="Your name *" value="' + escapeAttr(v.name || '') + '">' +
+            '<input id="pfx-bk-email" type="email" class="pfx-offline-input" autocomplete="email" placeholder="Email address *" value="' + escapeAttr(v.email || '') + '">' +
+            '<input id="pfx-bk-phone" type="tel" class="pfx-offline-input" autocomplete="tel" placeholder="Phone number' + (bk.info.require_phone ? ' *' : ' (optional)') + '" value="' + escapeAttr(v.phone || '') + '">' +
+            '<textarea id="pfx-bk-notes" class="pfx-offline-input" rows="2" style="resize:none" placeholder="Anything we should know? (optional)">' + escapeHtml(v.notes || '') + '</textarea>' +
+            '<button type="button" id="pfx-bk-go" class="pfx-btn-primary">' + (bk.info.auto_confirm ? 'Confirm booking' : 'Request booking') + '</button>', bkDates);
+        el.querySelector('#pfx-bk-go').onclick = bkSubmit;
+    }
+
+    async function bkSubmit() {
+        const val = function (id) { return ((document.getElementById(id) || {}).value || '').trim(); };
+        bk.form = { name: val('pfx-bk-name'), email: val('pfx-bk-email'), phone: val('pfx-bk-phone'), notes: val('pfx-bk-notes') };
+        if (!bk.form.name || !/^\S+@\S+\.\S+$/.test(bk.form.email) || (bk.info.require_phone && !bk.form.phone)) {
+            return bkDetails('Please fill in the required fields.');
+        }
+        const btn = document.getElementById('pfx-bk-go');
+        btn.disabled = true; btn.textContent = 'Booking…';
+        const r = await bkApi('POST', '', Object.assign({}, bk.form, {
+            service_id: bk.service.id, start: bk.slot.start,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || undefined,
+            conversation_uuid: conversationUuid || undefined,
+        }));
+        if (!r.ok) {
+            const errors = (r.data && r.data.errors) || {};
+            if (errors.start) { bk.slot = null; bkDates(); return; }
+            const first = Object.keys(errors).length ? errors[Object.keys(errors)[0]][0] : null;
+            return bkDetails(first || (r.status === 429 ? 'Too many attempts. Please wait a minute.' : 'Something went wrong. Please try again.'));
+        }
+        const d = r.data;
+        bkPanel(d.status === 'pending' ? 'Request sent' : 'You are booked in',
+            '<div class="pfx-bk-done"><div class="pfx-bk-tick">✓</div>' +
+            '<strong>' + escapeHtml(d.service) + '</strong><span>' + escapeHtml(d.when) + ' (' + escapeHtml(d.timezone) + ')</span>' +
+            '<p class="pfx-bk-muted">' + (d.status === 'pending' ? 'We will confirm by email shortly.' : 'A confirmation and calendar invite are on their way to ' + escapeHtml(bk.form.email) + '.') + '</p>' +
+            '<a href="' + escapeAttr(d.manage_url) + '" target="_blank" rel="noopener" class="pfx-bk-link">Manage or cancel</a></div>');
+        bk.form = null;
+    }
+
+    function maybeOfferBooking(text) {
+        if (!config.booking || !/\b(book|booking|appointments?|schedule|reserve|reservation|slots?|availability)\b/i.test(text)) return;
+        const wrap = document.getElementById('pfx-messages');
+        if (!wrap) return;
+        setTimeout(function () {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'pfx-chip';
+            b.style.alignSelf = 'flex-start';
+            b.textContent = '📅 ' + config.booking.label;
+            b.onclick = openBooking;
+            wrap.appendChild(b);
+            wrap.scrollTop = wrap.scrollHeight;
+        }, 1500);
     }
 
     // ── Proactive messaging ───────────────────────────────────────────────────

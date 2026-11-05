@@ -8,6 +8,7 @@
             ['widgets.index', 'Widgets', 'widgets.*'],
             ['conversations.index', 'Conversations', 'conversations.*'],
             ['leads.index', 'Leads', 'leads.*'],
+            ['appointments.index', 'Bookings', 'appointments.*'],
             ['analytics.index', 'Analytics', 'analytics.*'],
             ['automations.index', 'Automations', 'automations.*'],
         ];

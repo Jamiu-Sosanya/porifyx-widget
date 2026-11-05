@@ -35,6 +35,8 @@ Route::get('/blog/{slug}', [SiteController::class, 'post'])->name('blog.post');
 Route::get('/status', [SiteController::class, 'status'])->name('status');
 Route::get('/contact', [SiteController::class, 'contact'])->name('contact');
 Route::post('/contact', [SiteController::class, 'sendContact'])->middleware('throttle:5,1')->name('contact.send');
+Route::get('/appointments/manage/{token}', [\App\Http\Controllers\AppointmentController::class, 'manage'])->name('appointments.manage');
+Route::post('/appointments/manage/{token}/cancel', [\App\Http\Controllers\AppointmentController::class, 'cancel'])->middleware('throttle:10,1')->name('appointments.cancel');
 
 // Admin login (separate from user login, IP-restricted)
 Route::middleware('admin.ip')->group(function () {
@@ -84,6 +86,12 @@ Route::middleware(['auth'])->group(function () {
 
         // Widgets
         Route::resource('widgets', WidgetController::class);
+
+        // Bookings
+        Route::get('/appointments', [\App\Http\Controllers\AppointmentController::class, 'index'])->name('appointments.index');
+        Route::patch('/appointments/{appointment}', [\App\Http\Controllers\AppointmentController::class, 'update'])->name('appointments.update');
+        Route::get('/widgets/{widget}/booking', [\App\Http\Controllers\AppointmentController::class, 'settings'])->name('widgets.booking');
+        Route::put('/widgets/{widget}/booking', [\App\Http\Controllers\AppointmentController::class, 'saveSettings'])->name('widgets.booking.update');
         Route::post('/widgets/{widget}/duplicate', [WidgetController::class, 'duplicate'])->name('widgets.duplicate');
         Route::post('/widgets/{widget}/toggle', [WidgetController::class, 'toggleActive'])->name('widgets.toggle');
         Route::post('/widgets/{widget}/regenerate-token', [WidgetController::class, 'regenerateToken'])->name('widgets.regenerateToken');

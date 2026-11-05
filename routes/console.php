@@ -18,3 +18,21 @@ Schedule::command('alerts:check')->daily()->at('07:00');
 
 // Send usage warning emails when users hit 80% or 90% of plan limits
 Schedule::command('app:usage-warnings')->daily()->at('10:00');
+
+// Booking reminders: emails visitors before confirmed appointments (per-widget "reminder_hours").
+Artisan::command('appointments:remind', function (App\Services\AppointmentService $service) {
+    $sent = 0;
+    App\Models\Appointment::with('widget')
+        ->where('status', 'confirmed')->whereNull('reminder_sent_at')
+        ->whereBetween('starts_at', [now(), now()->addDays(7)])
+        ->each(function ($a) use ($service, &$sent) {
+            $hours = (int) $a->widget->bookingSettings()['reminder_hours'];
+            if ($hours > 0 && $a->starts_at->lte(now()->addHours($hours))) {
+                $service->mail($a, 'reminder');
+                $a->update(['reminder_sent_at' => now()]);
+                $sent++;
+            }
+        });
+    $this->info("Sent {$sent} reminder(s).");
+})->purpose('Email booking reminders');
+Schedule::command('appointments:remind')->everyFifteenMinutes();

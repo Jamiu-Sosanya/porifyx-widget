@@ -40,6 +40,11 @@ Route::prefix('widget')->middleware([WidgetRateLimit::class])->group(function ()
 
     // Proactive message tracking
     Route::post('/{widgetUuid}/proactive/track', [WidgetApiController::class, 'trackProactive']);
+
+    // Bookings
+    Route::get('/{widgetUuid}/booking', [\App\Http\Controllers\Api\BookingApiController::class, 'show']);
+    Route::get('/{widgetUuid}/booking/slots', [\App\Http\Controllers\Api\BookingApiController::class, 'slots']);
+    Route::post('/{widgetUuid}/booking', [\App\Http\Controllers\Api\BookingApiController::class, 'store'])->middleware('throttle:6,1');
 });
 
 // PWA Routes (authenticated)

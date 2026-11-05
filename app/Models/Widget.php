@@ -56,7 +56,7 @@ class Widget extends Model
         'lead_qualification_flow', 'lead_qualification_enabled',
 
         // Security
-        'allowed_domains', 'domain_restriction', 'rate_limit', 'is_active',
+        'allowed_domains', 'domain_restriction', 'rate_limit', 'is_active', 'booking',
 
         // Timestamps & stats
         'last_deployed_at', 'total_conversations', 'total_messages', 'total_leads',
@@ -82,6 +82,7 @@ class Widget extends Model
             'lead_qualification_enabled'  => 'boolean',
             'domain_restriction'          => 'boolean',
             'is_active'                   => 'boolean',
+            'booking'                     => 'array',
             'show_handoff_button'         => 'boolean',
             'webhook_enabled'             => 'boolean',
             'webhook_lead_always'         => 'boolean',
@@ -126,6 +127,17 @@ class Widget extends Model
     // ─────────────────────────────────────────────────────────
     // Relationships
     // ─────────────────────────────────────────────────────────
+
+    public function appointments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
+    /** Booking settings merged over defaults (see App\Support\Booking). */
+    public function bookingSettings(): array
+    {
+        return \App\Support\Booking::settings($this);
+    }
 
     public function user(): BelongsTo
     {

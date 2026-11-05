@@ -31,6 +31,8 @@ class DemoMode
         'api/widget/*/message',
         'api/widget/*/stream',
         'api/widget/*/proactive',
+        'api/widget/*/booking',
+        'appointments/manage/*/cancel',
     ];
 
     public function handle(Request $request, Closure $next): Response
