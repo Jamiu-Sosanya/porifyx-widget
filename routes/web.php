@@ -21,13 +21,8 @@ Route::get('/offline', function () {
 })->name('offline');
 
 // Landing page
-Route::get('/', function () {
-    if (!config('branding.landing_enabled')) {
-        return redirect()->route('login');
-    }
-    $plans = \App\Models\Plan::where('is_active', true)->orderBy('sort_order')->get();
-    return view('welcome', compact('plans'));
-})->name('home');
+Route::get('/', [\App\Http\Controllers\LandingController::class, 'index'])->name('home');
+Route::post('/demo-chat', [\App\Http\Controllers\LandingController::class, 'chat'])->middleware('throttle:20,1')->name('demo.chat');
 
 $staticPages = [
     'about' => [

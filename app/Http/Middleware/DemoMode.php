@@ -23,6 +23,7 @@ class DemoMode
         'install*',
         'up',
         'offline',
+        'demo-chat',
         // Let the public widget API still receive conversations/messages
         // so an embedded demo widget keeps working
         'api/widget/*/conversation',
