@@ -145,6 +145,63 @@
                     </div>
                 </section>
 
+                {{-- Sizes on desktop and mobile --}}
+                <section class="{{ $card }}" x-data="{ rec: @js(\App\Support\LauncherIcons::RECOMMENDED) }">
+                    <div class="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                            <h3 class="text-base font-semibold text-white">Size on screens</h3>
+                            <p class="text-xs text-gray-500 mt-0.5">Chat window and launcher size on computers and phones.</p>
+                        </div>
+                        <button type="button" @click="Object.assign(L, rec)" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-500/10 text-brand-300 ring-1 ring-brand-500/30 hover:bg-brand-500/20">Use recommended sizes</button>
+                    </div>
+                    <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {{-- Desktop --}}
+                        <div class="space-y-4">
+                            <p class="flex items-center gap-2 text-sm font-semibold text-white"><svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5h18v11H3zM8 20h8M12 16v4"/></svg>Desktop and tablet</p>
+                            @foreach(['chat_w' => ['Chat width', 300, 520, 10], 'chat_h' => ['Chat height', 400, 760, 10]] as $k => [$t, $min, $max, $step])
+                            <div>
+                                <div class="flex justify-between text-[11px]"><span class="text-gray-400">{{ $t }}</span><span class="text-gray-300"><span x-text="L.{{ $k }} + 'px'"></span> <span x-show="+L.{{ $k }} === rec.{{ $k }}" class="ml-1 text-emerald-400">Recommended</span><span x-show="+L.{{ $k }} !== rec.{{ $k }}" class="ml-1 text-gray-500" x-text="'· recommended ' + rec.{{ $k }} + 'px'"></span></span></div>
+                                <input type="range" name="launcher[{{ $k }}]" min="{{ $min }}" max="{{ $max }}" step="{{ $step }}" x-model="L.{{ $k }}" class="w-full accent-brand-500">
+                            </div>
+                            @endforeach
+                            <p class="text-[11px] text-gray-500">Never taller or wider than the visitor's screen allows.</p>
+                        </div>
+                        {{-- Mobile --}}
+                        <div class="space-y-4">
+                            <p class="flex items-center gap-2 text-sm font-semibold text-white"><svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg>Phones</p>
+                            <div class="grid grid-cols-2 gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
+                                <label><input type="radio" name="launcher[m_mode]" value="full" x-model="L.m_mode" class="peer sr-only"><span class="{{ $seg }} block">Full screen <span class="opacity-75">(recommended)</span></span></label>
+                                <label><input type="radio" name="launcher[m_mode]" value="custom" x-model="L.m_mode" class="peer sr-only"><span class="{{ $seg }} block">Custom</span></label>
+                            </div>
+                            <template x-if="L.m_mode === 'custom'">
+                                <div class="space-y-4">
+                                    @foreach(['m_w' => ['Chat width', 70, 100], 'm_h' => ['Chat height', 50, 100]] as $k => [$t, $min, $max])
+                                    <div>
+                                        <div class="flex justify-between text-[11px]"><span class="text-gray-400">{{ $t }} (% of screen)</span><span class="text-gray-300" x-text="L.{{ $k }} + '%'"></span></div>
+                                        <input type="range" name="launcher[{{ $k }}]" min="{{ $min }}" max="{{ $max }}" x-model="L.{{ $k }}" class="w-full accent-brand-500">
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </template>
+                            <div>
+                                <div class="flex justify-between text-[11px]"><span class="text-gray-400">Launcher size on phones</span><span class="text-gray-300"><span x-text="L.m_size + 'px'"></span> <span x-show="+L.m_size === rec.m_size" class="ml-1 text-emerald-400">Recommended</span></span></div>
+                                <input type="range" name="launcher[m_size]" min="40" max="72" step="2" x-model="L.m_size" class="w-full accent-brand-500">
+                            </div>
+                            <p class="text-[11px] text-gray-500">Full screen gives the most room to type and read; 56 px is an easy tap target.</p>
+                        </div>
+                    </div>
+                    {{-- Proportion sketch --}}
+                    <div class="mt-5 flex items-end justify-center gap-8 p-4 rounded-xl bg-white/[0.03] border border-white/5" aria-hidden="true">
+                        <div class="relative w-56 h-36 rounded-lg border-2 border-slate-500/40 bg-slate-500/10">
+                            <div class="absolute right-2 bottom-2 rounded-md transition-all" :style="`width:${L.chat_w / 1440 * 224 * 1.6}px;height:${L.chat_h / 900 * 144 * .9}px;background:${pColor}55;border:1px solid ${pColor}`"></div>
+                            <span class="absolute left-2 top-1.5 text-[10px] text-gray-500">1440 × 900</span>
+                        </div>
+                        <div class="relative w-16 h-32 rounded-xl border-2 border-slate-500/40 bg-slate-500/10 overflow-hidden">
+                            <div class="absolute rounded-sm transition-all" :style="L.m_mode === 'full' ? `inset:0;background:${pColor}55` : `width:${L.m_w}%;height:${L.m_h}%;left:${(100 - L.m_w) / 2}%;bottom:2px;background:${pColor}55;border:1px solid ${pColor}`"></div>
+                        </div>
+                    </div>
+                </section>
+
                 {{-- Launcher --}}
                 <section class="{{ $card }}">
                     <h3 class="text-base font-semibold text-white">Launcher button</h3>

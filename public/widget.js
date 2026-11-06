@@ -262,6 +262,19 @@
         return '<span style="display:flex;color:' + escapeAttr(config.primary_color || '#2f5ee8') + ';">' + (ic.svg || '') + '</span>';
     }
 
+    // Phone layout: full screen (recommended) or a custom share of the screen; launcher size on phones.
+    function mobileChatCSS() {
+        const L = config.launcher_style || {};
+        const ms = +L.m_size || 56;
+        // The text label is hidden on phones, so the launcher is a plain icon button there.
+        const launcher = '#pfx-launcher{width:' + ms + 'px !important;height:' + ms + 'px !important;padding:0 !important;gap:0 !important;}';
+        if (L.m_mode === 'custom') {
+            const w = Math.min(100, Math.max(70, +L.m_w || 94)), h = Math.min(100, Math.max(50, +L.m_h || 85));
+            return launcher + '#pfx-chat{width:' + w + 'vw !important;height:' + h + 'svh !important;left:' + ((100 - w) / 2) + 'vw !important;right:auto !important;bottom:' + (h >= 100 ? 0 : 8) + 'px !important;top:auto !important;border-radius:' + (w >= 100 ? 0 : 16) + 'px !important;}';
+        }
+        return launcher + '#pfx-chat{width:100vw !important;height:100svh !important;left:0 !important;right:0 !important;top:0 !important;bottom:0 !important;border-radius:0 !important;}';
+    }
+
     function buildLauncherHTML() {
         const L      = config.launcher_style || {};
         const pos    = config.position || 'bottom-right';
@@ -305,7 +318,7 @@
         const showHO = config.show_handoff_button !== false;
         const hoLabel = escapeHtml(config.handoff_button_label || 'Talk to a human');
 
-        return '<div id="pfx-chat" class="' + mHide + '" style="position:fixed;' + hPos + vPos + 'width:390px;height:500px;display:none;flex-direction:column;border-radius:16px;overflow:hidden;box-shadow:0 30px 80px -20px rgba(11,19,36,0.55);z-index:99999;font-family:' + (config.font_family || '\'Plus Jakarta Sans\',system-ui,-apple-system,sans-serif') + ';background:' + t.bg + ';border:1px solid ' + t.border + ';opacity:0;transform:translateY(24px) scale(0.97);transition:opacity 0.35s cubic-bezier(0.4,0,0.2,1),transform 0.35s cubic-bezier(0.4,0,0.2,1);">' +
+        return '<div id="pfx-chat" class="' + mHide + '" style="position:fixed;' + hPos + vPos + 'width:min(' + (+(config.launcher_style || {}).chat_w || 380) + 'px,calc(100vw - 32px));height:min(' + (+(config.launcher_style || {}).chat_h || 600) + 'px,calc(100vh - 110px));display:none;flex-direction:column;border-radius:16px;overflow:hidden;box-shadow:0 30px 80px -20px rgba(11,19,36,0.55);z-index:99999;font-family:' + (config.font_family || '\'Plus Jakarta Sans\',system-ui,-apple-system,sans-serif') + ';background:' + t.bg + ';border:1px solid ' + t.border + ';opacity:0;transform:translateY(24px) scale(0.97);transition:opacity 0.35s cubic-bezier(0.4,0,0.2,1),transform 0.35s cubic-bezier(0.4,0,0.2,1);">' +
 
             // ── Header ──
             '<div id="pfx-header" style="padding:16px 16px 14px;background:linear-gradient(135deg,' + config.primary_color + ' 0%,' + (config.secondary_color || config.primary_color) + ' 100%);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-shrink:0;">' +
@@ -520,7 +533,7 @@
 
 @media(max-width:480px) {
   .pfx-hide-mobile { display:none !important; }
-  #pfx-chat { width:calc(100vw - 16px) !important; height:calc(100svh - 16px) !important; left:8px !important; right:8px !important; bottom:8px !important; border-radius:16px !important; }
+  ${mobileChatCSS()}
 }
         `;
 
