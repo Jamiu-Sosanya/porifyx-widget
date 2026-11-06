@@ -126,7 +126,22 @@ class WidgetController extends Controller
             'text_color'                => 'nullable|string|max:20',
             'bg_color'                  => 'nullable|string|max:20',
             'position'                  => 'nullable|in:bottom-right,bottom-left,top-right,top-left',
-            'launcher_shape'            => 'nullable|in:circle,rounded,square',
+            'launcher_shape'            => 'nullable|in:circle,rounded,square,custom',
+            'launcher'                  => 'nullable|array',
+            'launcher.size'             => 'nullable|integer|between:40,96',
+            'launcher.radius'           => 'nullable|integer|between:0,48',
+            'launcher.bg_type'          => 'nullable|in:solid,gradient',
+            'launcher.bg'               => 'nullable|regex:/^#[0-9a-fA-F]{6}$/',
+            'launcher.bg2'              => 'nullable|regex:/^#[0-9a-fA-F]{6}$/',
+            'launcher.angle'            => 'nullable|integer|between:0,360',
+            'launcher.icon_color'       => 'nullable|regex:/^#[0-9a-fA-F]{6}$/',
+            'launcher.border_width'     => 'nullable|integer|between:0,8',
+            'launcher.border_color'     => 'nullable|regex:/^#[0-9a-fA-F]{6}$/',
+            'launcher.shadow'           => 'nullable|in:none,soft,medium,strong',
+            'launcher.offset_x'         => 'nullable|integer|between:0,120',
+            'launcher.offset_y'         => 'nullable|integer|between:0,120',
+            'launcher.label'            => 'nullable|string|max:40',
+            'launcher.animation'        => ['nullable', \Illuminate\Validation\Rule::in(array_keys(\App\Support\LauncherIcons::ANIMATIONS))],
             'launcher_icon'             => ['nullable', \Illuminate\Validation\Rule::in([...array_keys(\App\Support\LauncherIcons::PRESETS), 'custom'])],
             'launcher_icon_file'        => 'nullable|' . \App\Support\LauncherIcons::UPLOAD_RULE,
             'font_family'               => 'nullable|string|max:100',
@@ -226,6 +241,9 @@ class WidgetController extends Controller
 
         // Launcher icon: a new upload switches to "custom"; choosing a preset or removing drops the old file.
         unset($validated['launcher_icon_file']);
+        if (isset($validated['launcher'])) {
+            $validated['launcher'] = array_replace(\App\Support\LauncherIcons::style($widget), array_filter($validated['launcher'], fn ($v) => $v !== null), ['label' => (string) ($validated['launcher']['label'] ?? '')]);
+        }
         if ($request->hasFile('launcher_icon_file')) {
             if ($widget->launcher_icon_path) {
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($widget->launcher_icon_path);

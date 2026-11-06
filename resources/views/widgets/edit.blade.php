@@ -17,7 +17,7 @@
     pFont: @js($widget->font_family ?? 'Plus Jakarta Sans, system-ui, sans-serif'),
     pChatOpen: true,
     appName: @js(config('branding.name', config('app.name'))),
-}" class="max-w-5xl">
+}" class="w-full">
 
     {{-- Header --}}
     <div class="flex items-center justify-between mb-6">
@@ -44,114 +44,128 @@
     <form id="widget-edit-form" method="POST" action="{{ route('widgets.update', $widget) }}" enctype="multipart/form-data">
         @csrf @method('PUT')
 
-        {{-- ── Appearance Tab ───────────────────────────────────────────────── --}}
-        <div x-show="tab === 'appearance'" x-transition class="bg-gray-900/50 border border-white/5 rounded-2xl p-6 space-y-6">
-            <h3 class="text-base font-semibold text-white">Appearance</h3>
+        {{-- ── Appearance ─────────────────────────────────────────────────────── --}}
+        @php
+            $ls = \App\Support\LauncherIcons::style($widget);
+            $iconSvgs = collect(\App\Support\LauncherIcons::PRESETS)->map(fn ($p, $k) => \App\Support\LauncherIcons::svg($k, 24, '__C__'))->all();
+            $card = 'bg-gray-900/50 border border-white/5 rounded-2xl p-5 sm:p-6';
+            $lbl = 'block text-xs font-semibold text-gray-400 mb-1.5';
+            $in = 'w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/15 transition';
+            $seg = 'pfx-seg flex-1 text-center px-2 py-2 rounded-lg text-xs font-semibold cursor-pointer transition';
+        @endphp
+        <div x-show="tab === 'appearance'" x-cloak
+             x-data="{
+                 L: @js($ls),
+                 shape: @js(old('launcher_shape', $widget->launcher_shape ?: 'circle')),
+                 icon: @js(old('launcher_icon', $widget->launcher_icon ?: 'default')),
+                 svgs: @js($iconSvgs),
+                 upload: @js($widget->launcher_icon_path ? asset('storage/' . $widget->launcher_icon_path) : null),
+                 radius() { const s = +this.L.size; return this.shape === 'square' ? Math.round(s * .18) : this.shape === 'rounded' ? Math.round(s * .3) : this.shape === 'custom' ? +this.L.radius : 999; },
+                 bg() { return this.L.bg_type === 'gradient' ? `linear-gradient(${this.L.angle}deg, ${this.L.bg}, ${this.L.bg2})` : this.L.bg; },
+                 shadow() { return { none: 'none', soft: '0 6px 18px -6px rgba(0,0,0,.35)', medium: '0 10px 28px -6px rgba(0,0,0,.45)', strong: '0 18px 44px -8px rgba(0,0,0,.6)' }[this.L.shadow]; },
+                 iconHtml() { return this.icon === 'custom' && this.upload ? `<img src='${this.upload}' style='width:100%;height:100%;object-fit:cover'>` : (this.svgs[this.icon] || this.svgs.default).replaceAll('__C__', this.L.icon_color); },
+                 launcherStyle() {
+                     const s = +this.L.size, label = this.L.label.trim();
+                     return `${label ? `height:${s}px;padding:0 ${Math.round(s * .32)}px 0 ${Math.round(s * .22)}px;gap:10px;` : `width:${s}px;height:${s}px;`}border-radius:${this.radius()}px;background:${this.bg()};box-shadow:${this.shadow()};border:${+this.L.border_width ? `${this.L.border_width}px solid ${this.L.border_color}` : 'none'};color:${this.L.bg}`;
+                 },
+                 chatPos() {
+                     const sc = .6, x = Math.round(this.L.offset_x * sc) + 'px', gap = Math.round(this.L.offset_y * sc + +this.L.size + 10) + 'px';
+                     return (pPosition.includes('left') ? `left:${x};` : `right:${x};`) + (pPosition.includes('top') ? `top:${gap};` : `bottom:${gap};`);
+                 },
+                 corner() {
+                     const sc = .6, x = Math.round(this.L.offset_x * sc) + 'px', y = Math.round(this.L.offset_y * sc) + 'px';
+                     return (pPosition.includes('left') ? `left:${x};` : `right:${x};`) + (pPosition.includes('top') ? `top:${y};` : `bottom:${y};`);
+                 },
+             }"
+             class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-6 items-start">
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1.5">Widget Name</label>
-                    <input name="name" value="{{ old('name', $widget->name) }}" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-500/50 focus:ring-2 focus:ring-brand-500/20 transition">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1.5">AI Name</label>
-                    <input name="ai_name" value="{{ old('ai_name', $widget->ai_name) }}" @input="pName = $event.target.value" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-500/50 focus:ring-2 focus:ring-brand-500/20 transition">
-                </div>
-            </div>
-
-            {{-- Colors --}}
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                @foreach(['primary_color' => 'Primary Color', 'secondary_color' => 'Secondary', 'text_color' => 'Text Color', 'bg_color' => 'Background'] as $field => $label)
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1.5">{{ $label }}</label>
-                    <div class="flex gap-2 items-center">
-                        <input name="{{ $field }}" type="color" value="{{ $widget->$field }}"
-                            @if($field === 'primary_color') @input="pColor = $event.target.value"
-                            @elseif($field === 'bg_color') @input="pBg = $event.target.value"
-                            @elseif($field === 'text_color') @input="pText = $event.target.value"
+            <div class="space-y-6 min-w-0">
+                {{-- Identity --}}
+                <section class="{{ $card }}">
+                    <h3 class="text-base font-semibold text-white">Identity</h3>
+                    <p class="text-xs text-gray-500 mt-0.5">How the assistant introduces itself.</p>
+                    <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div><label class="{{ $lbl }}">Widget name</label><input name="name" value="{{ old('name', $widget->name) }}" required class="{{ $in }}"></div>
+                        <div><label class="{{ $lbl }}">Assistant name</label><input name="ai_name" value="{{ old('ai_name', $widget->ai_name) }}" @input="pName = $event.target.value" class="{{ $in }}"></div>
+                        <div>
+                            <label class="{{ $lbl }}">Tone</label>
+                            <select name="tone" class="{{ $in }}">
+                                @foreach(['friendly' => 'Friendly', 'professional' => 'Professional', 'sales' => 'Sales', 'support' => 'Support'] as $val => $t)
+                                <option value="{{ $val }}" @selected($widget->tone === $val)>{{ $t }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="{{ $lbl }}">Font</label>
+                            <select name="font_family" @change="pFont = $event.target.value" class="{{ $in }}">
+                                @foreach(["'Plus Jakarta Sans', system-ui, sans-serif" => 'Plus Jakarta Sans (default)', "'Poppins', sans-serif" => 'Poppins', "'Roboto', sans-serif" => 'Roboto', "'Open Sans', sans-serif" => 'Open Sans', "'DM Sans', sans-serif" => 'DM Sans', "system-ui, sans-serif" => 'System default', "'Georgia', serif" => 'Georgia (serif)', "'Courier New', monospace" => 'Monospace'] as $val => $t)
+                                <option value="{{ $val }}" @selected($widget->font_family === $val)>{{ $t }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="sm:col-span-2 flex items-center gap-4 p-3 rounded-xl bg-white/[0.03] border border-white/5">
+                            @if($widget->ai_avatar)
+                                <img src="{{ asset('storage/' . $widget->ai_avatar) }}" class="w-12 h-12 rounded-xl object-cover" alt="">
+                            @else
+                                <div class="w-12 h-12 rounded-xl bg-white/5 grid place-items-center text-xl">🤖</div>
                             @endif
-                            class="w-10 h-10 rounded-lg border border-white/10 bg-transparent cursor-pointer">
-                        <input type="text" value="{{ $widget->$field }}" readonly class="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs font-mono" onclick="this.previousElementSibling.click()">
-                    </div>
-                </div>
-                @endforeach
-            </div>
-
-            {{-- Theme --}}
-            <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">Widget Theme</label>
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-                    @foreach([
-                        'dark'    => ['Dark',    '#0f0f13', '#2f5ee8'],
-                        'light'   => ['Light',   '#ffffff', '#2f5ee8'],
-                        'minimal' => ['Minimal', '#fafafa', '#111827'],
-                        'bold'    => ['Bold',    '#1a0533', '#0891b2'],
-                        'ocean'   => ['Ocean',   '#0c1e35', '#38bdf8'],
-                        'nature'  => ['Nature',  '#0f1f0f', '#86efac'],
-                    ] as $themeVal => [$themeName, $bgColor, $accentColor])
-                    <label class="cursor-pointer">
-                        <input type="radio" name="theme" value="{{ $themeVal }}" {{ ($widget->theme ?? 'dark') === $themeVal ? 'checked' : '' }} @change="pTheme = $event.target.value; pBg = '{{ $bgColor }}'; pText = '{{ $bgColor === '#ffffff' || $bgColor === '#fafafa' ? '#111827' : '#ffffff' }}'" class="sr-only peer">
-                        <div class="relative rounded-xl overflow-hidden border-2 border-transparent peer-checked:border-brand-500 transition-all hover:border-white/20 h-16" style="background:{{ $bgColor }};">
-                            <div class="absolute bottom-0 left-0 right-0 h-4" style="background:{{ $accentColor }};opacity:0.3;"></div>
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <span class="text-xs font-medium" style="color:{{ $bgColor === '#ffffff' || $bgColor === '#fafafa' ? '#111' : '#fff' }}">{{ $themeName }}</span>
-                            </div>
-                            <div class="absolute top-1 right-1 hidden peer-checked:block">
-                                <div class="w-4 h-4 bg-brand-500 rounded-full flex items-center justify-center">
-                                    <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
-                                </div>
+                            <div class="min-w-0">
+                                <label class="{{ $lbl }} !mb-1">Assistant avatar</label>
+                                <input type="file" name="ai_avatar" accept="image/png,image/jpeg" class="w-full max-w-full text-xs text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-white/10 file:text-white file:text-xs">
+                                <p class="text-[11px] text-gray-500 mt-1">PNG or JPG, up to 2 MB. Shown in the chat header.</p>
                             </div>
                         </div>
-                        <p class="text-center text-[10px] text-gray-500 mt-1">{{ $themeName }}</p>
-                    </label>
-                    @endforeach
-                </div>
-            </div>
+                    </div>
+                </section>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1.5">Position</label>
-                    <select name="position" @change="pPosition = $event.target.value" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-500/50 transition">
-                        @foreach(['bottom-right' => 'Bottom Right', 'bottom-left' => 'Bottom Left', 'top-right' => 'Top Right', 'top-left' => 'Top Left'] as $val => $lbl)
-                        <option value="{{ $val }}" {{ $widget->position === $val ? 'selected' : '' }}>{{ $lbl }}</option>
+                {{-- Colours & theme --}}
+                <section class="{{ $card }}">
+                    <h3 class="text-base font-semibold text-white">Chat window</h3>
+                    <p class="text-xs text-gray-500 mt-0.5">Theme and colours of the conversation panel.</p>
+                    <div class="mt-5 grid grid-cols-3 sm:grid-cols-6 gap-2.5">
+                        @foreach(['dark' => ['Dark', '#0f0f13', '#2f5ee8'], 'light' => ['Light', '#ffffff', '#2f5ee8'], 'minimal' => ['Minimal', '#fafafa', '#111827'], 'bold' => ['Bold', '#1a0533', '#0891b2'], 'ocean' => ['Ocean', '#0c1e35', '#38bdf8'], 'nature' => ['Nature', '#0f1f0f', '#86efac']] as $val => [$t, $bgc, $acc])
+                        <label class="cursor-pointer">
+                            <input type="radio" name="theme" value="{{ $val }}" @checked(($widget->theme ?? 'dark') === $val) @change="pTheme = '{{ $val }}'; pBg = '{{ $bgc }}'; pText = '{{ in_array($val, ['light', 'minimal']) ? '#111827' : '#ffffff' }}'" class="peer sr-only">
+                            <span class="block rounded-xl overflow-hidden ring-1 ring-slate-400/30 peer-checked:ring-2 peer-checked:ring-brand-500 transition">
+                                <span class="block h-10" style="background: {{ $bgc }}"></span>
+                                <span class="block h-2" style="background: {{ $acc }}"></span>
+                            </span>
+                            <span class="block mt-1 text-center text-[11px] text-gray-400">{{ $t }}</span>
+                        </label>
                         @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1.5">Launcher Shape</label>
-                    <select name="launcher_shape" @change="pShape = $event.target.value" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-500/50 transition">
-                        @foreach(['circle' => '● Circle', 'rounded' => '▢ Rounded', 'square' => '■ Square'] as $val => $lbl)
-                        <option value="{{ $val }}" {{ $widget->launcher_shape === $val ? 'selected' : '' }}>{{ $lbl }}</option>
+                    </div>
+                    <div class="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        @foreach(['primary_color' => 'Primary', 'secondary_color' => 'Secondary', 'text_color' => 'Text', 'bg_color' => 'Background'] as $field => $t)
+                        <label class="flex items-center gap-2.5 p-2 rounded-xl bg-white/[0.03] border border-white/5 cursor-pointer" x-data="{ v: @js($widget->$field ?: '#000000') }">
+                            <input type="color" name="{{ $field }}" x-model="v" class="w-9 h-9 rounded-lg bg-transparent cursor-pointer shrink-0"
+                                   @if($field === 'primary_color') @input="pColor = v" @elseif($field === 'bg_color') @input="pBg = v" @elseif($field === 'text_color') @input="pText = v" @endif>
+                            <span class="min-w-0"><span class="block text-xs font-semibold text-gray-300">{{ $t }}</span><span class="block text-[11px] font-mono text-gray-500 uppercase" x-text="v"></span></span>
+                        </label>
                         @endforeach
-                    </select>
-                </div>
-                {{-- Launcher icon: presets or upload --}}
-                <div class="md:col-span-2" x-data="{ icon: @js(old('launcher_icon', $widget->launcher_icon ?: 'default')), upload: null }">
-                    <label class="block text-sm font-medium text-gray-300 mb-1.5">Launcher Icon</label>
-                    <div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                        @foreach(\App\Support\LauncherIcons::PRESETS as $key => [$label])
-                        <label class="cursor-pointer" title="{{ $label }}">
+                    </div>
+                </section>
+
+                {{-- Launcher --}}
+                <section class="{{ $card }}">
+                    <h3 class="text-base font-semibold text-white">Launcher button</h3>
+                    <p class="text-xs text-gray-500 mt-0.5">The button visitors click to open the chat. Changes show in the preview.</p>
+
+                    {{-- Icon --}}
+                    <p class="{{ $lbl }} mt-5">Icon</p>
+                    <div class="grid grid-cols-6 sm:grid-cols-11 gap-2">
+                        @foreach(\App\Support\LauncherIcons::PRESETS as $key => [$t])
+                        <label class="cursor-pointer" title="{{ $t }}">
                             <input type="radio" name="launcher_icon" value="{{ $key }}" x-model="icon" class="peer sr-only">
-                            <span class="flex flex-col items-center gap-1.5 p-2 rounded-xl border border-white/10 peer-checked:border-brand-500 peer-checked:ring-2 peer-checked:ring-brand-500/30 transition">
-                                <span class="grid place-items-center w-11 h-11 rounded-full" style="background: {{ $widget->primary_color }}; color: {{ $widget->primary_color }}">{!! \App\Support\LauncherIcons::svg($key, 24) !!}</span>
-                                <span class="text-[10px] text-gray-400 text-center leading-tight">{{ $label }}</span>
+                            <span class="grid place-items-center aspect-square rounded-xl ring-1 ring-white/10 peer-checked:ring-2 peer-checked:ring-brand-500 transition" :style="`background:${bg()};color:${L.bg}`">
+                                <span class="w-1/2 h-1/2 [&>svg]:w-full [&>svg]:h-full" x-html="svgs['{{ $key }}'].replaceAll('__C__', L.icon_color)"></span>
                             </span>
                         </label>
                         @endforeach
-                        <label class="cursor-pointer" title="Your own image">
+                        <label class="cursor-pointer" title="Upload your own">
                             <input type="radio" name="launcher_icon" value="custom" x-model="icon" class="peer sr-only">
-                            <span class="flex flex-col items-center gap-1.5 p-2 rounded-xl border border-dashed border-white/20 peer-checked:border-brand-500 peer-checked:ring-2 peer-checked:ring-brand-500/30 transition">
-                                <span class="grid place-items-center w-11 h-11 rounded-full overflow-hidden bg-white/5">
-                                    <template x-if="upload"><img :src="upload" alt="" class="w-full h-full object-cover"></template>
-                                    <template x-if="!upload">
-                                        @if($widget->launcher_icon_path)
-                                        <img src="{{ asset('storage/' . $widget->launcher_icon_path) }}" alt="" class="w-full h-full object-cover">
-                                        @else
-                                        <svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
-                                        @endif
-                                    </template>
-                                </span>
-                                <span class="text-[10px] text-gray-400 text-center leading-tight">Upload</span>
+                            <span class="grid place-items-center aspect-square rounded-xl ring-1 ring-dashed ring-white/20 peer-checked:ring-2 peer-checked:ring-brand-500 overflow-hidden bg-white/5">
+                                <template x-if="upload"><img :src="upload" alt="" class="w-full h-full object-cover"></template>
+                                <template x-if="!upload"><svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></template>
                             </span>
                         </label>
                     </div>
@@ -160,46 +174,136 @@
                                @change="const f = $event.target.files[0]; if (!f) return;
                                         if (!['image/png','image/jpeg'].includes(f.type)) { alert('Please choose a JPG or PNG image.'); $event.target.value=''; return; }
                                         if (f.size > 512 * 1024) { alert('The image must be 512 KB or smaller.'); $event.target.value=''; return; }
-                                        const img = new Image(); img.onload = () => { const ok = img.width === img.height && img.width >= 64 && img.width <= 512; if (!ok) { alert('The image must be square, between 64×64 and 512×512 pixels. This one is ' + img.width + '×' + img.height + '.'); $event.target.value=''; upload = null; } else { upload = img.src; } }; img.src = URL.createObjectURL(f);"
+                                        const img = new Image(); img.onload = () => { if (img.width !== img.height || img.width < 64 || img.width > 512) { alert('The image must be square, between 64×64 and 512×512 pixels. This one is ' + img.width + '×' + img.height + '.'); $event.target.value=''; } else { upload = img.src; } }; img.src = URL.createObjectURL(f);"
                                class="block w-full text-sm text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:bg-white/10 file:text-white">
                         <p class="mt-2 text-xs text-gray-500">{{ \App\Support\LauncherIcons::UPLOAD_HINT }}</p>
                         @error('launcher_icon_file')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
                     </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1.5">Tone</label>
-                    <select name="tone" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-500/50 transition">
-                        @foreach(['friendly' => '😊 Friendly', 'professional' => '💼 Professional', 'sales' => '🚀 Sales', 'support' => '🎧 Support'] as $val => $lbl)
-                        <option value="{{ $val }}" {{ $widget->tone === $val ? 'selected' : '' }}>{{ $lbl }}</option>
-                        @endforeach
-                    </select>
-                </div>
+
+                    <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
+                        {{-- Shape --}}
+                        <div>
+                            <p class="{{ $lbl }}">Shape</p>
+                            <div class="flex gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
+                                @foreach(['circle' => 'Circle', 'rounded' => 'Rounded', 'square' => 'Square', 'custom' => 'Custom'] as $val => $t)
+                                <label class="flex-1"><input type="radio" name="launcher_shape" value="{{ $val }}" x-model="shape" @change="pShape = shape" class="peer sr-only"><span class="{{ $seg }} block">{{ $t }}</span></label>
+                                @endforeach
+                            </div>
+                            <div x-show="shape === 'custom'" x-cloak class="mt-3">
+                                <div class="flex justify-between text-[11px] text-gray-500"><span>Corner radius</span><span x-text="L.radius + 'px'"></span></div>
+                                <input type="range" name="launcher[radius]" min="0" max="48" x-model="L.radius" class="w-full accent-brand-500">
+                            </div>
+                        </div>
+                        {{-- Size --}}
+                        <div>
+                            <div class="flex justify-between"><p class="{{ $lbl }}">Size</p><span class="text-[11px] text-gray-500" x-text="L.size + 'px'"></span></div>
+                            <input type="range" name="launcher[size]" min="40" max="96" step="2" x-model="L.size" class="w-full accent-brand-500 mt-2">
+                            <div class="flex justify-between text-[10px] text-gray-600"><span>Small</span><span>Large</span></div>
+                        </div>
+                        {{-- Background --}}
+                        <div class="sm:col-span-2">
+                            <p class="{{ $lbl }}">Background</p>
+                            <div class="flex flex-wrap items-center gap-3">
+                                <div class="flex gap-1 p-1 rounded-xl bg-white/5 border border-white/10 w-48">
+                                    @foreach(['solid' => 'Solid', 'gradient' => 'Gradient'] as $val => $t)
+                                    <label class="flex-1"><input type="radio" name="launcher[bg_type]" value="{{ $val }}" x-model="L.bg_type" class="peer sr-only"><span class="{{ $seg }} block">{{ $t }}</span></label>
+                                    @endforeach
+                                </div>
+                                <label class="flex items-center gap-2 text-xs text-gray-400"><input type="color" name="launcher[bg]" x-model="L.bg" class="w-9 h-9 rounded-lg bg-transparent cursor-pointer"><span x-text="L.bg_type === 'gradient' ? 'From' : 'Colour'"></span></label>
+                                <label x-show="L.bg_type === 'gradient'" class="flex items-center gap-2 text-xs text-gray-400"><input type="color" name="launcher[bg2]" x-model="L.bg2" class="w-9 h-9 rounded-lg bg-transparent cursor-pointer">To</label>
+                                <div x-show="L.bg_type === 'gradient'" class="flex-1 min-w-[140px]">
+                                    <div class="flex justify-between text-[11px] text-gray-500"><span>Angle</span><span x-text="L.angle + '°'"></span></div>
+                                    <input type="range" name="launcher[angle]" min="0" max="360" step="5" x-model="L.angle" class="w-full accent-brand-500">
+                                </div>
+                            </div>
+                        </div>
+                        {{-- Icon colour --}}
+                        <div>
+                            <p class="{{ $lbl }}">Icon and label colour</p>
+                            <label class="flex items-center gap-2.5"><input type="color" name="launcher[icon_color]" x-model="L.icon_color" class="w-9 h-9 rounded-lg bg-transparent cursor-pointer"><span class="text-[11px] font-mono text-gray-500 uppercase" x-text="L.icon_color"></span></label>
+                        </div>
+                        {{-- Border --}}
+                        <div>
+                            <div class="flex justify-between"><p class="{{ $lbl }}">Border</p><span class="text-[11px] text-gray-500" x-text="+L.border_width ? L.border_width + 'px' : 'None'"></span></div>
+                            <div class="flex items-center gap-3">
+                                <input type="range" name="launcher[border_width]" min="0" max="8" x-model="L.border_width" class="flex-1 accent-brand-500">
+                                <input type="color" name="launcher[border_color]" x-model="L.border_color" class="w-9 h-9 rounded-lg bg-transparent cursor-pointer" :class="!+L.border_width && 'opacity-40'">
+                            </div>
+                        </div>
+                        {{-- Shadow --}}
+                        <div>
+                            <p class="{{ $lbl }}">Shadow</p>
+                            <div class="flex gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
+                                @foreach(['none' => 'None', 'soft' => 'Soft', 'medium' => 'Medium', 'strong' => 'Strong'] as $val => $t)
+                                <label class="flex-1"><input type="radio" name="launcher[shadow]" value="{{ $val }}" x-model="L.shadow" class="peer sr-only"><span class="{{ $seg }} block">{{ $t }}</span></label>
+                                @endforeach
+                            </div>
+                        </div>
+                        {{-- Animation --}}
+                        <div>
+                            <p class="{{ $lbl }}">Attention effect</p>
+                            <div class="grid grid-cols-3 gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
+                                @foreach(\App\Support\LauncherIcons::ANIMATIONS as $val => $t)
+                                <label><input type="radio" name="launcher[animation]" value="{{ $val }}" x-model="L.animation" class="peer sr-only"><span class="{{ $seg }} block">{{ $t }}</span></label>
+                                @endforeach
+                            </div>
+                        </div>
+                        {{-- Label --}}
+                        <div class="sm:col-span-2">
+                            <label class="{{ $lbl }}">Text beside the icon <span class="font-normal text-gray-500">(optional, hidden on phones)</span></label>
+                            <input name="launcher[label]" x-model="L.label" maxlength="40" placeholder="e.g. Chat with us" class="{{ $in }}">
+                        </div>
+                        {{-- Position --}}
+                        <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+                            <div>
+                                <p class="{{ $lbl }}">Position</p>
+                                <div class="grid grid-cols-2 gap-1 p-1 rounded-xl bg-white/5 border border-white/10 w-28">
+                                    @foreach(['top-left' => '↖', 'top-right' => '↗', 'bottom-left' => '↙', 'bottom-right' => '↘'] as $val => $t)
+                                    <label title="{{ str_replace('-', ' ', ucfirst($val)) }}"><input type="radio" name="position" value="{{ $val }}" @checked(($widget->position ?? 'bottom-right') === $val) @change="pPosition = '{{ $val }}'" class="peer sr-only"><span class="{{ $seg }} block">{{ $t }}</span></label>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-[11px] text-gray-500"><span>From the side</span><span x-text="L.offset_x + 'px'"></span></div>
+                                <input type="range" name="launcher[offset_x]" min="0" max="120" x-model="L.offset_x" class="w-full accent-brand-500">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-[11px] text-gray-500"><span>From the edge</span><span x-text="L.offset_y + 'px'"></span></div>
+                                <input type="range" name="launcher[offset_y]" min="0" max="120" x-model="L.offset_y" class="w-full accent-brand-500">
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1.5">Font Family</label>
-                <select name="font_family" @change="pFont = $event.target.value" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-500/50 transition">
-                    @foreach(["'Plus Jakarta Sans', system-ui, sans-serif" => 'Inter (Default)', "'Poppins', sans-serif" => 'Poppins', "'Roboto', sans-serif" => 'Roboto', "'Open Sans', sans-serif" => 'Open Sans', "'DM Sans', sans-serif" => 'DM Sans', "system-ui, sans-serif" => 'System Default', "'Georgia', serif" => 'Georgia (Serif)', "'Courier New', monospace" => 'Monospace'] as $val => $lbl)
-                    <option value="{{ $val }}" {{ $widget->font_family === $val ? 'selected' : '' }}>{{ $lbl }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            {{-- AI Avatar --}}
-            <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">AI Avatar</label>
-                <div class="flex items-center gap-4">
-                    @if($widget->ai_avatar)
-                    <img src="{{ asset('storage/' . $widget->ai_avatar) }}" class="w-14 h-14 rounded-xl object-cover border border-white/10" alt="Current avatar">
-                    @else
-                    <div class="w-14 h-14 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl">🤖</div>
-                    @endif
-                    <div>
-                        <input type="file" name="ai_avatar" accept="image/*" class="text-sm text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-white/10 file:text-white file:text-xs file:font-medium hover:file:bg-white/20 cursor-pointer">
-                        <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 2MB. Shown in widget header.</p>
+            {{-- Live preview --}}
+            <aside class="xl:sticky xl:top-6 space-y-3">
+                <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">Preview</p>
+                <div class="relative h-[26rem] rounded-2xl overflow-hidden border border-white/10 bg-[linear-gradient(180deg,#f8fafc,#e2e8f0)]">
+                    <div class="p-5 space-y-2.5" aria-hidden="true">
+                        <div class="h-4 w-1/2 rounded bg-slate-300"></div>
+                        <div class="h-2.5 w-5/6 rounded bg-slate-200"></div>
+                        <div class="h-2.5 w-2/3 rounded bg-slate-200"></div>
+                        <div class="grid grid-cols-2 gap-2 pt-3"><div class="h-16 rounded-lg bg-slate-200"></div><div class="h-16 rounded-lg bg-slate-200"></div></div>
+                    </div>
+                    {{-- Mini chat window: theme colours, name and font update as you type --}}
+                    <div class="absolute w-52 rounded-xl overflow-hidden shadow-xl ring-1 ring-black/10 transition-all duration-200" :style="chatPos() + `background:${pBg};font-family:${pFont}`">
+                        <div class="flex items-center gap-2 px-3 py-2.5" :style="`background:linear-gradient(135deg, ${pColor}, ${pColor}cc)`">
+                            <span class="grid place-items-center w-6 h-6 rounded-full bg-white text-[11px] font-bold" :style="`color:${pColor}`" x-text="(pName || 'A').charAt(0).toUpperCase()"></span>
+                            <span class="text-xs font-semibold text-white truncate" x-text="pName || 'Assistant'"></span>
+                        </div>
+                        <div class="p-2.5 space-y-1.5">
+                            <p class="max-w-[85%] px-2.5 py-1.5 rounded-lg rounded-tl-sm text-[10px] leading-snug" :style="`background:${pText}14;color:${pText}`">Hi! How can I help today?</p>
+                            <p class="ml-auto max-w-[75%] px-2.5 py-1.5 rounded-lg rounded-tr-sm text-[10px] text-white" :style="`background:${pColor}`">Do you have openings?</p>
+                        </div>
+                    </div>
+                    <div class="absolute flex items-center justify-center transition-[width,height,border-radius,background,left,right,top,bottom] duration-200" :class="L.animation !== 'none' && 'pfx-anim-' + L.animation" :style="corner() + launcherStyle() + `;--pfx-ring:${L.bg}99`">
+                        <span class="shrink-0 grid place-items-center [&>svg]:w-full [&>svg]:h-full overflow-hidden" :style="icon === 'custom' && upload ? `width:100%;height:100%;border-radius:inherit` : `width:${Math.round(L.size * .5)}px;height:${Math.round(L.size * .5)}px`" x-html="iconHtml()"></span>
+                        <span x-show="L.label.trim()" class="text-sm font-semibold whitespace-nowrap" :style="`color:${L.icon_color};font-family:${pFont}`" x-text="L.label"></span>
                     </div>
                 </div>
-            </div>
+                <p class="text-[11px] text-gray-500">Updates live as you change settings. Gaps are shown at 60% scale. Save to publish them to your site.</p>
+            </aside>
         </div>
 
         {{-- ── Behavior Tab ─────────────────────────────────────────────────── --}}

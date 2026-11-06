@@ -56,7 +56,7 @@ class Widget extends Model
         'lead_qualification_flow', 'lead_qualification_enabled',
 
         // Security
-        'allowed_domains', 'domain_restriction', 'rate_limit', 'is_active', 'booking', 'launcher_icon', 'launcher_icon_path',
+        'allowed_domains', 'domain_restriction', 'rate_limit', 'is_active', 'booking', 'launcher_icon', 'launcher_icon_path', 'launcher',
 
         // Timestamps & stats
         'last_deployed_at', 'total_conversations', 'total_messages', 'total_leads',
@@ -83,6 +83,7 @@ class Widget extends Model
             'domain_restriction'          => 'boolean',
             'is_active'                   => 'boolean',
             'booking'                     => 'array',
+            'launcher'                    => 'array',
             'show_handoff_button'         => 'boolean',
             'webhook_enabled'             => 'boolean',
             'webhook_lead_always'         => 'boolean',

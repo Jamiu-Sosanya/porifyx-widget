@@ -263,16 +263,36 @@
     }
 
     function buildLauncherHTML() {
-        const t       = getTheme();
-        const pos     = config.position || 'bottom-right';
-        const hPos    = pos.includes('left') ? 'left:20px;' : 'right:20px;';
-        const vPos    = pos.includes('top')  ? 'top:20px;'  : 'bottom:20px;';
-        const shape   = config.launcher_shape === 'rounded' ? '16px' : (config.launcher_shape === 'square' ? '10px' : '22px');
-        const mHide   = config.show_on_mobile === false ? 'pfx-hide-mobile' : '';
+        const L      = config.launcher_style || {};
+        const pos    = config.position || 'bottom-right';
+        const size   = +L.size || 60;
+        const ox     = (L.offset_x != null ? +L.offset_x : 20) + 'px';
+        const oy     = (L.offset_y != null ? +L.offset_y : 20) + 'px';
+        const hPos   = pos.includes('left') ? 'left:' + ox + ';' : 'right:' + ox + ';';
+        const vPos   = pos.includes('top') ? 'top:' + oy + ';' : 'bottom:' + oy + ';';
+        const label  = (L.label || '').trim();
+        const shape  = config.launcher_shape;
+        const radius = shape === 'square' ? Math.round(size * 0.18) : shape === 'rounded' ? Math.round(size * 0.3)
+                     : shape === 'custom' ? (+L.radius || 0) : 999;
+        const bg     = L.bg_type === 'gradient'
+            ? 'linear-gradient(' + (+L.angle || 135) + 'deg,' + (L.bg || config.primary_color) + ',' + (L.bg2 || config.secondary_color || config.primary_color) + ')'
+            : (L.bg || config.primary_color);
+        const shadow = { none: 'none', soft: '0 6px 18px -6px rgba(0,0,0,.35)', medium: '0 10px 28px -6px rgba(0,0,0,.45)', strong: '0 18px 44px -8px rgba(0,0,0,.6)' }[L.shadow || 'medium'];
+        const border = +L.border_width ? (+L.border_width + 'px solid ' + (L.border_color || '#ffffff')) : 'none';
+        const anim   = L.animation && L.animation !== 'none' ? 'pfx-anim-' + L.animation : '';
+        const mHide  = config.show_on_mobile === false ? 'pfx-hide-mobile' : '';
+        const dims   = label ? 'height:' + size + 'px;padding:0 ' + Math.round(size * 0.32) + 'px 0 ' + Math.round(size * 0.22) + 'px;gap:10px;'
+                             : 'width:' + size + 'px;height:' + size + 'px;';
 
-        return '<div id="pfx-launcher" class="' + mHide + '" style="position:fixed;' + hPos + vPos + 'width:60px;height:60px;border-radius:' + shape + ';background:' + config.primary_color + ';display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 10px 28px -6px ' + config.primary_color + 'aa,0 2px 6px rgba(0,0,0,0.2);z-index:99998;transition:transform 0.3s,box-shadow 0.3s;" onmouseover="this.style.transform=\'scale(1.1)\';this.style.boxShadow=\'0 12px 40px rgba(0,0,0,0.45)\'" onmouseout="this.style.transform=\'scale(1)\';this.style.boxShadow=\'0 8px 30px rgba(0,0,0,0.35)\'">' +
-            launcherIconHTML() +
-            '<div id="pfx-badge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;border-radius:10px;background:#ef4444;color:white;font-size:11px;font-weight:700;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 2px 8px rgba(239,68,68,0.5);">0</div>' +
+        return '<style>@keyframes pfxPulse{0%{box-shadow:0 0 0 0 var(--pfx-ring)}70%{box-shadow:0 0 0 16px transparent}100%{box-shadow:0 0 0 0 transparent}}@keyframes pfxPing{0%{box-shadow:0 0 0 0 var(--pfx-ring)}30%{box-shadow:0 0 0 14px transparent}100%{box-shadow:0 0 0 0 transparent}}@keyframes pfxGlow{from{box-shadow:0 0 6px 0 var(--pfx-ring)}to{box-shadow:0 0 26px 6px var(--pfx-ring)}}@keyframes pfxBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes pfxFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}@keyframes pfxWiggle{0%,30%,100%{transform:rotate(0)}6%,18%{transform:rotate(-10deg)}12%,24%{transform:rotate(10deg)}}@keyframes pfxShake{0%,25%,100%{transform:translateX(0)}5%,15%{transform:translateX(-4px)}10%,20%{transform:translateX(4px)}}@keyframes pfxHeart{0%,40%,100%{transform:scale(1)}10%,30%{transform:scale(1.12)}20%{transform:scale(.97)}}.pfx-anim-pulse{animation:pfxPulse 2.2s infinite}.pfx-anim-ping{animation:pfxPing 3s infinite}.pfx-anim-glow{animation:pfxGlow 1.6s ease-in-out infinite alternate}.pfx-anim-bounce{animation:pfxBounce 2s ease-in-out infinite}.pfx-anim-float{animation:pfxFloat 3s ease-in-out infinite}.pfx-anim-wiggle{animation:pfxWiggle 2.6s ease-in-out infinite}.pfx-anim-shake{animation:pfxShake 3s ease-in-out infinite}.pfx-anim-heartbeat{animation:pfxHeart 1.8s ease-in-out infinite}@media(prefers-reduced-motion:reduce){[class*=pfx-anim-]{animation:none!important}}' +
+            '#pfx-launcher .pfx-l-icon{width:' + Math.round(size * 0.5) + 'px;height:' + Math.round(size * 0.5) + 'px;display:flex;align-items:center;justify-content:center;flex-shrink:0}#pfx-launcher .pfx-l-icon svg{width:100%;height:100%}' +
+            '@media(max-width:640px){#pfx-launcher .pfx-l-text{display:none}}</style>' +
+            '<div id="pfx-launcher" role="button" tabindex="0" aria-label="' + escapeAttr(label || 'Open chat') + '" class="' + mHide + ' ' + anim + '" style="position:fixed;' + hPos + vPos + dims +
+            '--pfx-ring:' + (L.bg || config.primary_color) + '99;border-radius:' + radius + 'px;background:' + bg + ';border:' + border + ';box-shadow:' + shadow + ';display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:99998;transition:transform .25s;box-sizing:border-box;" ' +
+            'onmouseover="this.style.transform=\'scale(1.06)\'" onmouseout="this.style.transform=\'\'">' +
+            '<span class="pfx-l-icon"' + (config.launcher_icon && config.launcher_icon.type === 'image' ? ' style="width:100%;height:100%;border-radius:inherit;overflow:hidden"' : '') + '>' + launcherIconHTML() + '</span>' +
+            (label ? '<span class="pfx-l-text" style="color:' + escapeAttr(L.icon_color || '#ffffff') + ';font:600 14px/1 ' + (config.font_family || 'system-ui,sans-serif') + ';white-space:nowrap;">' + escapeHtml(label) + '</span>' : '') +
+            '<div id="pfx-badge" style="position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;border-radius:10px;background:#ef4444;color:white;font-size:11px;font-weight:700;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 2px 8px rgba(239,68,68,0.5);">0</div>' +
             '</div>';
     }
 

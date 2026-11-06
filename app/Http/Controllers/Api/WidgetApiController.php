@@ -78,6 +78,7 @@ class WidgetApiController extends Controller
                 'position'         => $widget->position,
                 'launcher_shape'   => $widget->launcher_shape,
                 'launcher_icon'    => \App\Support\LauncherIcons::forWidget($widget),
+                'launcher_style'   => \App\Support\LauncherIcons::style($widget),
                 'font_family'      => $widget->font_family,
                 'theme'            => $widget->theme ?? 'dark',
 
