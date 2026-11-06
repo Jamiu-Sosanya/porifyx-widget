@@ -20,7 +20,7 @@
                 <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-gray-900"></span>
                 @endif
             </button>
-            <div x-show="open" @click.away="open = false" x-transition
+            <div x-show="open" x-cloak @click.away="open = false" x-transition
                  class="absolute right-0 mt-2 w-80 bg-gray-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50">
                 <div class="p-4 border-b border-white/5">
                     <h3 class="text-sm font-semibold text-white">Notifications</h3>
@@ -84,7 +84,7 @@
                 <img src="{{ auth()->user()->avatarUrl() }}" alt="" class="w-8 h-8 rounded-lg object-cover">
                 <svg class="w-4 h-4 text-gray-500 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
             </button>
-            <div x-show="open" @click.away="open = false" x-transition class="absolute right-0 mt-2 w-56 bg-gray-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50">
+            <div x-show="open" x-cloak @click.away="open = false" x-transition class="absolute right-0 mt-2 w-56 bg-gray-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50">
                 <div class="p-3 border-b border-white/5">
                     <p class="text-sm font-medium text-white">{{ auth()->user()->name }}</p>
                     <p class="text-xs text-gray-500">{{ auth()->user()->email }}</p>

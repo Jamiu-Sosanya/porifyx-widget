@@ -389,3 +389,5 @@ html.light .pfx-shell main .text-gray-500 { color: #6b7a90 !important; }
 @media (prefers-reduced-motion: reduce) {
     .pfx-shell *, .pfx-shell *::before, .pfx-shell *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+/* Alpine: keep x-cloak elements hidden until Alpine has started (prevents flashes on load) */
+[x-cloak] { display: none !important; }

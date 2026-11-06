@@ -118,7 +118,7 @@
                             </a>
                             @if($children)
                             <button type="button" @click="open = !open" class="absolute right-1.5 p-1.5 rounded-lg text-gray-500 hover:text-white hover:bg-white/5" :aria-expanded="open" aria-label="Show {{ $label }} pages">
-                                <svg class="w-4 h-4 transition-transform" :class="open && 'rotate-90'" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7"/></svg>
+                                <svg class="w-4 h-4 transition-transform {{ $on ? 'rotate-90' : '' }}" :class="open && 'rotate-90'" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7"/></svg>
                             </button>
                             @endif
                         </div>
