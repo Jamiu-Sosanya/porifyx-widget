@@ -286,12 +286,12 @@
         </div>
         {{-- Phones: swipeable row. Tablet and up: staggered 2x2 grid. --}}
         <div class="min-w-0 -mx-5 sm:mx-0">
-            <div class="flex sm:grid sm:grid-cols-2 gap-4 sm:gap-6 overflow-x-auto sm:overflow-visible snap-x snap-mandatory px-5 sm:px-0 pb-4 sm:pb-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div class="flex sm:grid sm:grid-cols-2 gap-4 sm:gap-6 items-start overflow-x-auto sm:overflow-visible snap-x snap-mandatory px-5 sm:px-0 pb-4 lg:pb-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 @foreach([['chat-services', '1', 'Choose a service'], ['chat-times', '2', 'Pick a free time'], ['chat-details', '3', 'Add details'], ['chat-done', '4', 'Booked, with a number']] as [$img, $step, $label])
-                <figure class="snap-center shrink-0 w-[78%] sm:w-auto group {{ $loop->even ? 'sm:translate-y-10' : '' }}">
+                <figure class="snap-center shrink-0 w-[78%] sm:w-auto group {{ $loop->even ? 'lg:translate-y-10' : '' }}">
                     <div class="rounded-[1.4rem] p-1.5 bg-gradient-to-b from-white/15 to-white/[.03] ring-1 ring-white/10 shadow-[0_30px_60px_-20px_rgba(0,0,0,.7)] transition duration-300 group-hover:-translate-y-1 group-hover:ring-brand-500/40">
                         <img src="{{ asset('images/landing/' . $img . '.webp') }}" alt="Chat booking step {{ $step }}: {{ $label }}" width="403" height="622" loading="lazy" decoding="async"
-                             class="w-full h-auto rounded-2xl">
+                             class="block w-full aspect-[403/622] object-cover object-top rounded-2xl">
                     </div>
                     <figcaption class="mt-3.5 flex items-center gap-2.5 text-sm font-semibold text-white/90">
                         <span class="grid place-items-center w-7 h-7 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-white text-xs shadow-lg shadow-brand-500/30">{{ $step }}</span>{{ $label }}
