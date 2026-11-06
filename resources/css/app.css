@@ -257,3 +257,7 @@ html.light .pfx-seg:hover { color: #0f172a !important; }
 .peer:checked + .pfx-seg, html.light .peer:checked + .pfx-seg { background: var(--color-brand-500, #2f5ee8); color: #fff !important; box-shadow: 0 4px 12px -4px rgba(47,94,232,.6); }
 .peer:focus-visible + .pfx-seg { outline: 2px solid var(--color-brand-400, #6b8cff); outline-offset: 2px; }
 html.light main input[type=color] { box-shadow: inset 0 0 0 1px #cbd5e1; border-radius: .5rem; }
+/* Toggle switches: visible track in light mode */
+html.light main .peer + span.bg-white\/15 { background-color: #cbd5e1 !important; }
+html.light main .peer:checked + span.bg-white\/15 { background-color: var(--color-brand-500, #2f5ee8) !important; }
+html.light main .peer + span.bg-white\/15::after { box-shadow: 0 1px 3px rgba(15,23,42,.25); }
