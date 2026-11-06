@@ -14,6 +14,7 @@
             </div>
             <div class="space-y-2 text-sm border-t border-white/5 pt-4">
                 <div class="flex justify-between"><span class="text-gray-500">Plan</span><span class="text-white">{{ $user->subscription?->plan?->name ?? 'None' }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">AI credits</span><span class="text-white">{{ number_format($user->ai_credits) }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-500">Company</span><span class="text-white">{{ $user->company_name ?? '-' }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-500">Joined</span><span class="text-white">{{ $user->created_at->format('M d, Y') }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-500">Last Login</span><span class="text-white">{{ $user->last_login_at?->diffForHumans() ?? 'Never' }}</span></div>
@@ -25,6 +26,12 @@
                 <select name="role" class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none transition"><option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>User</option><option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option></select>
                 <label class="flex items-center gap-2"><input type="checkbox" name="is_active" value="1" {{ $user->is_active ? 'checked' : '' }} class="rounded bg-white/5 border-white/20 text-brand-600"><span class="text-sm text-gray-300">Active</span></label>
                 <button type="submit" class="w-full px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white text-sm font-medium rounded-xl transition">Update</button>
+            </form>
+            <form method="POST" action="{{ route('admin.users.credits', $user) }}" class="mt-4 space-y-2 border-t border-white/5 pt-4">@csrf
+                <p class="text-xs font-semibold text-gray-400">Give AI credits <span class="font-normal text-gray-500">(negative to remove)</span></p>
+                <div class="flex gap-2"><input type="number" name="credits" required placeholder="1000" class="w-28 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white">
+                <input name="note" placeholder="Reason (optional)" class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white"></div>
+                <button class="w-full px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-sm font-medium rounded-xl">Give credits</button>
             </form>
         </div>
         <div class="lg:col-span-2 space-y-4">

@@ -156,6 +156,16 @@ class AdminController extends Controller
         return view('admin.users', compact('users'));
     }
 
+    /** Give (or take back, with a negative number) AI reply credits. */
+    public function grantCredits(Request $request, User $user)
+    {
+        $d = $request->validate(['credits' => 'required|integer|between:-1000000,1000000|not_in:0', 'note' => 'nullable|string|max:200']);
+        $user->forceFill(['ai_credits' => max(0, $user->ai_credits + $d['credits'])])->save();
+        \App\Support\Audit::log('credits.granted', $user, ['credits' => $d['credits'], 'note' => $d['note'] ?? null]);
+
+        return back()->with('success', ($d['credits'] > 0 ? 'Added ' : 'Removed ') . number_format(abs($d['credits'])) . ' AI credits. Balance: ' . number_format($user->ai_credits) . '.');
+    }
+
     public function showUser(User $user)
     {
         $user->load(['subscription.plan', 'widgets', 'leads']);

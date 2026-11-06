@@ -31,6 +31,41 @@ class PayPalController extends Controller
         }
     }
 
+    public function credits(Request $request, PayPalService $pp)
+    {
+        $pack = config('plans.credit_packs.' . $request->input('pack'));
+        abort_unless(PayPalService::ready() && $pack, 404);
+        try {
+            [, $approve] = $pp->createOrder(number_format($pack[1], 2, '.', ''), number_format($pack[0]) . ' AI reply credits', $request->user()->id,
+                route('billing.paypal.credits.return', ['pack' => $request->input('pack')]), route('settings.billing'));
+
+            return redirect()->away($approve);
+        } catch (\Throwable $e) {
+            Log::error('PayPal credits failed: ' . $e->getMessage());
+
+            return back()->with('error', 'PayPal could not start. Please try another payment method.');
+        }
+    }
+
+    /** Capture with PayPal, then check payer, amount and that the order was not used before. */
+    public function creditsReturned(Request $request, PayPalService $pp)
+    {
+        $pack = config('plans.credit_packs.' . $request->get('pack'));
+        $id = (string) $request->get('token');
+        try {
+            $o = $pack && $id ? $pp->captureOrder($id) : [];
+        } catch (\Throwable) {
+            $o = [];
+        }
+        $cap = $o['purchase_units'][0]['payments']['captures'][0] ?? [];
+        $ok = ($o['status'] ?? '') === 'COMPLETED' && (int) ($cap['custom_id'] ?? $o['purchase_units'][0]['custom_id'] ?? 0) === $request->user()->id
+            && (float) ($cap['amount']['value'] ?? 0) >= $pack[1];
+        if (! $ok) return redirect()->route('settings.billing')->with('error', 'We could not confirm the PayPal payment.');
+        if (\Illuminate\Support\Facades\Cache::add('pfx:pp-credits:' . $id, 1, now()->addDays(30))) $request->user()->increment('ai_credits', $pack[0]);
+
+        return redirect()->route('settings.billing')->with('success', number_format($pack[0]) . ' AI credits added.');
+    }
+
     /** Back from PayPal: confirm with PayPal before activating (never trust the query string alone). */
     public function returned(Request $request, PayPalService $pp)
     {

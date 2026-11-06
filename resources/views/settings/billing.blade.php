@@ -22,7 +22,7 @@
     <div class="mb-5 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-sm text-emerald-400">Payment received. Your plan updates within a minute; refresh if it has not changed yet.</div>
     @endif
     @if($pfxPending)
-    <div class="mb-5 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-sm text-amber-300">Bank transfer for <strong>{{ $pfxPending->plan->name }}</strong> (reference {{ $pfxPending->reference }}) is waiting for confirmation. We activate it as soon as the money arrives.</div>
+    <div class="mb-5 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-sm text-amber-300">Bank transfer for <strong>{{ $pfxPending->label() }}</strong> (reference {{ $pfxPending->reference }}) is waiting for confirmation. We activate it as soon as the money arrives.</div>
     @endif
     @if($pfxStripe && auth()->user()->subscription?->stripe_customer_id)
     <div class="mb-5 flex justify-end"><a href="{{ route('billing.portal') }}" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-semibold text-white">Manage card &amp; invoices</a></div>
@@ -103,15 +103,22 @@
             <p class="text-sm font-semibold text-white">AI reply credits <span class="ml-2 px-2 py-0.5 rounded-full bg-brand-500/15 text-brand-300 text-xs">{{ number_format($pfxCredits) }} left</span></p>
             <p class="mt-1 text-xs text-gray-400">Your plan's AI replies are included every month. Credits are only used after that, never expire, and keep your assistant answering at busy times. No surprise upgrades.</p>
         </div>
-        @if($pfxStripe)
-        <div class="flex flex-wrap gap-2">
-            @foreach(config('plans.credit_packs') as $k => [$n, $price])
-            <form method="POST" action="{{ route('billing.credits') }}">@csrf<input type="hidden" name="pack" value="{{ $k }}">
-                <button class="px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm text-white"><strong>{{ number_format($n) }}</strong> replies · ${{ $price }}</button></form>
-            @endforeach
+        @php $pfxPP = \App\Services\PayPalService::ready(); @endphp
+        @if($pfxStripe || $pfxPP || $pfxBank)
+        <div x-data="{ pack: 'm' }" class="space-y-2">
+            <div class="flex flex-wrap gap-2">
+                @foreach(config('plans.credit_packs') as $k => [$n, $price])
+                <button type="button" @click="pack = '{{ $k }}'" :class="pack === '{{ $k }}' ? 'border-brand-500 bg-brand-500/15' : 'border-white/10 bg-white/5'" class="px-4 py-2 rounded-xl border text-sm text-white"><strong>{{ number_format($n) }}</strong> replies · ${{ $price }}</button>
+                @endforeach
+            </div>
+            <div class="flex flex-wrap gap-2 text-xs font-semibold">
+                @if($pfxStripe)<form method="POST" action="{{ route('billing.credits') }}">@csrf<input type="hidden" name="pack" :value="pack"><button class="px-3 py-2 rounded-lg bg-brand-500 text-white">Pay by card</button></form>@endif
+                @if($pfxPP)<form method="POST" action="{{ route('billing.paypal.credits') }}">@csrf<input type="hidden" name="pack" :value="pack"><button class="px-3 py-2 rounded-lg bg-[#ffc439] text-gray-900">PayPal</button></form>@endif
+                @if($pfxBank)<a :href="'{{ route('billing.bank') }}?pack=' + pack" class="px-3 py-2 rounded-lg bg-white/10 text-white">Bank transfer</a>@endif
+            </div>
         </div>
         @else
-        <p class="text-xs text-gray-500">Card payments are not set up yet. Contact us to add credits.</p>
+        <p class="text-xs text-gray-500">Online payments are not set up yet. Contact us to add credits.</p>
         @endif
     </div>
 

@@ -233,6 +233,8 @@ Route::middleware(['auth', \App\Http\Middleware\WorkspaceContext::class])->group
     Route::post('/settings/billing/bank-transfer', [\App\Http\Controllers\BillingController::class, 'bankSubmit'])->name('billing.bank.submit');
     Route::post('/settings/billing/paypal', [\App\Http\Controllers\PayPalController::class, 'checkout'])->name('billing.paypal');
     Route::get('/settings/billing/paypal/return', [\App\Http\Controllers\PayPalController::class, 'returned'])->name('billing.paypal.return');
+    Route::post('/settings/billing/credits/paypal', [\App\Http\Controllers\PayPalController::class, 'credits'])->name('billing.paypal.credits');
+    Route::get('/settings/billing/credits/paypal/return', [\App\Http\Controllers\PayPalController::class, 'creditsReturned'])->name('billing.paypal.credits.return');
     Route::post('/settings/billing/credits', [\App\Http\Controllers\BillingController::class, 'buyCredits'])->name('billing.credits');
     Route::get('/settings/billing/portal', [\App\Http\Controllers\BillingController::class, 'portal'])->name('billing.portal');
     Route::post('/settings/billing/cancel', [SettingsController::class, 'cancelSubscription'])->name('settings.billing.cancel');
@@ -266,6 +268,7 @@ Route::middleware(['auth', \App\Http\Middleware\WorkspaceContext::class])->group
         Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
         Route::get('/users', [AdminController::class, 'users'])->name('users');
         Route::get('/users/{user}', [AdminController::class, 'showUser'])->name('users.show');
+        Route::post('/users/{user}/credits', [AdminController::class, 'grantCredits'])->name('users.credits');
         Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
         Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('users.delete');
         Route::post('/users/{user}/impersonate', [AdminController::class, 'impersonateUser'])->name('users.impersonate');

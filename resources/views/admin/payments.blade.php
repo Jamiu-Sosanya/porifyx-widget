@@ -12,7 +12,7 @@
         <div class="px-5 py-4 border-b border-white/5 last:border-0 flex flex-col lg:flex-row lg:items-center gap-3">
             <div class="min-w-0 flex-1">
                 <p class="text-sm font-medium text-white">{{ $p->user->name }} <span class="text-gray-500">· {{ $p->user->email }}</span></p>
-                <p class="text-xs text-gray-400">{{ $p->plan->name }} ({{ $p->billing_cycle }}) · <strong class="text-white">${{ number_format($p->amount, 2) }}</strong> · reference <span class="font-mono text-brand-400">{{ $p->reference }}</span> · {{ $p->created_at->diffForHumans() }}</p>
+                <p class="text-xs text-gray-400">{{ $p->label() }} · <strong class="text-white">${{ number_format($p->amount, 2) }}</strong> · reference <span class="font-mono text-brand-400">{{ $p->reference }}</span> · {{ $p->created_at->diffForHumans() }}</p>
             </div>
             <div class="flex flex-wrap gap-2">
                 <form method="POST" action="{{ route('admin.payments.approve', $p) }}" onsubmit="return confirm('Money received? This activates the plan.')">@csrf<button class="px-4 py-2 rounded-lg bg-emerald-500 text-white text-xs font-semibold">Approve</button></form>
@@ -34,7 +34,7 @@
             <tbody>
                 @foreach($recent as $p)
                 <tr class="border-t border-white/5 text-gray-300">
-                    <td class="px-5 py-3">{{ $p->user->email }}</td><td class="px-5 py-3">{{ $p->plan->name }}</td><td class="px-5 py-3">${{ number_format($p->amount, 2) }}</td>
+                    <td class="px-5 py-3">{{ $p->user->email }}</td><td class="px-5 py-3">{{ $p->label() }}</td><td class="px-5 py-3">${{ number_format($p->amount, 2) }}</td>
                     <td class="px-5 py-3 font-mono text-xs">{{ $p->reference }}</td>
                     <td class="px-5 py-3"><span class="px-2 py-0.5 rounded-full text-[11px] font-semibold {{ $p->status === 'approved' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-rose-500/15 text-rose-400' }}">{{ ucfirst($p->status) }}</span></td>
                     <td class="px-5 py-3 text-xs text-gray-500">{{ $p->reviewed_at?->diffForHumans() }}</td>

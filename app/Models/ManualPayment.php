@@ -7,7 +7,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ManualPayment extends Model
 {
-    protected $fillable = ['user_id', 'plan_id', 'billing_cycle', 'amount', 'reference', 'status', 'note', 'reviewed_by', 'reviewed_at'];
+    /** What was bought, for lists and emails. */
+    public function label(): string
+    {
+        return $this->credits ? number_format($this->credits) . ' AI credits' : ($this->plan?->name . ' (' . $this->billing_cycle . ')');
+    }
+
+    protected $fillable = ['user_id', 'plan_id', 'billing_cycle', 'amount', 'reference', 'status', 'note', 'reviewed_by', 'reviewed_at', 'credits'];
 
     protected function casts(): array
     {
@@ -20,6 +26,12 @@ class ManualPayment extends Model
     /** Approve: start (or extend) the customer's subscription for one billing period. */
     public function approve(User $admin): void
     {
+        if ($this->credits) {
+            $this->user->increment('ai_credits', $this->credits);
+            $this->update(['status' => 'approved', 'reviewed_by' => $admin->id, 'reviewed_at' => now()]);
+
+            return;
+        }
         $sub = $this->user->subscription;
         $from = $sub && $sub->plan_id === $this->plan_id && $sub->current_period_end?->isFuture() ? $sub->current_period_end : now();
         $end = $this->billing_cycle === 'yearly' ? $from->copy()->addYear() : $from->copy()->addMonth();

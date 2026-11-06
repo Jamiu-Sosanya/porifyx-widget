@@ -129,6 +129,10 @@ class BillingController extends Controller
     public function bank(Request $request)
     {
         abort_unless(self::bankReady(), 404);
+        if ($pack = config('plans.credit_packs.' . $request->get('pack'))) {
+            return view('settings.bank-transfer', ['plan' => null, 'pack' => $request->get('pack'), 'credits' => $pack[0], 'cycle' => null, 'amount' => $pack[1],
+                'details' => SystemSetting::get('bank_transfer_details'), 'suggested' => 'PFX-' . $request->user()->id . '-CR']);
+        }
         $plan = Plan::active()->findOrFail($request->integer('plan'));
         $cycle = $request->get('cycle') === 'yearly' ? 'yearly' : 'monthly';
 
@@ -143,6 +147,15 @@ class BillingController extends Controller
     public function bankSubmit(Request $request)
     {
         abort_unless(self::bankReady(), 404);
+        if ($pack = config('plans.credit_packs.' . $request->get('pack'))) {
+            $ref = $request->validate(['reference' => 'required|string|max:120'])['reference'];
+            if (ManualPayment::where('user_id', $request->user()->id)->where('status', 'pending')->exists()) {
+                return redirect()->route('settings.billing')->with('error', 'You already have a bank payment waiting for approval.');
+            }
+            ManualPayment::create(['user_id' => $request->user()->id, 'credits' => $pack[0], 'amount' => $pack[1], 'reference' => $ref]);
+
+            return redirect()->route('settings.billing')->with('success', 'Thanks! We will add ' . number_format($pack[0]) . ' AI credits as soon as your transfer arrives.');
+        }
         $d = $request->validate(['plan_id' => 'required|exists:plans,id', 'billing_cycle' => 'required|in:monthly,yearly', 'reference' => 'required|string|max:120']);
         $plan = Plan::active()->findOrFail($d['plan_id']);
         $user = $request->user();

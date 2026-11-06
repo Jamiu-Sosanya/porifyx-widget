@@ -21,9 +21,9 @@ class PaymentController extends Controller
     {
         abort_unless($payment->status === 'pending', 409);
         $payment->approve($request->user());
-        \App\Support\Audit::log('payment.approved', $payment, ['user' => $payment->user->email, 'plan' => $payment->plan->name, 'amount' => (string) $payment->amount]);
+        \App\Support\Audit::log('payment.approved', $payment, ['user' => $payment->user->email, 'plan' => $payment->label(), 'amount' => (string) $payment->amount]);
 
-        return back()->with('success', "Approved. {$payment->user->name} is now on {$payment->plan->name}.");
+        return back()->with('success', 'Approved: ' . $payment->user->name . ' · ' . $payment->label() . '.');
     }
 
     public function reject(Request $request, ManualPayment $payment)

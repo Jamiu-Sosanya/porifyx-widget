@@ -44,6 +44,23 @@ class PayPalService
         return [$r->json('id'), $approve];
     }
 
+    /** One-off payment (Orders v2). Returns [order id, approval URL]. */
+    public function createOrder(string $amount, string $description, int $userId, string $returnUrl, string $cancelUrl): array
+    {
+        $r = $this->http()->post($this->base() . '/v2/checkout/orders', [
+            'intent' => 'CAPTURE',
+            'purchase_units' => [['amount' => ['currency_code' => 'USD', 'value' => $amount], 'description' => $description, 'custom_id' => (string) $userId]],
+            'application_context' => ['brand_name' => config('branding.name'), 'user_action' => 'PAY_NOW', 'return_url' => $returnUrl, 'cancel_url' => $cancelUrl],
+        ])->throw();
+
+        return [$r->json('id'), collect($r->json('links'))->firstWhere('rel', 'approve')['href'] ?? null];
+    }
+
+    public function captureOrder(string $id): array
+    {
+        return $this->http()->withBody('{}', 'application/json')->post($this->base() . '/v2/checkout/orders/' . $id . '/capture')->json() ?? [];
+    }
+
     public function subscription(string $id): array
     {
         return $this->http()->get($this->base() . '/v1/billing/subscriptions/' . rawurlencode($id))->throw()->json();
