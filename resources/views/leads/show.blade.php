@@ -35,6 +35,17 @@
                 <div class="space-y-2 text-sm">
                     @if($lead->phone)<div class="flex justify-between"><span class="text-gray-500">Phone</span><span class="text-white">{{ $lead->phone }}</span></div>@endif
                     @if($lead->company)<div class="flex justify-between"><span class="text-gray-500">Company</span><span class="text-white">{{ $lead->company }}</span></div>@endif
+                    @if($lead->enrichment)
+                    <div class="mt-3 -mx-1 rounded-xl border border-white/5 bg-white/[0.03] p-3 space-y-1.5">
+                        <div class="flex items-center gap-2">
+                            @if(! empty($lead->enrichment['logo']))<img src="{{ $lead->enrichment['logo'] }}" alt="" class="w-5 h-5 rounded">@endif
+                            <span class="text-white font-medium">{{ $lead->enrichment['company'] ?? $lead->enrichment['domain'] }}</span>
+                            <span class="ml-auto px-2 py-0.5 rounded-full text-[10px] font-semibold {{ ($lead->enrichment['type'] ?? '') === 'business' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-white/5 text-gray-400' }}">{{ ($lead->enrichment['type'] ?? '') === 'business' ? 'Business email' : 'Personal email' }}</span>
+                        </div>
+                        @if(! empty($lead->enrichment['description']))<p class="text-xs text-gray-400">{{ $lead->enrichment['description'] }}</p>@endif
+                        @if(! empty($lead->enrichment['socials']))<p class="flex flex-wrap gap-2 text-xs">@foreach($lead->enrichment['socials'] as $soc)<a href="{{ $soc }}" target="_blank" rel="noopener" class="text-brand-400">{{ parse_url($soc, PHP_URL_HOST) }}</a>@endforeach</p>@endif
+                    </div>
+                    @endif
                     @foreach(array_diff_key((array) $lead->form_data, array_flip(['name', 'email', 'phone', 'company'])) as $fk => $fv)
                     <div class="flex justify-between gap-3"><span class="text-gray-500">{{ ucfirst(str_replace('_', ' ', $fk)) }}</span><span class="text-white text-right break-words min-w-0">{{ is_bool($fv) ? ($fv ? 'Yes' : 'No') : $fv }}</span></div>
                     @endforeach

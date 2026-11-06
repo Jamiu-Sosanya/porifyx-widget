@@ -33,7 +33,7 @@ class TicketMail extends Mailable
         return new Envelope(
             from: $toCustomer ? new Address(config('mail.from.address'), $brand) : null,
             subject: $subject . ' [' . $t->number . ']',
-            replyTo: $toCustomer ? ($t->owner->email ? [$t->owner->email] : []) : [$t->requester_email],
+            replyTo: $toCustomer ? array_filter([($t->owner->support_settings['inbound_address'] ?? null) ?: $t->owner->email]) : [$t->requester_email],
         );
     }
 

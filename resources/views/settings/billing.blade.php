@@ -153,6 +153,19 @@
                             {{ $isCurrent ? 'disabled' : '' }}>
                         {{ $isCurrent ? 'Current Plan' : ($plan ? 'Switch to ' . $p->name : 'Get Started') }}
                     </button>
+                </form>
+                @if(! $isCurrent && \App\Services\PayPalService::ready() && ($p->paypal_monthly_id || $p->paypal_yearly_id))
+                <form method="POST" action="{{ route('billing.paypal') }}" class="mt-2">
+                    @csrf
+                    <input type="hidden" name="plan_id" value="{{ $p->id }}">
+                    <input type="hidden" name="billing_cycle" :value="cycle">
+                    <button class="w-full py-2 rounded-xl bg-[#ffc439] hover:bg-[#f2b92f] text-[#003087] text-sm font-bold">Pay with PayPal</button>
+                </form>
+                @endif
+                <form method="POST" action="{{ route('settings.billing.changePlan') }}">
+                    @csrf
+                    <input type="hidden" name="plan_id" value="{{ $p->id }}">
+                    <input type="hidden" name="billing_cycle" :value="cycle">
                     @if(! $isCurrent && $p->price_monthly > 0 && $pfxBank && $pfxStripe)
                     <button type="submit" name="method" value="bank" class="mt-2 w-full text-xs text-gray-400 hover:text-white">or pay by bank transfer</button>
                     @endif

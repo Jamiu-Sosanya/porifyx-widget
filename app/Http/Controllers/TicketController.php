@@ -135,12 +135,13 @@ class TicketController extends Controller
 
     public function settings(User $u): array
     {
-        return array_merge(['escalate_hours' => 24], is_array($u->support_settings) ? $u->support_settings : []);
+        return array_merge(['escalate_hours' => 24, 'inbound_address' => null, 'ai_draft' => false], is_array($u->support_settings) ? $u->support_settings : []);
     }
 
     public function saveSettings(Request $request)
     {
-        $d = $request->validate(['escalate_hours' => 'required|integer|min:0|max:720']);
+        $d = $request->validate(['escalate_hours' => 'required|integer|min:0|max:720', 'inbound_address' => 'nullable|email|max:190']);
+        $d['ai_draft'] = $request->boolean('ai_draft');
         $request->user()->update(['support_settings' => array_merge($this->settings($request->user()), $d)]);
 
         return back()->with('success', 'Escalation saved.');

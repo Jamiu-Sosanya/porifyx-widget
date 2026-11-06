@@ -10,6 +10,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Lead extends Model
 {
+    /** New email on a lead: look up the company in the background. */
+    protected static function booted(): void
+    {
+        static::saved(function (Lead $lead) {
+            if ($lead->email && $lead->wasChanged('email') || ($lead->wasRecentlyCreated && $lead->email)) {
+                \App\Jobs\EnrichLead::dispatch($lead->id)->afterResponse();
+            }
+        });
+    }
+
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
@@ -18,7 +28,7 @@ class Lead extends Model
         'score', 'temperature', 'quality_grade', 'engagement_score',
         'service_interest', 'budget_range', 'timeline', 'pain_point',
         'industry', 'company_size', 'notes', 'tags', 'status', 'priority',
-        'qualification_answers', 'form_data', 'qualified_at', 'last_engagement_at', 'follow_up_priority',
+        'qualification_answers', 'form_data', 'enrichment', 'qualified_at', 'last_engagement_at', 'follow_up_priority',
     ];
 
     protected function casts(): array
@@ -27,6 +37,7 @@ class Lead extends Model
             'tags'                   => 'array',
             'qualification_answers'  => 'array',
             'form_data'              => 'array',
+            'enrichment'             => 'array',
             'qualified_at'           => 'datetime',
             'last_engagement_at'     => 'datetime',
             'score'                  => 'integer',

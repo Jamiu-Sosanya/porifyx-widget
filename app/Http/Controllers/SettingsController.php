@@ -277,6 +277,10 @@ class SettingsController extends Controller
             return back()->with('error', 'No active subscription to cancel.');
         }
 
+        if ($subscription->paypal_subscription_id && \App\Services\PayPalService::ready()) {
+            try { app(\App\Services\PayPalService::class)->cancel($subscription->paypal_subscription_id); } catch (\Throwable $e) { report($e); }
+        }
+
         $subscription->update([
             'status'      => 'canceled',
             'ends_at'     => $subscription->current_period_end,

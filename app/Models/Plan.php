@@ -12,7 +12,7 @@ class Plan extends Model
 
     protected $fillable = [
         'name', 'slug', 'description', 'price_monthly', 'price_yearly',
-        'stripe_monthly_id', 'stripe_yearly_id', 'color', 'is_popular',
+        'stripe_monthly_id', 'stripe_yearly_id', 'paypal_monthly_id', 'paypal_yearly_id', 'color', 'is_popular',
         'is_active', 'sort_order', 'widgets_limit', 'messages_per_month',
         'training_sources_limit', 'leads_per_month', 'bookings_per_month', 'team_members_limit',
         'has_live_chat', 'workflow_automations_limit', 'has_ai_insights',

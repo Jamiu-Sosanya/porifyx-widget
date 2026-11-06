@@ -46,11 +46,24 @@
 </div>
 <div class="mt-5">{{ $tickets->links() }}</div>
 
-<form method="POST" action="{{ route('tickets.settings') }}" class="mt-6 flex flex-wrap items-center gap-3 text-sm text-gray-300">
+<form method="POST" action="{{ route('tickets.settings') }}" class="mt-6 rounded-2xl border border-white/5 bg-gray-900/50 p-5 space-y-4 text-sm text-gray-300">
     @csrf @method('PUT')
+    <div>
+        <h3 class="text-sm font-semibold text-white">Email channel</h3>
+        <p class="mt-1 text-xs text-gray-500">Turn emails into tickets. In Mailgun (Routes → forward), Postmark (Inbound webhook) or SendGrid (Inbound Parse), send incoming mail for your support address to this URL:</p>
+        <input readonly onclick="this.select()" value="{{ \App\Http\Controllers\Api\InboundEmailController::url(auth()->user()) }}" class="mt-2 w-full bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs font-mono text-gray-200">
+        <div class="mt-3 grid sm:grid-cols-2 gap-3">
+            <label class="block text-xs text-gray-400">Support address customers reply to
+                <input type="email" name="inbound_address" value="{{ $settings['inbound_address'] }}" placeholder="support@yourcompany.com" class="mt-1 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white">
+            </label>
+            <label class="flex items-center gap-2 text-xs text-gray-300 sm:mt-6"><input type="checkbox" name="ai_draft" value="1" @checked($settings['ai_draft'])> Let the AI draft a reply (saved as an internal note)</label>
+        </div>
+    </div>
+    <div class="flex flex-wrap items-center gap-3">
     Escalate open tickets with no reply after
     <input type="number" name="escalate_hours" min="0" max="720" value="{{ $settings['escalate_hours'] }}" class="w-20 bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-white">
     hours <span class="text-xs text-gray-500">(0 = off)</span>
-    <button class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-semibold">Save</button>
+    <button class="ml-auto px-4 py-2 rounded-lg bg-brand-500 text-white text-xs font-semibold">Save</button>
+    </div>
 </form>
 @endsection

@@ -40,7 +40,8 @@ class SiteHealth
             $c[] = ['Queue worker', 'warn', 'Queue tables not found'];
         }
 
-        $c[] = ['Payments', BillingController::stripeReady() || BillingController::bankReady() ? 'ok' : 'warn', BillingController::stripeReady() ? 'Stripe connected' . (BillingController::bankReady() ? ' + bank transfer' : '') : (BillingController::bankReady() ? 'Bank transfer only' : 'No payment method: customers cannot upgrade')];
+        $c[] = ['PayPal', \App\Services\PayPalService::ready() ? (filled(config('services.paypal.webhook_id')) ? 'ok' : 'warn') : 'ok', \App\Services\PayPalService::ready() ? (filled(config('services.paypal.webhook_id')) ? 'Connected (' . config('services.paypal.mode') . ')' : 'Add the PayPal webhook ID so renewals and cancellations sync') : 'Not used'];
+        $c[] = ['Payments', BillingController::stripeReady() || BillingController::bankReady() || \App\Services\PayPalService::ready() ? 'ok' : 'warn', BillingController::stripeReady() ? 'Stripe connected' . (BillingController::bankReady() ? ' + bank transfer' : '') : (BillingController::bankReady() ? 'Bank transfer only' : 'No payment method: customers cannot upgrade')];
         if (BillingController::stripeReady()) {
             $c[] = ['Stripe webhook', filled(config('services.stripe.webhook_secret')) ? 'ok' : 'fail', filled(config('services.stripe.webhook_secret')) ? 'Signing secret set' : 'Add the webhook signing secret, or paid plans never activate'];
         }

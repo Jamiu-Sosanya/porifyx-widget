@@ -130,3 +130,9 @@ Route::prefix('sync/{uuid}')->middleware('throttle:120,1')->group(function () {
     Route::post('/pages', [\App\Http\Controllers\Api\ContentSyncController::class, 'upsert']);
     Route::delete('/pages', [\App\Http\Controllers\Api\ContentSyncController::class, 'remove']);
 });
+
+// Email channel: inbound email webhook (Mailgun / Postmark / SendGrid)
+Route::post('/inbound/email/{user}/{token}', \App\Http\Controllers\Api\InboundEmailController::class)->whereNumber('user')->middleware('throttle:120,1');
+
+// PayPal subscription events (verified with PayPal before use)
+Route::post('/paypal/webhook', [\App\Http\Controllers\PayPalController::class, 'webhook'])->name('paypal.webhook');

@@ -24,6 +24,8 @@ $planColors = ['blue','accent','emerald','amber','rose','brand','sky','teal','or
         'training_sources_limit'    => $p->training_sources_limit,
         'leads_per_month'           => $p->leads_per_month,
         'bookings_per_month'        => $p->bookings_per_month,
+        'paypal_monthly_id'         => $p->paypal_monthly_id,
+        'paypal_yearly_id'          => $p->paypal_yearly_id,
         'team_members_limit'        => $p->team_members_limit,
         'workflow_automations_limit'=> $p->workflow_automations_limit,
         'channels_per_widget'       => $p->features['channels_per_widget'] ?? 1,
@@ -260,6 +262,14 @@ $planColors = ['blue','accent','emerald','amber','rose','brand','sky','teal','or
                                placeholder="price_xxxxxxxxxxxxxxxx"
                                class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-gray-600 text-sm font-mono focus:outline-none focus:border-rose-500/50 transition">
                     </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-400 mb-1">PayPal Monthly Plan ID</label>
+                        <input name="paypal_monthly_id" x-model="f.paypal_monthly_id" placeholder="P-xxxxxxxxxxxx" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-gray-600 text-sm font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-400 mb-1">PayPal Yearly Plan ID</label>
+                        <input name="paypal_yearly_id" x-model="f.paypal_yearly_id" placeholder="P-xxxxxxxxxxxx" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-gray-600 text-sm font-mono">
+                    </div>
                 </div>
             </div>
 
@@ -384,7 +394,7 @@ function plansManager() {
             widgets_limit: 1, messages_per_month: 500, training_sources_limit: 3,
             leads_per_month: 50, bookings_per_month: 0, team_members_limit: 1, workflow_automations_limit: 0,
             channels_per_widget: 1, channel_messages_per_month: 100,
-            stripe_monthly_id: '', stripe_yearly_id: '',
+            stripe_monthly_id: '', stripe_yearly_id: '', paypal_monthly_id: '', paypal_yearly_id: '',
             has_live_chat: false, has_ai_insights: false, has_custom_branding: false,
             has_api_access: false, has_priority_support: false,
             is_active: true, is_popular: false,
@@ -406,7 +416,7 @@ function plansManager() {
                 widgets_limit: 1, messages_per_month: 500, training_sources_limit: 3,
                 leads_per_month: 50, bookings_per_month: 0, team_members_limit: 1, workflow_automations_limit: 0,
                 channels_per_widget: 1, channel_messages_per_month: 100,
-                stripe_monthly_id: '', stripe_yearly_id: '',
+                stripe_monthly_id: '', stripe_yearly_id: '', paypal_monthly_id: '', paypal_yearly_id: '',
                 has_live_chat: false, has_ai_insights: false, has_custom_branding: false,
                 has_api_access: false, has_priority_support: false,
                 is_active: true, is_popular: false,
