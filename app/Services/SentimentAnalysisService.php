@@ -47,7 +47,7 @@ class SentimentAnalysisService
         );
 
         try {
-            $response = AppSupportAi::create([
+            $response = \App\Support\Ai::create([
                 'model'       => 'gpt-4o-mini',
                 'max_tokens'  => 200,
                 'temperature' => 0,
@@ -109,7 +109,7 @@ class SentimentAnalysisService
         }
 
         try {
-            $response = AppSupportAi::create([
+            $response = \App\Support\Ai::create([
                 'model'       => 'gpt-4o-mini',
                 'max_tokens'  => 10,
                 'temperature' => 0,
@@ -145,7 +145,7 @@ class SentimentAnalysisService
         }
 
         try {
-            $response = AppSupportAi::create([
+            $response = \App\Support\Ai::create([
                 'model'       => 'gpt-4o-mini',
                 'max_tokens'  => 1000,
                 'temperature' => 0.3,

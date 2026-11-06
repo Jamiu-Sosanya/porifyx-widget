@@ -344,7 +344,17 @@ class WidgetApiController extends Controller
         ]);
 
         $aiResponse = null;
-        if ($conversation->isAiActive()) {
+        $flow = $conversation->isAiActive() ? $this->applyFlow($widget, $conversation, $validated['content']) : null;
+        if ($flow) {
+            $aiMessage = Message::create([
+                'conversation_id' => $conversation->id, 'role' => 'ai', 'content' => $flow['reply'],
+                'smart_suggestions' => $flow['choices'], 'metadata' => ['provider' => 'flow'],
+            ]);
+            $aiResponse = [
+                'uuid' => $aiMessage->uuid, 'role' => 'ai', 'content' => $flow['reply'], 'confidence_score' => 1, 'is_fallback' => false,
+                'smart_suggestions' => $flow['choices'], 'sources' => [], 'cards' => [], 'created_at' => $aiMessage->created_at->toISOString(),
+            ];
+        } elseif ($conversation->isAiActive()) {
             $result = $this->chatService->generateResponse($conversation, $validated['content']);
 
             $aiMessage = Message::create([
@@ -389,7 +399,7 @@ class WidgetApiController extends Controller
             'is_read'         => false,
         ]);
 
-        if (! $widget->isPlaygroundRequest()) $user->incrementUsage('messages');
+        if (! $flow && ! $widget->isPlaygroundRequest()) $user->incrementUsage('messages'); // scripted flow replies are free
         $widget->increment('total_messages');
 
         // Update conversation sentiment
@@ -451,6 +461,18 @@ class WidgetApiController extends Controller
             'sentiment_score' => $sentiment['score'],
             'sentiment_label' => $sentiment['label'],
         ]);
+
+        if ($flow = $this->applyFlow($widget, $conversation, $validated['content'])) {
+            $m = Message::create(['conversation_id' => $conversation->id, 'role' => 'ai', 'content' => $flow['reply'], 'smart_suggestions' => $flow['choices'], 'metadata' => ['provider' => 'flow']]);
+            $conversation->update(['message_count' => $conversation->messages()->count(), 'last_message_at' => now(), 'is_read' => false]);
+
+            return response()->stream(function () use ($flow, $m) {
+                echo 'data: ' . json_encode(['chunk' => $flow['reply']]) . "\n\n";
+                echo 'data: ' . json_encode(['done' => true, 'message_uuid' => $m->uuid, 'smart_suggestions' => $flow['choices'], 'sources' => [], 'cards' => []]) . "\n\n";
+                if (ob_get_level() > 0) ob_flush();
+                flush();
+            }, 200, ['Content-Type' => 'text/event-stream', 'Cache-Control' => 'no-cache', 'X-Accel-Buffering' => 'no']);
+        }
 
         $chatService        = $this->chatService;
         $sentimentSvc       = $this->sentimentService;
@@ -752,6 +774,26 @@ class WidgetApiController extends Controller
         $message->update(['reactions' => $reactions]);
 
         return response()->json(['ok' => true, 'reactions' => $reactions]);
+    }
+
+    /** Run chat flows for this message; saves flow state, tags and handoff on the conversation. */
+    private function applyFlow(Widget $widget, Conversation $conversation, string $message): ?array
+    {
+        $ctx = (array) ($conversation->context_data ?? []);
+        $r = app(\App\Services\FlowEngine::class)->handle($widget, $ctx['flow'] ?? null, $message);
+        if (! $r) return null;
+
+        $ctx['flow'] = $r['state'];
+        $conversation->context_data = $ctx;
+        if ($r['tags']) $conversation->tags = array_values(array_unique(array_merge((array) $conversation->tags, $r['tags'])));
+        if ($r['escalate'] && $widget->user->hasFeature('live_chat')) {
+            $conversation->status = 'open'; // waiting for a person, AI paused
+            $this->notificationService->notifyHandoffRequested($widget, $conversation);
+        }
+        $conversation->save();
+        if ($r['reply'] === '') $r['reply'] = '…';
+
+        return $r;
     }
 
     protected function conversationForWidget(Widget $widget, string $conversationUuid): Conversation

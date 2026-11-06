@@ -30,7 +30,7 @@ class LeadQualificationService
         $transcript = $messages->map(fn ($m) => "{$m->role}: {$m->content}")->implode("\n");
 
         try {
-            $response = AppSupportAi::create([
+            $response = \App\Support\Ai::create([
                 'model'    => 'gpt-4o-mini',
                 'messages' => [
                     [

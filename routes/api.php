@@ -109,3 +109,10 @@ Route::prefix('v1')->middleware(\App\Http\Middleware\AuthenticateApiKey::class)-
 });
 
 Route::get('/health', [\App\Http\Controllers\PwaController::class, 'health']);
+
+// CMS content sync (WordPress plugin). Auth: X-Widget-Token header.
+Route::prefix('sync/{uuid}')->middleware('throttle:120,1')->group(function () {
+    Route::get('/ping', [\App\Http\Controllers\Api\ContentSyncController::class, 'ping']);
+    Route::post('/pages', [\App\Http\Controllers\Api\ContentSyncController::class, 'upsert']);
+    Route::delete('/pages', [\App\Http\Controllers\Api\ContentSyncController::class, 'remove']);
+});

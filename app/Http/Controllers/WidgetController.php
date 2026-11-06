@@ -365,6 +365,22 @@ class WidgetController extends Controller
         return view('widgets.playground', ['widget' => $widget, 'plan' => $widget->planState()]);
     }
 
+    /** WordPress plugin zip, built from wp-plugin/porifyx-widget. */
+    public function wordpressPlugin(Widget $widget)
+    {
+        $this->authorize('view', $widget);
+        $dir = base_path('wp-plugin/porifyx-widget');
+        $zipPath = tempnam(sys_get_temp_dir(), 'pfxwp');
+        $zip = new \ZipArchive();
+        $zip->open($zipPath, \ZipArchive::OVERWRITE);
+        foreach (glob($dir . '/*') as $file) {
+            $zip->addFile($file, 'porifyx-widget/' . basename($file));
+        }
+        $zip->close();
+
+        return response()->download($zipPath, 'porifyx-widget-wordpress.zip')->deleteFileAfterSend();
+    }
+
     public function embedCode(Widget $widget)
     {
         $this->authorize('view', $widget);

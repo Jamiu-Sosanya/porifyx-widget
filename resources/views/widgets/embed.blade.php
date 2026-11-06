@@ -42,6 +42,34 @@
                 <button type="submit" class="px-4 py-3 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white text-xs font-medium rounded-xl transition">Regenerate</button>
             </form>
         </div>
+        <p class="mt-2 text-xs text-gray-500">Used by the WordPress plugin to sync content. Keep it private.</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6 mt-6">
+        <div class="bg-gray-900/50 border border-white/5 rounded-2xl p-6">
+            <h3 class="text-base font-semibold text-white">WordPress &amp; WooCommerce</h3>
+            <p class="mt-1 text-sm text-gray-400">Adds the widget to every page and keeps the assistant's knowledge in sync with posts, pages and products.</p>
+            <ol class="mt-3 space-y-1 text-sm text-gray-300 list-decimal list-inside">
+                <li>Download and upload the plugin in Plugins → Add New.</li>
+                <li>Settings → PoriFyx Widget: paste the URL, Widget ID and token below.</li>
+                <li>Click “Sync now”. Edits sync automatically after that.</li>
+            </ol>
+            <dl class="mt-3 space-y-1 text-xs text-gray-400">
+                <div class="flex gap-2"><dt class="w-20 shrink-0">URL</dt><dd class="font-mono text-gray-200 break-all">{{ url('/') }}</dd></div>
+                <div class="flex gap-2"><dt class="w-20 shrink-0">Widget ID</dt><dd class="font-mono text-gray-200 break-all">{{ $widget->uuid }}</dd></div>
+            </dl>
+            <a href="{{ route('widgets.wordpress', $widget) }}" class="mt-4 inline-block px-4 py-2.5 rounded-xl bg-brand-500 text-white text-sm font-semibold">Download plugin (.zip)</a>
+        </div>
+        <div class="bg-gray-900/50 border border-white/5 rounded-2xl p-6">
+            <h3 class="text-base font-semibold text-white">Shopify, Wix, Squarespace &amp; others</h3>
+            <ul class="mt-3 space-y-2 text-sm text-gray-300">
+                <li><strong class="text-white">Shopify:</strong> Online Store → Themes → ⋯ → Edit code → <code>theme.liquid</code>; paste the code above just before <code>&lt;/body&gt;</code> and save.</li>
+                <li><strong class="text-white">Wix:</strong> Settings → Custom code → Add code → Body - end, all pages.</li>
+                <li><strong class="text-white">Squarespace:</strong> Settings → Advanced → Code injection → Footer.</li>
+                <li><strong class="text-white">Webflow:</strong> Site settings → Custom code → Footer code, then publish.</li>
+                <li><strong class="text-white">React / Next.js:</strong> load <code>{{ url('/widget.js') }}</code> with <code>data-widget-id</code> once in your root layout.</li>
+            </ul>
+        </div>
     </div>
 </div>
 @endsection

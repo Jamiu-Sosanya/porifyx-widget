@@ -103,6 +103,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/widgets/{widget}/booking/crm/{connection}', [\App\Http\Controllers\BookingIntegrationController::class, 'deleteCrm'])->name('widgets.booking.crm.delete');
         Route::get('/calendar/callback/{provider}', [\App\Http\Controllers\BookingIntegrationController::class, 'calendarCallback'])->name('calendar.callback');
         Route::post('/widgets/{widget}/duplicate', [WidgetController::class, 'duplicate'])->name('widgets.duplicate');
+        Route::get('/widgets/{widget}/wordpress-plugin', [WidgetController::class, 'wordpressPlugin'])->name('widgets.wordpress');
         Route::get('/widgets/{widget}/playground', [WidgetController::class, 'playground'])->name('widgets.playground');
         Route::get('/widgets/{widget}/engagement', [\App\Http\Controllers\EngagementController::class, 'show'])->name('widgets.engagement');
         Route::put('/widgets/{widget}/engagement', [\App\Http\Controllers\EngagementController::class, 'save'])->name('widgets.engagement.save');
@@ -116,6 +117,10 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/widgets/{widget}/help/categories/{category}', [\App\Http\Controllers\HelpCenterController::class, 'destroyCategory'])->name('widgets.help.categories.destroy');
         Route::post('/widgets/{widget}/help/articles', [\App\Http\Controllers\HelpCenterController::class, 'saveArticle'])->name('widgets.help.articles.save');
         Route::delete('/widgets/{widget}/help/articles/{article}', [\App\Http\Controllers\HelpCenterController::class, 'destroyArticle'])->name('widgets.help.articles.destroy');
+        Route::get('/widgets/{widget}/flows', [\App\Http\Controllers\FlowController::class, 'index'])->name('widgets.flows');
+        Route::post('/widgets/{widget}/flows', [\App\Http\Controllers\FlowController::class, 'save'])->name('widgets.flows.save');
+        Route::post('/widgets/{widget}/flows/test', [\App\Http\Controllers\FlowController::class, 'test'])->name('widgets.flows.test');
+        Route::delete('/widgets/{widget}/flows/{flow}', [\App\Http\Controllers\FlowController::class, 'destroy'])->name('widgets.flows.destroy');
         Route::get('/widgets/{widget}/answers', [\App\Http\Controllers\AnswerController::class, 'index'])->name('widgets.answers');
         Route::post('/widgets/{widget}/answers', [\App\Http\Controllers\AnswerController::class, 'store'])->name('widgets.answers.store');
         Route::put('/widgets/{widget}/answers/{answer}', [\App\Http\Controllers\AnswerController::class, 'update'])->name('widgets.answers.update');
