@@ -1,0 +1,96 @@
+{
+ "n": 20,
+ "seed": 699100,
+ "customer": {
+  "business": "PoriFyx Widget: AI chat receptionist that answers questions and books appointments inside the website chat",
+  "target": "Owners or managers of appointment-based small businesses (5 to 50 staff): clinics, dental and physio practices, salons, spas, and home-service trades",
+  "where": "Online, mainly UK, US and other English-speaking markets",
+  "age": [
+   28,
+   60
+  ],
+  "segments": [
+   {
+    "name": "Clinic or practice (dental, physio, GP, aesthetics)",
+    "share": 0.4,
+    "income": [
+     250000,
+     2500000
+    ]
+   },
+   {
+    "name": "Salon, spa or beauty studio",
+    "share": 0.3,
+    "income": [
+     120000,
+     900000
+    ]
+   },
+   {
+    "name": "Home-service trade (plumbing, cleaning, repairs)",
+    "share": 0.2,
+    "income": [
+     150000,
+     1500000
+    ]
+   },
+   {
+    "name": "Small agency that builds sites for these businesses",
+    "share": 0.1,
+    "income": [
+     100000,
+     800000
+    ]
+   }
+  ],
+  "behaviours": [
+   {
+    "name": "Phone-first",
+    "share": 0.2,
+    "how": "Front desk answers calls; the website is an afterthought."
+   },
+   {
+    "name": "Already uses a booking tool",
+    "share": 0.2,
+    "how": "Pays for Fresha, Cliniko, Jobber or Calendly and will not switch calendars."
+   },
+   {
+    "name": "Price-sensitive",
+    "share": 0.15,
+    "how": "Counts every monthly subscription and cancels what it cannot justify."
+   },
+   {
+    "name": "Burned by chatbots",
+    "share": 0.15,
+    "how": "Tried a website chat before; it gave wrong answers or nobody used it."
+   },
+   {
+    "name": "Growth-minded",
+    "share": 0.15,
+    "how": "Runs ads, tracks leads, wants more bookings after hours."
+   },
+   {
+    "name": "Asks their web person",
+    "share": 0.15,
+    "how": "Lets the agency or a freelancer decide what goes on the site."
+   }
+  ],
+  "objections": [
+   "My booking system already has an online booking button",
+   "What if the AI gives a patient or customer wrong information?",
+   "I do not have time to set up and train another tool",
+   "Another monthly subscription I may not use",
+   "Will it work with my calendar and my existing software?",
+   "Customers would rather phone us",
+   "Data privacy and GDPR for client details",
+   "I have never heard of this company"
+  ],
+  "habits": [
+   "you check bookings on your phone between appointments",
+   "most enquiries arrive in the evening when the desk is closed",
+   "you pay for several software subscriptions already",
+   "your website was built by someone else three years ago"
+  ]
+ },
+ "pitch": "PoriFyx is an AI receptionist for your website chat. It learns from your site pages, PDFs and price list, answers visitors' questions any time of day, and books appointments inside the chat, synced to Google or Outlook calendar.\nWhen it is unsure, it says so and passes the chat to your staff instead of guessing.\nAdd it with one line of code or the WordPress plugin; most setups take under 15 minutes.\nPrice: Free plan forever (100 AI replies a month). Starter $19/month (2,000 replies). Pro $49/month (8,000 replies, your branding). AI is included in every plan: no per-reply credits and no automatic upgrades. Extra replies cost $5 per 1,000 and never expire.\nTry Pro free for 14 days with no card; after that it drops to the Free plan, not off."
+}

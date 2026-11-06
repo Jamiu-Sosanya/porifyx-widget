@@ -1,0 +1,13 @@
+{
+  "id": "P013",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "I already pay for a booking tool and I am not switching calendars. An AI chat box that books into Google or Outlook does not fix the fact that my bookings live in Fresha or Cliniko, and I have no time to wire another tool into my site and train it.",
+  "objection": "Does it sync with my actual booking software, or do I end up with two calendars and double bookings? And who sets up the code on a website someone else built three years ago?",
+  "would_change_my_mind": "A written confirmation that it books directly into Fresha, Cliniko and Jobber, plus a setup done for me in under an hour, so I can try the free plan without touching my calendar.",
+  "price_too_cheap": 5,
+  "price_cheap": 12,
+  "price_expensive": 35,
+  "price_too_expensive": 60
+}

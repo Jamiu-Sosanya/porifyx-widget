@@ -310,6 +310,10 @@ Route::middleware(['auth', \App\Http\Middleware\WorkspaceContext::class])->group
         Route::delete('/changelog/{id}', [\App\Http\Controllers\Admin\ToolsController::class, 'destroyChangelog'])->whereNumber('id')->name('changelog.destroy');
         Route::get('/marketing', [\App\Http\Controllers\Admin\ToolsController::class, 'marketing'])->name('marketing');
         Route::put('/marketing', [\App\Http\Controllers\Admin\ToolsController::class, 'saveMarketing'])->name('marketing.save');
+        Route::get('/security', [\App\Http\Controllers\Admin\SecurityController::class, 'index'])->name('security');
+        Route::put('/security', [\App\Http\Controllers\Admin\SecurityController::class, 'save'])->name('security.save');
+        Route::post('/security/ip', [\App\Http\Controllers\Admin\SecurityController::class, 'ip'])->name('security.ip');
+        Route::post('/security/action', [\App\Http\Controllers\Admin\SecurityController::class, 'action'])->name('security.action');
         Route::get('/privacy', [\App\Http\Controllers\Admin\PrivacyController::class, 'index'])->name('privacy');
         Route::put('/privacy', [\App\Http\Controllers\Admin\PrivacyController::class, 'save'])->name('privacy.save');
         Route::get('/translations', [\App\Http\Controllers\Admin\TranslationController::class, 'index'])->name('translations');

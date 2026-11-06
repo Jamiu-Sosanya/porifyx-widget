@@ -1,41 +1,47 @@
-# Board summary: PoriFyx Widget
+# Board summary: PoriFyx Widget (second review)
 
-**Vote: 2 fund if, 1 pass. Average score: 3.7 / 10.**
+**Vote: 2 fund if, 1 pass. Average score: 4.3 / 10** (first review: 3.7).
 
-| Lens | Score | Vote |
+| Lens | Score (before → now) | Vote |
 |---|---|---|
-| Offers | 4 | Fund if |
-| Monopoly | 3 | Pass |
-| Product | 4 | Fund if |
+| Offers | 4 → 5 | Fund if |
+| Monopoly | 3 → 3 | Pass |
+| Product | 4 → 5 | Fund if |
 
-## Risks raised by more than one member
+The previous review is archived in `board/v1/`.
 
-1. **No single customer.** All three members flagged it. Shops, clinics, SaaS firms and agencies worldwide is not a market a solo founder can reach or win. Without one buyer, the pitch needs a paragraph and buyers compare on price.
-2. **A crowded category with nothing that stands out.** Offers says the product will be treated as a commodity. Monopoly says anyone can copy it, because the base script is for sale on Codester. Product says the feature list hides the one reason to buy.
-3. **No distribution plan.** Offers and Monopoly both noted that how customers will find it has not been decided. The cost of winning each customer is unknown.
-4. **AI cost and who pays it.** Offers and Product both asked whether the 29 plan loses money on busy sites, and whether customers bring their own AI keys.
-5. **No proof.** Offers and Product both noted there are no users, no case studies and no evidence that a non-technical owner can set it up alone.
+## What improved
+
+All three members credit the new pricing. AI is in every plan, nothing upgrades on its own, top-ups never expire, and the trial drops to Free instead of switching off. Those changes answer the main complaints buyers make about rivals. Product also credits the confidence threshold and fallback reply against "confident wrong answers".
+
+## Risks more than one member raised
+
+1. **No single customer** (all three). Shops, clinics, SaaS firms and agencies want different results. One offer for all of them speaks to none.
+2. **No proof** (Offers, Product). There are no users, no results and no measured first session. Buyers already fear wrong answers.
+3. **No route to buyers** (Offers, Monopoly). How the first customers arrive, and what each one costs to win, is still undecided.
+4. **Too many features for one person** (Product, Monopoly). The breadth makes the pitch a paragraph, and the code from the bought script has not been audited.
+5. **Fair pricing is easy to copy** (Monopoly, Offers). It is a selling point, not a moat.
 
 ## Where the members disagree
 
-- **Monopoly would pass** because it sees no possible moat. **Offers and Product would fund** a narrowed version, because they believe a sharp offer and a smooth first session can win a niche even without a moat.
-- **Monopoly sees agencies as the best first market**, because each agency brings many end customers. Offers and Product leaned towards a single end-user niche such as clinics, but neither ruled agencies out.
+- **Monopoly still passes.** It sees no moat: anyone can buy the same Codester script, the AI underneath is rented, and rivals can drop credits whenever they like. **Offers and Product would fund** a version narrowed to one buyer, with proof.
+- Monopoly asks whether anything gets better as more customers join, such as an agency network. Offers and Product focus on the first session and the outcome instead.
 
 ## Conditions checklist
 
-- [ ] Pick one segment and one job, stated in one sentence. (All three)
-- [ ] Show that no one serves that segment well, and find out what rivals charge. (`/founder-competitors`)
-- [ ] Test whether that segment will pay, and at what price. (`/founder-consumer`, `/founder-pricing`)
-- [ ] Work out AI cost per conversation and decide who pays for AI usage. Make sure the cheapest plan earns a margin. (`/founder-cfo`)
-- [ ] Rewrite the offer around one measurable result, such as leads or bookings in 14 days, with bonuses (done-for-you setup, onboarding call, agency white-label) and a guarantee the numbers can carry. (`/founder-offer`)
-- [ ] Get 3 to 5 pilot users with real numbers before a wide launch.
-- [ ] Watch 5 target users set it up without help, and fix every point where they stall.
-- [ ] Launch with the website widget plus at most one other channel. Hide the rest until customers ask.
-- [ ] Test the AI provider fallback under real conditions before launch.
-- [ ] Name and cost a route to the first 100 customers. (`/founder-marketing`, `/founder-cfo`)
-- [ ] Choose one moat to build: data from the niche, integrations rivals lack, or a brand known within that niche.
-- [ ] Confirm the currency of the prices.
+- [ ] Pick one buyer type and one promise; hide every feature that does not serve it. (Offers, Product, Monopoly)
+- [ ] Lead with a result in numbers (booked calls, tickets avoided), not the feature list. (Offers)
+- [ ] Get a small set of real users and turn their results into proof before a wide launch. (Offers)
+- [ ] Add a guarantee tied to an outcome, sized so the business can afford it. (Offers; `/founder-offer`, `/founder-cfo`)
+- [ ] Decide how the first 100 customers arrive and what each costs. (Offers, Monopoly; `/founder-marketing`)
+- [ ] Make the first five minutes great: paste a URL, get correct answers, go live. Measure it. (Product)
+- [ ] Test bot-to-human handoff end to end with real visitors. (Product)
+- [ ] Audit the bought code for quality and security before charging anyone. (Product)
+- [ ] Name one thing that gets better with more customers (agency network, shared templates). (Monopoly)
+- [ ] Check that AI costs stay under each plan's price on busy sites. (Open question; `/founder-cfo`)
 
 ## The strongest version the board can see
 
-This is not the business as pitched. The pitch is a general AI chat widget for every small business in the world, and the board would not back that. The strongest version is **an AI front desk for one niche, sold through agencies**. For example, it answers patients' questions for clinics and books the callback, with strict mode and human handoff as the headline promise. Agencies resell it under their own brand to many clinics. That gives one sharp, measurable result to sell (enquiries turned into bookings), a distribution channel that brings customers in groups rather than one by one, and a way to build a moat through niche-specific training content and integrations with the niche's booking software. The general product stays underneath. Visitors only see the niche version until it has paying customers.
+This narrows what you pitched. The strongest version is **an AI receptionist for appointment businesses: clinics, salons and trades.** It answers questions correctly, books the appointment inside the chat, and hands the chat to staff when unsure. It sells at a flat price with no surprise bills. Bookings in the chat is the feature no direct rival bundles at this price, and "missed enquiries become booked appointments" is a result an owner can measure. Agencies that set it up for many local businesses could become the route to buyers and the only network effect in sight. Everything else stays in the product but leaves the headline.
+
+Next: `/founder-consumer` to test this with 100 simulated buyers, or `/founder-cfo` to check that the new prices still make money.

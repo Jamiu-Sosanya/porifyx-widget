@@ -1,0 +1,13 @@
+{
+  "id": "P005",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "need",
+  "reason": "My booking system already has an online booking button and my web person already set up the contact page. I'd have to think about why I'd pay for a chatbot on top of that, and I don't see the gap yet.",
+  "objection": "If the AI gives a wrong answer about a treatment or a price, that's my name on it, and I'd have to trust it to hand over to my staff when it's unsure. I don't know that it will.",
+  "would_change_my_mind": "My web person recommends it and it plugs into the booking system I already pay for, showing me real chats where it booked someone and handed off the rest.",
+  "price_too_cheap": 3,
+  "price_cheap": 9,
+  "price_expensive": 25,
+  "price_too_expensive": 39
+}

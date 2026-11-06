@@ -14,7 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         // Behind Cloudflare / load balancers: honour X-Forwarded-Proto so HTTPS URLs are generated.
-        $middleware->trustProxies(at: '*');
+        $middleware->trustProxies(at: env('TRUSTED_PROXIES', '*')); // set to your proxy/CDN IPs in production so visitors cannot fake their IP
 
         // Redirect all web requests to /install/ until installation is complete
         $middleware->web(prepend: [
@@ -23,10 +23,12 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Demo mode runs on every web request (after the session is started)
         $middleware->web(append: [
+            \App\Http\Middleware\SecurityShield::class,
             \App\Http\Middleware\DemoMode::class,
             \App\Http\Middleware\TranslatePage::class,
         ]);
 
+        $middleware->api(prepend: [\App\Http\Middleware\SecurityShield::class]);
         $middleware->encryptCookies(except: ['pfx_lang']);
 
         $middleware->alias([

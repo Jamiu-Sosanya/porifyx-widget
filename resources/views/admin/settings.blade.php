@@ -232,7 +232,7 @@
         if (! function_exists('renderSettingInput')):
         function renderSettingInput($setting): string {
             $name  = "settings[{$setting->key}]";
-            $value = $setting->value ?? '';
+            $value = e($setting->value ?? '');
             $class = "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-500/50 focus:ring-2 focus:ring-brand-500/20 transition text-sm";
 
             if ($setting->type === 'boolean') {
@@ -284,7 +284,7 @@ HTML;
             }
 
             $type = $setting->type === 'integer' ? 'number' : 'text';
-            return "<input type=\"{$type}\" name=\"{$name}\" value=\"" . e($value) . "\" class=\"{$class}\">";
+            return "<input type=\"{$type}\" name=\"{$name}\" value=\"{$value}\" class=\"{$class}\">";
         }
         endif;
         @endphp

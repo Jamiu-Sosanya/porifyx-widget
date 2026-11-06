@@ -26,15 +26,21 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
+        if ($locked = \App\Support\Security::lockedMessage($credentials['email'], (string) $request->ip())) {
+            return back()->withInput($request->only('email'))->withErrors(['email' => $locked]);
+        }
+
         $remember = $request->boolean('remember');
 
         if (!Auth::attempt($credentials, $remember)) {
+            $locked = \App\Support\Security::failedLogin($credentials['email'], (string) $request->ip());
             return back()
                 ->withInput($request->only('email'))
-                ->withErrors(['email' => 'These credentials do not match our records.']);
+                ->withErrors(['email' => $locked ?? 'These credentials do not match our records.']);
         }
 
         $user = Auth::user();
+        \App\Support\Security::clearLogin($credentials['email'], (string) $request->ip());
 
         if (!$user->is_active) {
             Auth::logout();
@@ -214,9 +220,14 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
+        if ($locked = \App\Support\Security::lockedMessage($credentials['email'], (string) $request->ip())) {
+            return back()->withInput($request->only('email'))->withErrors(['email' => $locked]);
+        }
+
         $remember = $request->boolean('remember');
 
         if (!Auth::attempt($credentials, $remember)) {
+            $locked = \App\Support\Security::failedLogin($credentials['email'], (string) $request->ip());
             // Log the failed attempt
             \Illuminate\Support\Facades\Log::warning('Failed admin login attempt', [
                 'email' => $request->email,
@@ -225,10 +236,11 @@ class AuthController extends Controller
 
             return back()
                 ->withInput($request->only('email'))
-                ->withErrors(['email' => 'Invalid credentials.']);
+                ->withErrors(['email' => $locked ?? 'Invalid credentials.']);
         }
 
         $user = Auth::user();
+        \App\Support\Security::clearLogin($credentials['email'], (string) $request->ip());
 
         if (!$user->is_active) {
             Auth::logout();

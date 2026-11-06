@@ -1,0 +1,222 @@
+[
+ {
+  "id": "P001",
+  "name": "Dana",
+  "age": 44,
+  "segment": "Small agency that builds sites for these businesses",
+  "income": 727000,
+  "behaviour": "Phone-first",
+  "behaviour_how": "Front desk answers calls; the website is an afterthought.",
+  "objection": "Customers would rather phone us",
+  "habit": "you check bookings on your phone between appointments"
+ },
+ {
+  "id": "P002",
+  "name": "Leah",
+  "age": 53,
+  "segment": "Salon, spa or beauty studio",
+  "income": 756000,
+  "behaviour": "Already uses a booking tool",
+  "behaviour_how": "Pays for Fresha, Cliniko, Jobber or Calendly and will not switch calendars.",
+  "objection": "What if the AI gives a patient or customer wrong information?",
+  "habit": "your website was built by someone else three years ago"
+ },
+ {
+  "id": "P003",
+  "name": "Clara",
+  "age": 50,
+  "segment": "Salon, spa or beauty studio",
+  "income": 895000,
+  "behaviour": "Price-sensitive",
+  "behaviour_how": "Counts every monthly subscription and cancels what it cannot justify.",
+  "objection": "My booking system already has an online booking button",
+  "habit": "you check bookings on your phone between appointments"
+ },
+ {
+  "id": "P004",
+  "name": "Liam",
+  "age": 39,
+  "segment": "Salon, spa or beauty studio",
+  "income": 762000,
+  "behaviour": "Already uses a booking tool",
+  "behaviour_how": "Pays for Fresha, Cliniko, Jobber or Calendly and will not switch calendars.",
+  "objection": "Customers would rather phone us",
+  "habit": "you pay for several software subscriptions already"
+ },
+ {
+  "id": "P005",
+  "name": "Emil",
+  "age": 47,
+  "segment": "Clinic or practice (dental, physio, GP, aesthetics)",
+  "income": 2324000,
+  "behaviour": "Asks their web person",
+  "behaviour_how": "Lets the agency or a freelancer decide what goes on the site.",
+  "objection": "My booking system already has an online booking button",
+  "habit": "you pay for several software subscriptions already"
+ },
+ {
+  "id": "P006",
+  "name": "Ivy",
+  "age": 45,
+  "segment": "Salon, spa or beauty studio",
+  "income": 754000,
+  "behaviour": "Phone-first",
+  "behaviour_how": "Front desk answers calls; the website is an afterthought.",
+  "objection": "What if the AI gives a patient or customer wrong information?",
+  "habit": "your website was built by someone else three years ago"
+ },
+ {
+  "id": "P007",
+  "name": "Adrian",
+  "age": 58,
+  "segment": "Home-service trade (plumbing, cleaning, repairs)",
+  "income": 854000,
+  "behaviour": "Burned by chatbots",
+  "behaviour_how": "Tried a website chat before; it gave wrong answers or nobody used it.",
+  "objection": "Another monthly subscription I may not use",
+  "habit": "you pay for several software subscriptions already"
+ },
+ {
+  "id": "P008",
+  "name": "Nia",
+  "age": 49,
+  "segment": "Clinic or practice (dental, physio, GP, aesthetics)",
+  "income": 2082000,
+  "behaviour": "Price-sensitive",
+  "behaviour_how": "Counts every monthly subscription and cancels what it cannot justify.",
+  "objection": "I have never heard of this company",
+  "habit": "most enquiries arrive in the evening when the desk is closed"
+ },
+ {
+  "id": "P009",
+  "name": "Iris",
+  "age": 44,
+  "segment": "Salon, spa or beauty studio",
+  "income": 322000,
+  "behaviour": "Phone-first",
+  "behaviour_how": "Front desk answers calls; the website is an afterthought.",
+  "objection": "Another monthly subscription I may not use",
+  "habit": "you pay for several software subscriptions already"
+ },
+ {
+  "id": "P010",
+  "name": "Ravi",
+  "age": 28,
+  "segment": "Small agency that builds sites for these businesses",
+  "income": 492000,
+  "behaviour": "Burned by chatbots",
+  "behaviour_how": "Tried a website chat before; it gave wrong answers or nobody used it.",
+  "objection": "What if the AI gives a patient or customer wrong information?",
+  "habit": "you pay for several software subscriptions already"
+ },
+ {
+  "id": "P011",
+  "name": "Ethan",
+  "age": 52,
+  "segment": "Clinic or practice (dental, physio, GP, aesthetics)",
+  "income": 636000,
+  "behaviour": "Growth-minded",
+  "behaviour_how": "Runs ads, tracks leads, wants more bookings after hours.",
+  "objection": "My booking system already has an online booking button",
+  "habit": "you check bookings on your phone between appointments"
+ },
+ {
+  "id": "P012",
+  "name": "Jade",
+  "age": 47,
+  "segment": "Clinic or practice (dental, physio, GP, aesthetics)",
+  "income": 2189000,
+  "behaviour": "Growth-minded",
+  "behaviour_how": "Runs ads, tracks leads, wants more bookings after hours.",
+  "objection": "What if the AI gives a patient or customer wrong information?",
+  "habit": "your website was built by someone else three years ago"
+ },
+ {
+  "id": "P013",
+  "name": "Min",
+  "age": 45,
+  "segment": "Clinic or practice (dental, physio, GP, aesthetics)",
+  "income": 1528000,
+  "behaviour": "Already uses a booking tool",
+  "behaviour_how": "Pays for Fresha, Cliniko, Jobber or Calendly and will not switch calendars.",
+  "objection": "I do not have time to set up and train another tool",
+  "habit": "your website was built by someone else three years ago"
+ },
+ {
+  "id": "P014",
+  "name": "Jonah",
+  "age": 39,
+  "segment": "Clinic or practice (dental, physio, GP, aesthetics)",
+  "income": 1702000,
+  "behaviour": "Asks their web person",
+  "behaviour_how": "Lets the agency or a freelancer decide what goes on the site.",
+  "objection": "I have never heard of this company",
+  "habit": "you pay for several software subscriptions already"
+ },
+ {
+  "id": "P015",
+  "name": "Nico",
+  "age": 60,
+  "segment": "Home-service trade (plumbing, cleaning, repairs)",
+  "income": 186000,
+  "behaviour": "Asks their web person",
+  "behaviour_how": "Lets the agency or a freelancer decide what goes on the site.",
+  "objection": "I do not have time to set up and train another tool",
+  "habit": "your website was built by someone else three years ago"
+ },
+ {
+  "id": "P016",
+  "name": "Harper",
+  "age": 60,
+  "segment": "Home-service trade (plumbing, cleaning, repairs)",
+  "income": 894000,
+  "behaviour": "Growth-minded",
+  "behaviour_how": "Runs ads, tracks leads, wants more bookings after hours.",
+  "objection": "My booking system already has an online booking button",
+  "habit": "you pay for several software subscriptions already"
+ },
+ {
+  "id": "P017",
+  "name": "Seth",
+  "age": 42,
+  "segment": "Clinic or practice (dental, physio, GP, aesthetics)",
+  "income": 832000,
+  "behaviour": "Burned by chatbots",
+  "behaviour_how": "Tried a website chat before; it gave wrong answers or nobody used it.",
+  "objection": "My booking system already has an online booking button",
+  "habit": "you pay for several software subscriptions already"
+ },
+ {
+  "id": "P018",
+  "name": "Raj",
+  "age": 32,
+  "segment": "Salon, spa or beauty studio",
+  "income": 224000,
+  "behaviour": "Already uses a booking tool",
+  "behaviour_how": "Pays for Fresha, Cliniko, Jobber or Calendly and will not switch calendars.",
+  "objection": "Another monthly subscription I may not use",
+  "habit": "your website was built by someone else three years ago"
+ },
+ {
+  "id": "P019",
+  "name": "Farah",
+  "age": 46,
+  "segment": "Home-service trade (plumbing, cleaning, repairs)",
+  "income": 672000,
+  "behaviour": "Phone-first",
+  "behaviour_how": "Front desk answers calls; the website is an afterthought.",
+  "objection": "My booking system already has an online booking button",
+  "habit": "you pay for several software subscriptions already"
+ },
+ {
+  "id": "P020",
+  "name": "Dev",
+  "age": 28,
+  "segment": "Clinic or practice (dental, physio, GP, aesthetics)",
+  "income": 1600000,
+  "behaviour": "Price-sensitive",
+  "behaviour_how": "Counts every monthly subscription and cancels what it cannot justify.",
+  "objection": "Data privacy and GDPR for client details",
+  "habit": "you check bookings on your phone between appointments"
+ }
+]

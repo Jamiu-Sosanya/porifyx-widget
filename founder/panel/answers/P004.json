@@ -1,0 +1,13 @@
+{
+  "id": "P004",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "I already pay for a booking tool and I'm not switching calendars. Customers would rather phone us, and a chat box that books into Google or Outlook sounds like a second calendar I'd have to babysit.",
+  "objection": "Would it double-book against the calendar I already run, and would my clients actually use a chat box instead of ringing the front desk?",
+  "would_change_my_mind": "It writes straight into the booking tool I already use, so there is no double entry and no second calendar to check.",
+  "price_too_cheap": 5,
+  "price_cheap": 12,
+  "price_expensive": 29,
+  "price_too_expensive": 49
+}

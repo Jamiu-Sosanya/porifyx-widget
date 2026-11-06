@@ -1,0 +1,13 @@
+{
+  "id": "P003",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "need",
+  "reason": "My booking system already has an online booking button and clients use it. I can't see what a chat receptionist would add that justifies another monthly charge when I'm already counting every subscription.",
+  "objection": "Another subscription on top of the booking system I already pay for, with no proof it brings in extra bookings instead of just answering questions I already handle.",
+  "would_change_my_mind": "A free trial that shows, on my own bookings, that it brings in clients my current booking button misses.",
+  "price_too_cheap": 5,
+  "price_cheap": 9,
+  "price_expensive": 25,
+  "price_too_expensive": 39
+}

@@ -1,0 +1,13 @@
+{
+  "id": "P018",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "I already pay for a booking tool and I will not switch calendars for a chatbot. Another monthly subscription I may not use, and I would not hand my customer chats to something I cannot see working.",
+  "objection": "Does it book into the calendar I already use, or just into a Google or Outlook calendar nobody in my salon looks at?",
+  "would_change_my_mind": "It syncs straight into the Fresha or Cliniko calendar I already run, with a free trial that proves it books real appointments.",
+  "price_too_cheap": 5,
+  "price_cheap": 9,
+  "price_expensive": 25,
+  "price_too_expensive": 35
+}

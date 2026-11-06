@@ -1,0 +1,13 @@
+{
+  "id": "P011",
+  "buys": true,
+  "purchases_first_month": 1,
+  "reason_code": "need",
+  "reason": "After-hours enquiries are leaking out of my practice and my booking button only works when someone is awake to click it. If this books people at 10pm from my site without me touching the phone, the $19 pays for itself with one extra appointment, so I would start on Starter after the trial.",
+  "objection": "My booking system already has an online booking button, so I doubt a chat box adds real bookings rather than just another thing my staff have to check, and I do not trust an AI to give patients the wrong answer about their treatment.",
+  "would_change_my_mind": "Proof on my own site that it books appointments that would otherwise have been lost, plus a clear way to hand a chat to staff when it is unsure.",
+  "price_too_cheap": 5,
+  "price_cheap": 9,
+  "price_expensive": 29,
+  "price_too_expensive": 79
+}

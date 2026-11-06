@@ -45,6 +45,7 @@
                 [route('admin.search'), 'Search', $is('admin.search*'), 'M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z', []],
                 [route('admin.monitor'), 'Widget monitor', $is('admin.monitor*'), 'M3 12h4l3-8 4 16 3-8h4', []],
                 [route('admin.marketing'), 'Marketing site', $is('admin.marketing*'), 'M4 5h16v10H4zM8 19h8M12 15v4', []],
+                [route('admin.security'), 'Security & performance', $is('admin.security*'), 'M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5l-8-3zm0 7v4m0 3h.01', []],
                 [route('admin.privacy'), 'Privacy & GDPR', $is('admin.privacy*'), 'M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4zm-3 9 2 2 4-4', []],
                 [route('admin.translations'), 'Translations', $is('admin.translations*'), 'M3 5h12M9 3v2m1.05 9.5A18 18 0 0 1 6.4 9M12.5 18h7M15 21l5-10 5 10M4 15c2.5-1.3 4.6-3.3 6-6', []],
                 [route('admin.changelog'), 'Changelog', $is('admin.changelog*'), 'M9 12h6m-6 4h6M7 4h10a2 2 0 0 1 2 2v14l-4-2-3 2-3-2-4 2V6a2 2 0 0 1 2-2z', []],

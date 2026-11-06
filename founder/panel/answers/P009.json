@@ -1,0 +1,13 @@
+{
+  "id": "P009",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "need",
+  "reason": "My front desk already answers the phone and I rarely get chat enquiries from the website, so I can't see what this would add. I'd be paying another monthly bill for a tool I'd have to babysit.",
+  "objection": "Another monthly subscription I may not use. I already pay for several, and I'd have to trust a bot to talk to my clients.",
+  "would_change_my_mind": "Proof from my own site that chat visitors are booking appointments I'd otherwise lose, shown during a free trial before any card is asked for.",
+  "price_too_cheap": 5,
+  "price_cheap": 9,
+  "price_expensive": 25,
+  "price_too_expensive": 35
+}

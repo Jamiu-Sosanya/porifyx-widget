@@ -1,0 +1,13 @@
+{
+  "id": "P020",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "trust",
+  "reason": "I would try the free plan maybe, but I am not paying $19 a month to let a bot talk to my clients until I know where their details go. Client names, phone numbers and health details are not something I want sitting with a third party I have never heard of.",
+  "objection": "Data privacy and GDPR for client details. I need to know where chat data is stored, whether it is used to train AI, and whether you will sign a data processing agreement.",
+  "would_change_my_mind": "A written GDPR data processing agreement, clear storage location, and a statement that our chat data is not used to train models, plus proof the calendar booking does not expose other clients' details.",
+  "price_too_cheap": 5,
+  "price_cheap": 10,
+  "price_expensive": 25,
+  "price_too_expensive": 39
+}

@@ -1,0 +1,13 @@
+{
+  "id": "P016",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "need",
+  "reason": "My booking system already has an online booking button, so I don't see what an AI chat adds that I'm missing. I'd have to set up another tool, check its answers, and hand chats to my staff anyway when it's unsure.",
+  "objection": "It's one more subscription and one more thing to babysit. If it gives a wrong price or wrong slot, that's on me, and I'd still need someone watching the chat.",
+  "would_change_my_mind": "Proof it books directly into my existing booking system and brings in bookings I'd otherwise lose after hours, measured on my own site for a couple of weeks.",
+  "price_too_cheap": 0,
+  "price_cheap": 19,
+  "price_expensive": 49,
+  "price_too_expensive": 79
+}

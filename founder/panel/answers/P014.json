@@ -1,0 +1,13 @@
+{
+  "id": "P014",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "trust",
+  "reason": "I've never heard of PoriFyx, and I'd have to let it talk to my patients on my website. My web person would have to set it up and sign off on it, and I'd want them to decide before I pay anything.",
+  "objection": "Who is behind this company, and will it give a wrong answer about pricing or availability to someone who then turns up at the clinic?",
+  "would_change_my_mind": "My web person recommends it, or a clinic like mine has run it for a few months and tells me the bookings are real and the chat doesn't embarrass them.",
+  "price_too_cheap": 5,
+  "price_cheap": 12,
+  "price_expensive": 35,
+  "price_too_expensive": 75
+}
