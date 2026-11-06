@@ -24,7 +24,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // Demo mode runs on every web request (after the session is started)
         $middleware->web(append: [
             \App\Http\Middleware\DemoMode::class,
+            \App\Http\Middleware\TranslatePage::class,
         ]);
+
+        $middleware->encryptCookies(except: ['pfx_lang']);
 
         $middleware->alias([
             'admin.ip'    => \App\Http\Middleware\AdminIpWhitelist::class,

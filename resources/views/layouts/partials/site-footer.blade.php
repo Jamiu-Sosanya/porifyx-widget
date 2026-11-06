@@ -40,4 +40,9 @@
             </button>
         </div>
     </div>
+    <div class="max-w-6xl mx-auto px-5 pb-8 -mt-2">
+        <!--notranslate--><select aria-label="Language" onchange="location.href = @js(url('/lang')) + '/' + this.value" class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs dark:border-white/10 dark:bg-white/5">
+            @foreach(\App\Support\I18n::LOCALES as $code => $name)<option value="{{ $code }}" @selected(\App\Support\I18n::current() === $code)>{{ $name }}</option>@endforeach
+        </select><!--/notranslate-->
+    </div>
 </footer>

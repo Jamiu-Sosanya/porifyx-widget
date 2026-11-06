@@ -102,6 +102,12 @@
                     @endunless
                 </div>
                 <div class="p-1 border-t border-white/5">
+<form action="" onsubmit="return false" class="px-3 py-2">
+    <label class="block text-[11px] text-gray-500 mb-1">Language</label>
+    <!--notranslate--><select onchange="location.href = @js(url('/lang')) + '/' + this.value" class="w-full bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white">
+        @foreach(\App\Support\I18n::LOCALES as $code => $name)<option value="{{ $code }}" @selected(\App\Support\I18n::current() === $code)>{{ $name }}</option>@endforeach
+    </select><!--/notranslate-->
+</form>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="flex items-center gap-2 px-3 py-2 text-sm text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition w-full">

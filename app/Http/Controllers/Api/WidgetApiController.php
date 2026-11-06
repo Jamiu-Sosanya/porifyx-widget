@@ -120,6 +120,7 @@ class WidgetApiController extends Controller
                 'hidden'               => ! $widget->isPlaygroundRequest() && \App\Support\Engagement::hiddenOn($widget, (string) request('page_url', '')),
                 'ai_notice'            => ($n = \App\Support\Engagement::settings($widget)['ai_notice'])['enabled'] ? $n + ['version' => substr(md5($n['title'] . $n['text']), 0, 8)] : null,
                 'voice_input_enabled'  => (bool) $widget->voice_input_enabled,
+                'strings'              => $this->widgetStrings($userLanguage),
                 'voice_upload'         => \App\Http\Controllers\Api\TranscribeController::provider() !== null,
                 'lead_form'            => ($lf = \App\Support\LeadForm::settings($widget))['mode'] !== 'off' ? $lf : null,
                 'offline_form_message' => $this->getLocalizedText($widget->offline_form_messages, $userLanguage, $widget->offline_form_message),
@@ -154,7 +155,7 @@ class WidgetApiController extends Controller
         $preferred = $request->getPreferredLanguage();
         if ($preferred) {
             // Extract language code (e.g., 'en-US' -> 'en')
-            $langCode = explode('-', $preferred)[0];
+            $langCode = preg_split('/[-_]/', $preferred)[0]; // de_DE or de-DE
             if (preg_match('/^[a-z]{2,3}$/', $langCode)) {
                 return strtolower($langCode);
             }
@@ -775,6 +776,16 @@ class WidgetApiController extends Controller
         $message->update(['reactions' => $reactions]);
 
         return response()->json(['ok' => true, 'reactions' => $reactions]);
+    }
+
+    /** Widget interface text in the visitor's language (translated once per language in the background). */
+    private function widgetStrings(string $lang): array
+    {
+        $l = \App\Support\I18n::normalize($lang);
+        if (! $l || $l === 'en') return [];
+        \App\Support\I18n::ensure($l);
+
+        return array_intersect_key(\App\Support\I18n::dict($l), array_flip(\App\Support\I18n::WIDGET));
     }
 
     /** Run chat flows for this message; saves flow state, tags and handoff on the conversation. */

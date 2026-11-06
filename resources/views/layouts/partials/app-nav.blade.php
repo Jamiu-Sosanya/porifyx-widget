@@ -44,6 +44,7 @@
                 [route('admin.system'), 'System', $is('admin.system*'), 'M4 6h16M4 12h16M4 18h16', []],
                 [route('admin.search'), 'Search', $is('admin.search*'), 'M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z', []],
                 [route('admin.monitor'), 'Widget monitor', $is('admin.monitor*'), 'M3 12h4l3-8 4 16 3-8h4', []],
+                [route('admin.translations'), 'Translations', $is('admin.translations*'), 'M3 5h12M9 3v2m1.05 9.5A18 18 0 0 1 6.4 9M12.5 18h7M15 21l5-10 5 10M4 15c2.5-1.3 4.6-3.3 6-6', []],
                 [route('admin.changelog'), 'Changelog', $is('admin.changelog*'), 'M9 12h6m-6 4h6M7 4h10a2 2 0 0 1 2 2v14l-4-2-3 2-3-2-4 2V6a2 2 0 0 1 2-2z', []],
                 [route('admin.activity'), 'Activity log', $is('admin.activity*'), 'M12 6v6l4 2m5-2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z', []],
                 [route('admin.settings'), 'Settings', $is('admin.settings*', 'admin.profile*'), 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm8-3a8 8 0 0 0-.2-1.7l2-1.6-2-3.4-2.4 1a8 8 0 0 0-2.9-1.7L14 2h-4l-.5 2.6a8 8 0 0 0-2.9 1.7l-2.4-1-2 3.4 2 1.6a8 8 0 0 0 0 3.4l-2 1.6 2 3.4 2.4-1a8 8 0 0 0 2.9 1.7L10 22h4l.5-2.6a8 8 0 0 0 2.9-1.7l2.4 1 2-3.4-2-1.6c.1-.6.2-1.1.2-1.7z', []],

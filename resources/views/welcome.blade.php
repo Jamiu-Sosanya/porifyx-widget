@@ -15,7 +15,8 @@
     <script>
         (function () {
             var q = new URLSearchParams(location.search).get('theme');
-            var t = (q === 'light' || q === 'dark') ? q : localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            var forced = @js(\App\Support\MarketingTheme::forced());
+            var t = forced || ((q === 'light' || q === 'dark') ? q : localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
             document.documentElement.classList.toggle('dark', t === 'dark');
         })();
     </script>
@@ -25,6 +26,7 @@
     <style>
         [x-cloak] { display: none !important; }
         html, body { overflow-x: clip; }
+        {!! \App\Support\MarketingTheme::css() !!}
         .pfx-hero { background: radial-gradient(55rem 35rem at 90% -10%, #ff6a2b26, transparent 60%), radial-gradient(40rem 28rem at -10% 100%, #8fb4e31f, transparent 60%); }
         .dark .pfx-hero { background: radial-gradient(55rem 35rem at 90% -10%, #ff6a2b55, transparent 60%), radial-gradient(40rem 28rem at -10% 100%, #8fb4e333, transparent 60%); }
         .pfx-grid { background-image: linear-gradient(#0d1a330a 1px, transparent 1px), linear-gradient(90deg, #0d1a330a 1px, transparent 1px); background-size: 48px 48px; mask-image: linear-gradient(to bottom, #000 30%, transparent 85%); }
@@ -79,9 +81,10 @@
                 Live demo — try the assistant on this page
             </span>
             <h1 class="mt-6 text-[2.5rem] leading-[1.05] sm:text-5xl lg:text-[3.6rem] font-extrabold tracking-tight">
-                Turn website visitors into <span class="bg-gradient-to-r from-brand-500 to-accent-500 dark:from-brand-300 dark:to-accent-300 bg-clip-text text-transparent">customers, 24/7.</span>
+                @php $pfxHero = \App\Support\MarketingTheme::hero(); @endphp
+                {{ $pfxHero['title'] }} <span class="bg-gradient-to-r from-brand-500 to-accent-500 dark:from-brand-300 dark:to-accent-300 bg-clip-text text-transparent">{{ $pfxHero['highlight'] }}</span>
             </h1>
-            <p class="mt-6 text-base sm:text-lg max-w-xl {{ $muted }}">{{ config('branding.description') }}</p>
+            <p class="mt-6 text-base sm:text-lg max-w-xl {{ $muted }}">{{ $pfxHero['subtitle'] }}</p>
             <div class="mt-8 flex flex-col sm:flex-row gap-3">
                 <a href="{{ route('register') }}" class="px-6 py-4 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-semibold text-center shadow-lg shadow-brand-500/30">Start your free trial</a>
                 <a href="#how" class="px-6 py-4 rounded-xl border border-slate-300 hover:border-slate-900 dark:border-white/20 dark:hover:bg-white/5 font-semibold text-center">See how it works</a>

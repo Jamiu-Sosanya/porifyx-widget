@@ -291,6 +291,9 @@ Route::middleware(['auth', \App\Http\Middleware\WorkspaceContext::class])->group
         Route::post('/changelog', [\App\Http\Controllers\Admin\ToolsController::class, 'storeChangelog'])->name('changelog.store');
         Route::post('/changelog/{id}/toggle', [\App\Http\Controllers\Admin\ToolsController::class, 'toggleChangelog'])->whereNumber('id')->name('changelog.toggle');
         Route::delete('/changelog/{id}', [\App\Http\Controllers\Admin\ToolsController::class, 'destroyChangelog'])->whereNumber('id')->name('changelog.destroy');
+        Route::get('/translations', [\App\Http\Controllers\Admin\TranslationController::class, 'index'])->name('translations');
+        Route::put('/translations', [\App\Http\Controllers\Admin\TranslationController::class, 'save'])->name('translations.save');
+        Route::post('/translations/generate', [\App\Http\Controllers\Admin\TranslationController::class, 'generate'])->name('translations.generate');
         Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments');
         Route::post('/payments/{payment}/approve', [\App\Http\Controllers\Admin\PaymentController::class, 'approve'])->name('payments.approve');
         Route::post('/payments/{payment}/reject', [\App\Http\Controllers\Admin\PaymentController::class, 'reject'])->name('payments.reject');
@@ -342,3 +345,11 @@ Route::get('/sitemap.xml', function () {
         . $urls->map(fn ($u) => '<url><loc>' . e($u) . '</loc></url>')->implode('') . '</urlset>';
     return response($xml, 200, ['Content-Type' => 'application/xml']);
 })->name('sitemap');
+
+// Interface language
+Route::get('/lang/{code}', function (string $code) {
+    $l = \App\Support\I18n::normalize($code) ?? 'en';
+    if ($u = \App\Support\Workspace::realUser()) $u->forceFill(['locale' => $l])->save();
+    \App\Support\I18n::ensure($l);
+    return back()->withCookie(cookie()->forever('pfx_lang', $l));
+})->name('lang.switch');

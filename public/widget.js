@@ -192,6 +192,9 @@
         } catch (e) {}
     }
 
+    // Interface text in the visitor's language (config.strings), English fallback.
+    function tr(s) { return (config && config.strings && config.strings[s]) || s; }
+
     function hdrs(accept) {
         const h = { 'Content-Type': 'application/json', Accept: accept };
         if (pgToken) h['X-PFX-Playground'] = pgToken;
@@ -405,7 +408,7 @@
             '<div style="padding:10px 14px 12px;border-top:1px solid ' + t.border + ';flex-shrink:0;background:' + t.bg + ';">' +
             '<div id="pfx-collect-form" style="display:none;margin-bottom:8px;"></div>' +
             '<div style="display:flex;gap:8px;align-items:flex-end;">' +
-            '<textarea id="pfx-input" rows="1" placeholder="' + escapeAttr(config.placeholder_text || 'Type a message...') + '" style="flex:1;resize:none;border:1px solid ' + t.inputBorder + ';border-radius:12px;padding:10px 14px;font-size:13px;background:' + t.inputBg + ';color:' + t.text + ';outline:none;font-family:inherit;transition:border-color 0.2s,max-height 0.2s;max-height:120px;line-height:1.5;overflow-y:auto;"></textarea>' +
+            '<textarea id="pfx-input" rows="1" placeholder="' + escapeAttr(config.placeholder_text || tr('Type a message...')) + '" style="flex:1;resize:none;border:1px solid ' + t.inputBorder + ';border-radius:12px;padding:10px 14px;font-size:13px;background:' + t.inputBg + ';color:' + t.text + ';outline:none;font-family:inherit;transition:border-color 0.2s,max-height 0.2s;max-height:120px;line-height:1.5;overflow-y:auto;"></textarea>' +
             (config.voice_input_enabled && voiceSupported()
                 ? '<button id="pfx-mic" type="button" aria-label="Speak your question" title="Speak your question" style="width:42px;height:42px;border-radius:12px;border:1px solid ' + t.inputBorder + ';background:' + t.inputBg + ';color:' + t.text + ';cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>'
                 : '') +
@@ -413,7 +416,7 @@
             '<svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>' +
             '</div></div>' +
 
-            (config.show_branding !== false ? '<div style="text-align:center;padding:4px;font-size:10px;color:' + t.textDim + ';background:' + t.bg + ';">Powered by <a href="https://porifyx.com" target="_blank" rel="noopener" style="color:inherit"><strong>PoriFyx</strong></a></div>' : '') +
+            (config.show_branding !== false ? '<div style="text-align:center;padding:4px;font-size:10px;color:' + t.textDim + ';background:' + t.bg + ';">' + tr('Powered by') + ' <a href="https://porifyx.com" target="_blank" rel="noopener" style="color:inherit"><strong>PoriFyx</strong></a></div>' : '') +
             '</div>';
     }
 
@@ -780,10 +783,10 @@ ${bubbleCSS()}
         const inner = style === 'text'
             ? '<span class="pfx-typing-text">' + escapeHtml(config.ai_name || 'Assistant') + ' is typing<i>…</i></span>'
             : style === 'pulse' ? '<span></span>' : '<span></span><span></span><span></span>';
-        div.innerHTML = '<div class="pfx-bubble-wrap"><div class="pfx-bubble pfx-bubble-ai ' + (style === 'text' ? '' : 'pfx-typing pfx-typing-' + style) + '">' + inner + '</div><div class="pfx-stage">Searching our knowledge…</div></div>';
+        div.innerHTML = '<div class="pfx-bubble-wrap"><div class="pfx-bubble pfx-bubble-ai ' + (style === 'text' ? '' : 'pfx-typing pfx-typing-' + style) + '">' + inner + '</div><div class="pfx-stage">' + tr('Searching our knowledge…') + '</div></div>';
         c.appendChild(div);
         clearTimeout(window.__pfxStage);
-        window.__pfxStage = setTimeout(function () { const s = div.querySelector('.pfx-stage'); if (s) s.textContent = 'Thinking…'; }, 1400);
+        window.__pfxStage = setTimeout(function () { const s = div.querySelector('.pfx-stage'); if (s) s.textContent = tr('Thinking…'); }, 1400);
         c.scrollTop = c.scrollHeight;
     }
 
@@ -791,7 +794,7 @@ ${bubbleCSS()}
         if (!wrap || !sources || !sources.length) return;
         const d = document.createElement('div');
         d.className = 'pfx-sources';
-        d.innerHTML = '<span>Sources:</span>' + sources.map(function (x) {
+        d.innerHTML = '<span>' + tr('Sources:') + '</span>' + sources.map(function (x) {
             return '<a href="' + escapeAttr(x.url) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(x.title || x.url) + '</a>';
         }).join('');
         const ts = wrap.querySelector('.pfx-ts');
@@ -813,7 +816,7 @@ ${bubbleCSS()}
         mic.style.color = on ? '#fff' : t.text;
         mic.title = label || 'Speak your question';
         const input = document.getElementById('pfx-input');
-        if (input) input.placeholder = on ? (label || 'Listening…') : (config.placeholder_text || 'Type a message...');
+        if (input) input.placeholder = on ? (label || 'Listening…') : (config.placeholder_text || tr('Type a message...'));
     }
     function toggleVoice() {
         if (config.ai_notice && !noticeAccepted()) { showNotice(); return; }
@@ -879,9 +882,9 @@ ${bubbleCSS()}
         el.id = 'pfx-notice';
         el.className = 'pfx-notice';
         el.innerHTML = '<strong>' + escapeHtml(n.title) + '</strong><p>' + escapeHtml(declined ? n.decline_text : n.text) + '</p>' +
-            (n.privacy_url && /^https?:/i.test(n.privacy_url) ? '<a href="' + escapeAttr(n.privacy_url) + '" target="_blank" rel="noopener noreferrer">Privacy policy</a>' : '') +
-            '<div class="pfx-notice-btns"><button type="button" class="pfx-btn-primary" data-a="1">Accept</button>' +
-            (declined ? '' : '<button type="button" class="pfx-notice-decline" data-a="0">Decline</button>') + '</div>';
+            (n.privacy_url && /^https?:/i.test(n.privacy_url) ? '<a href="' + escapeAttr(n.privacy_url) + '" target="_blank" rel="noopener noreferrer">' + tr('Privacy policy') + '</a>' : '') +
+            '<div class="pfx-notice-btns"><button type="button" class="pfx-btn-primary" data-a="1">' + tr('Accept') + '</button>' +
+            (declined ? '' : '<button type="button" class="pfx-notice-decline" data-a="0">' + tr('Decline') + '</button>') + '</div>';
         const c = document.getElementById('pfx-messages');
         c.appendChild(el);
         c.scrollTop = c.scrollHeight;
@@ -928,7 +931,7 @@ ${bubbleCSS()}
             }).join('') +
             '<div class="pfx-lf-err" style="display:none"></div>' +
             '<div class="pfx-notice-btns"><button type="submit" class="pfx-btn-primary">' + escapeHtml(lf.button || 'Send') + '</button>' +
-            (pre ? '' : '<button type="button" class="pfx-notice-decline" data-skip>Not now</button>') + '</div>';
+            (pre ? '' : '<button type="button" class="pfx-notice-decline" data-skip>' + tr('Not now') + '</button>') + '</div>';
         const c = document.getElementById('pfx-messages');
         c.appendChild(el);
         c.scrollTop = c.scrollHeight;
@@ -953,7 +956,7 @@ ${bubbleCSS()}
                 }
                 if (!res.ok) throw new Error('lead ' + res.status);
                 localStorage.setItem('pfx_lead_' + config.uuid, '1');
-                el.innerHTML = '<strong>Thank you!</strong><p>We have your details' + (fields.name ? ', ' + escapeHtml(String(fields.name).split(' ')[0]) : '') + '. How else can I help?</p>';
+                el.innerHTML = '<strong>' + tr('Thank you!') + '</strong><p>We have your details' + (fields.name ? ', ' + escapeHtml(String(fields.name).split(' ')[0]) : '') + '. How else can I help?</p>';
                 setInputVisible(true);
                 setTimeout(function () { el.remove(); }, 6000);
             } catch (x) {
@@ -1213,7 +1216,7 @@ ${bubbleCSS()}
         const t = getTheme();
         el.style.display = 'block';
         el.innerHTML =
-            '<div style="font-size:12px;color:' + t.textDim + ';margin-bottom:8px;font-weight:500;">How helpful was this chat?</div>' +
+            '<div style="font-size:12px;color:' + t.textDim + ';margin-bottom:8px;font-weight:500;">' + tr('How helpful was this chat?') + '</div>' +
             '<div class="pfx-csat-stars" style="display:flex;gap:2px;margin-bottom:8px;">' +
             [1,2,3,4,5].map(function (n) {
                 return '<button type="button" data-rating="' + n + '" aria-label="' + n + ' stars" style="font-size:24px;color:#fbbf24;opacity:0.25;padding:2px;transition:opacity 0.15s,transform 0.15s;">★</button>';
@@ -1280,10 +1283,10 @@ ${bubbleCSS()}
         el.style.display = 'block';
         el.innerHTML =
             '<div style="font-size:12px;color:' + t.textDim + ';margin-bottom:10px;">' + escapeHtml(config.offline_form_message || 'Leave us a message and we\'ll get back to you.') + '</div>' +
-            '<input type="text"  id="pfx-offline-name"    class="pfx-offline-input" placeholder="Your name (optional)">' +
-            '<input type="email" id="pfx-offline-email"   class="pfx-offline-input" placeholder="Your email address *">' +
-            '<textarea           id="pfx-offline-message" class="pfx-offline-input" rows="3" style="resize:none;" placeholder="Your message *"></textarea>' +
-            '<button type="button" id="pfx-offline-send" class="pfx-btn-primary">Send Message</button>';
+            '<input type="text"  id="pfx-offline-name"    class="pfx-offline-input" placeholder="' + tr('Your name (optional)') + '">' +
+            '<input type="email" id="pfx-offline-email"   class="pfx-offline-input" placeholder="' + tr('Your email address *') + '">' +
+            '<textarea           id="pfx-offline-message" class="pfx-offline-input" rows="3" style="resize:none;" placeholder="' + tr('Your message *') + '"></textarea>' +
+            '<button type="button" id="pfx-offline-send" class="pfx-btn-primary">' + tr('Send Message') + '</button>';
 
         document.getElementById('pfx-offline-send').addEventListener('click', submitOfflineMessage);
     }
