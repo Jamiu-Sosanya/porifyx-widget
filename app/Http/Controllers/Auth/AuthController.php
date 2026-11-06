@@ -65,11 +65,19 @@ class AuthController extends Controller
 
     public function showRegister()
     {
+        abort_unless(self::registrationOpen(), 403, 'Sign-up is by invitation only.');
         return view('auth.register');
+    }
+
+    /** Admin can turn public sign-up off (Admin > Settings > Features); team invites still work. */
+    public static function registrationOpen(): bool
+    {
+        return (bool) filter_var(\App\Models\SystemSetting::get('allow_registration', true), FILTER_VALIDATE_BOOLEAN);
     }
 
     public function register(Request $request)
     {
+        abort_unless(self::registrationOpen(), 403, 'Sign-up is by invitation only.');
         $validated = $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|string|email|max:255|unique:users',

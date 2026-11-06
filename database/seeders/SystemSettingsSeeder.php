@@ -546,6 +546,16 @@ class SystemSettingsSeeder extends Seeder
 
             // ── Features ──────────────────────────────────────────────────
             [
+                'key'        => 'allow_registration',
+                'config_key' => null,
+                'label'      => 'Allow public sign-ups',
+                'description'=> 'Turn off to make the platform invitation-only. Existing users and team invitations keep working.',
+                'type'       => 'boolean',
+                'group'      => 'features',
+                'value'      => '1',
+                'is_public'  => true,
+            ],
+            [
                 'key'        => 'trial_days',
                 'config_key' => 'branding.trial_days',
                 'label'      => 'Trial Period (days)',

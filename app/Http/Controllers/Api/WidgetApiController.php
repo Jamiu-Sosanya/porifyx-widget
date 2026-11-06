@@ -104,7 +104,8 @@ class WidgetApiController extends Controller
                 'smart_suggestions_enabled' => (bool) $widget->smart_suggestions_enabled,
 
                 // Handoff
-                'show_handoff_button'  => (bool) $widget->show_handoff_button && $plan['handoff'],
+                'show_handoff_button'  => (bool) $widget->show_handoff_button && $plan['handoff'] && ($online = \App\Support\Engagement::teamOnline($widget)),
+                'team_away_text'       => isset($online) && ! $online ? \App\Support\Engagement::settings($widget)['hours']['away_text'] : null,
                 'handoff_button_label' => $widget->handoff_button_label,
 
                 // CSAT

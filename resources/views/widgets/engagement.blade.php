@@ -108,6 +108,36 @@
             </label>
         </section>
 
+        @php $h = $s['hours']; @endphp
+        <section class="rounded-2xl border border-white/5 bg-gray-900/50 p-5 sm:p-6 space-y-3">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <h3 class="text-base font-semibold text-white">Business hours</h3>
+                    <p class="mt-1 text-xs text-gray-500">When your team is available. Outside these hours "Talk to a human" is hidden and visitors see your away note; the AI keeps answering.</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                    <input type="checkbox" name="hours[enabled]" value="1" @checked($h['enabled']) class="sr-only peer">
+                    <span class="w-11 h-6 bg-white/15 rounded-full peer-checked:bg-brand-500 transition"></span>
+                    <span class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full transition peer-checked:translate-x-5"></span>
+                </label>
+            </div>
+            <select name="hours[timezone]" class="{{ $field }}">
+                @foreach(timezone_identifiers_list() as $tz)<option value="{{ $tz }}" @selected($h['timezone'] === $tz)>{{ $tz }}</option>@endforeach
+            </select>
+            <div class="space-y-1.5">
+                @foreach(['mon' => 'Monday', 'tue' => 'Tuesday', 'wed' => 'Wednesday', 'thu' => 'Thursday', 'fri' => 'Friday', 'sat' => 'Saturday', 'sun' => 'Sunday'] as $k => $day)
+                @php $d = $h['days'][$k] ?? null; @endphp
+                <div class="flex flex-wrap items-center gap-2 text-sm text-gray-300">
+                    <label class="flex items-center gap-2 w-28"><input type="checkbox" name="hours[open][{{ $k }}]" value="1" @checked(is_array($d))> {{ $day }}</label>
+                    <input type="time" name="hours[days][{{ $k }}][0]" value="{{ $d[0] ?? '09:00' }}" class="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-xs">
+                    <span class="text-gray-500">to</span>
+                    <input type="time" name="hours[days][{{ $k }}][1]" value="{{ $d[1] ?? '17:00' }}" class="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-xs">
+                </div>
+                @endforeach
+            </div>
+            <input name="hours[away_text]" value="{{ $h['away_text'] }}" maxlength="300" placeholder="Away note" class="{{ $field }}">
+        </section>
+
         <button class="w-full sm:w-auto px-6 py-3 rounded-xl bg-brand-500 text-white text-sm font-semibold">Save engagement settings</button>
     </form>
 </div>

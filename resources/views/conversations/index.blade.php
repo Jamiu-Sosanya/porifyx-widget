@@ -22,6 +22,7 @@
         <div class="relative col-span-2 sm:flex-1 sm:min-w-[200px]">
             <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
             <input name="search" value="{{ request('search') }}" placeholder="Search conversations..." class="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-500/50 transition">
+            @if(request('tag'))<input type="hidden" name="tag" value="{{ request('tag') }}">@endif
         </div>
         <select name="status" onchange="this.form.submit()" class="w-full sm:w-auto min-w-0 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500/50 transition">
             <option value="">All Status</option>
@@ -56,6 +57,7 @@
                 </div>
                 <p class="text-xs text-gray-500 truncate">{{ $conv->lastMessage?->content ?? 'No messages' }}</p>
                 <p class="sm:hidden mt-1 text-[11px] text-gray-500 truncate">{{ $conv->widget?->name }} · {{ $conv->messages_count }} {{ \Illuminate\Support\Str::plural('message', $conv->messages_count) }}</p>
+                @if($conv->tags)<p class="mt-1 flex flex-wrap gap-1">@foreach($conv->tags as $tg)<span class="px-1.5 py-0.5 rounded-full bg-brand-500/15 text-brand-400 text-[10px] font-semibold">#{{ $tg }}</span>@endforeach</p>@endif
             </div>
             <div class="text-right shrink-0">
                 @php

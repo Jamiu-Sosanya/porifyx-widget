@@ -43,7 +43,17 @@ class EngagementController extends Controller
             'cards.*.button'         => 'nullable|string|max:30',
             'cards.*.url'            => 'nullable|url:http,https|max:255',
             'cards.*.keywords'       => 'nullable|string|max:200',
+            'hours.timezone'         => 'nullable|timezone',
+            'hours.away_text'        => 'nullable|string|max:300',
+            'hours.days'             => 'nullable|array',
+            'hours.days.*.0'         => 'nullable|date_format:H:i',
+            'hours.days.*.1'         => 'nullable|date_format:H:i',
         ]);
+        $days = [];
+        foreach (array_keys(Engagement::DEFAULTS['hours']['days']) as $k) {
+            $on = $request->boolean("hours.open.$k") && filled($d['hours']['days'][$k][0] ?? null) && filled($d['hours']['days'][$k][1] ?? null);
+            $days[$k] = $on ? [$d['hours']['days'][$k][0], $d['hours']['days'][$k][1]] : null;
+        }
 
         $notice = array_merge(Engagement::DEFAULTS['ai_notice'], array_filter($d['ai_notice'] ?? [], fn ($v) => $v !== null));
         $notice['enabled'] = $request->boolean('ai_notice.enabled');
@@ -55,6 +65,12 @@ class EngagementController extends Controller
                 'ai_notice'    => $notice,
                 'hidden_paths' => array_values(array_filter(array_map('trim', preg_split('/\R/', (string) ($d['hidden_paths'] ?? ''))))),
                 'cards'        => array_values(array_filter($d['cards'] ?? [], fn ($c) => filled($c['title'] ?? null) && filled($c['keywords'] ?? null))),
+                'hours'        => [
+                    'enabled'   => $request->boolean('hours.enabled'),
+                    'timezone'  => $d['hours']['timezone'] ?? 'UTC',
+                    'away_text' => $d['hours']['away_text'] ?? Engagement::DEFAULTS['hours']['away_text'],
+                    'days'      => $days,
+                ],
             ],
         ]);
 

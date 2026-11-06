@@ -664,6 +664,7 @@ ${bubbleCSS()}
             if (config.service_available === false) serviceUnavailable();
             else if (!conversationUuid) await startConversation();
             if (config.lead_form && config.lead_form.mode === 'pre_chat' && config.service_available !== false) showLeadForm();
+            if (config.team_away_text && !document.getElementById('pfx-away')) { appendMessage('system', config.team_away_text, 'pfx-away'); }
             startPolling();
         } else {
             stopPolling();

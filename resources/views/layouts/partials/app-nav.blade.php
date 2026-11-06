@@ -17,6 +17,7 @@
         $widgetMenu[] = [route('widgets.answers', $openWidget), 'Answers & gaps', $is('widgets.answers')];
         $widgetMenu[] = [route('widgets.engagement', $openWidget), 'Engagement', $is('widgets.engagement')];
         $widgetMenu[] = [route('widgets.leadform', $openWidget), 'Lead form', $is('widgets.leadform')];
+        $widgetMenu[] = [route('widgets.help', $openWidget), 'Help centre', $is('widgets.help')];
         $widgetMenu[] = [route('widgets.playground', $openWidget), 'Playground', $is('widgets.playground')];
         $widgetMenu[] = [route('widgets.embed', $openWidget), 'Embed code', $is('widgets.embed')];
     }
@@ -47,6 +48,7 @@
                 [route('dashboard'), 'Overview', $is('dashboard'), 'M4 5h7v7H4zM13 5h7v4h-7zM13 11h7v8h-7zM4 14h7v5H4z', []],
                 [route('widgets.index'), 'Widgets', $is('widgets.*') && ! $is('widgets.booking*'), 'M8 10h8M8 14h5M5 4h14a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-6l-5 4v-4H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z', $widgetMenu],
                 [route('conversations.index'), 'Conversations', $is('conversations.*'), 'M7 8h10M7 12h6m-9 8 3-3h11a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14z', []],
+                [route('tickets.index'), 'Tickets', $is('tickets.*'), 'M15 5v2m0 4v2m0 4v2M5 5h14a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4V7a2 2 0 0 1 2-2z', []],
                 [route('leads.index'), 'Leads', $is('leads.*'), 'M16 19v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1M9.5 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM21 19v-1a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75', []],
                 [route('appointments.index'), 'Bookings', $is('appointments.*', 'widgets.booking*'), 'M8 2v3m8-3v3M3.5 9h17M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z', array_filter([
                     [route('appointments.index'), 'Agenda', $is('appointments.*') && request('view') !== 'week'],

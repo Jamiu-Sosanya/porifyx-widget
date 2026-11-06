@@ -73,6 +73,7 @@
                         <svg class="w-4 h-4" fill="{{ $conversation->is_starred ? 'currentColor' : 'none' }}" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" /></svg>
                     </button>
                 </form>
+                <a href="{{ route('tickets.create', ['conversation' => $conversation->uuid]) }}" class="px-2.5 sm:px-3 py-1.5 bg-white/5 hover:bg-white/10 text-gray-200 text-xs font-semibold rounded-lg transition" title="Create a support ticket from this chat">🎫<span class="hidden sm:inline"> Ticket</span></a>
                 @if($conversation->status !== 'resolved')
                 <form method="POST" action="{{ route('conversations.resolve', $conversation) }}">@csrf
                     <button class="px-2.5 sm:px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-xs font-semibold rounded-lg transition" title="Mark as resolved">✓<span class="hidden sm:inline"> Resolve</span></button>
@@ -194,6 +195,22 @@
             <p class="text-sm font-semibold text-white">Visitor details</p>
             <button type="button" @click="details = false" class="p-1.5 rounded-lg text-gray-400 hover:text-white" aria-label="Close">✕</button>
         </div>
+        {{-- Tags --}}
+        <form method="POST" action="{{ route('conversations.tags', $conversation) }}" class="bg-gray-900/50 border border-white/5 rounded-2xl p-4 shrink-0">
+            @csrf @method('PUT')
+            <p class="text-sm font-semibold text-white mb-2">Tags</p>
+            @if($conversation->tags)
+            <div class="flex flex-wrap gap-1.5 mb-2">
+                @foreach($conversation->tags as $tg)
+                <a href="{{ route('conversations.index', ['tag' => $tg]) }}" class="px-2 py-0.5 rounded-full bg-brand-500/15 text-brand-400 text-[11px] font-semibold">#{{ $tg }}</a>
+                @endforeach
+            </div>
+            @endif
+            <div class="flex gap-2">
+                <input name="tags" value="{{ implode(', ', $conversation->tags ?? []) }}" maxlength="300" placeholder="billing, urgent, vip" class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white">
+                <button class="px-3 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-semibold text-white">Save</button>
+            </div>
+        </form>
         {{-- Visitor Info --}}
         <div class="bg-gray-900/50 border border-white/5 rounded-2xl p-5 shrink-0">
             <h3 class="text-sm font-semibold text-white mb-4">Visitor Info</h3>

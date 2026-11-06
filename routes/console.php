@@ -36,3 +36,4 @@ Artisan::command('appointments:remind', function (App\Services\AppointmentServic
     $this->info("Sent {$sent} reminder(s).");
 })->purpose('Email booking reminders');
 Schedule::command('appointments:remind')->everyFifteenMinutes();
+Schedule::command('tickets:escalate')->hourly();

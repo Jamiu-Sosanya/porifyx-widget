@@ -21,6 +21,9 @@ class Engagement
         ],
         'hidden_paths' => [],   // e.g. ["/checkout*", "/account/*"]
         'cards'        => [],   // [{title, text, button, url, keywords}]
+        // Team availability for "Talk to a human" (the AI answers 24/7).
+        'hours'        => ['enabled' => false, 'timezone' => 'UTC', 'days' => ['mon' => ['09:00', '17:00'], 'tue' => ['09:00', '17:00'], 'wed' => ['09:00', '17:00'], 'thu' => ['09:00', '17:00'], 'fri' => ['09:00', '17:00'], 'sat' => null, 'sun' => null],
+            'away_text' => 'Our team is offline right now. I can still help, or leave a message and we will reply when we are back.'],
     ];
 
     public static function settings(Widget $widget): array
@@ -31,7 +34,25 @@ class Engagement
             'ai_notice'    => array_merge(self::DEFAULTS['ai_notice'], $s['ai_notice'] ?? []),
             'hidden_paths' => array_values(array_filter((array) ($s['hidden_paths'] ?? []), 'is_string')),
             'cards'        => array_values(array_filter((array) ($s['cards'] ?? []), 'is_array')),
+            'hours'        => array_merge(self::DEFAULTS['hours'], (array) ($s['hours'] ?? [])),
         ];
+    }
+
+    /** Is the team available now? Always true when business hours are off. */
+    public static function teamOnline(Widget $widget, ?\DateTimeInterface $at = null): bool
+    {
+        $h = self::settings($widget)['hours'];
+        if (empty($h['enabled'])) return true;
+        try {
+            $now = \Carbon\CarbonImmutable::instance($at ?? now())->setTimezone($h['timezone'] ?: 'UTC');
+        } catch (\Throwable) {
+            $now = \Carbon\CarbonImmutable::now('UTC');
+        }
+        $day = $h['days'][strtolower($now->format('D'))] ?? null;
+        if (! is_array($day) || count($day) < 2) return false;
+        $t = $now->format('H:i');
+
+        return $t >= $day[0] && $t < $day[1];
     }
 
     /** Glob match against the page path, e.g. "/checkout*" or "/blog/*". */

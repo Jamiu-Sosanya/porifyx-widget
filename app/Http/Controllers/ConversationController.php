@@ -22,6 +22,9 @@ class ConversationController extends Controller
             ->withCount('messages'); // real count; the stored message_count column is not always updated
 
         // Filters
+        if ($tag = trim((string) $request->get('tag'))) {
+            $query->where('tags', 'like', '%"' . str_replace(['%', '_', '"'], '', $tag) . '"%');
+        }
         if ($status = $request->get('status')) {
             $query->where('status', $status);
         }
@@ -64,6 +67,9 @@ class ConversationController extends Controller
         $query = Conversation::whereIn('widget_id', $widgetIds)
             ->with(['widget', 'visitor']);
 
+        if ($tag = trim((string) $request->get('tag'))) {
+            $query->where('tags', 'like', '%"' . str_replace(['%', '_', '"'], '', $tag) . '"%');
+        }
         if ($status = $request->get('status')) {
             $query->where('status', $status);
         }
@@ -109,6 +115,16 @@ class ConversationController extends Controller
         }, $filename, [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
+    }
+
+    public function tags(Request $request, Conversation $conversation)
+    {
+        $this->authorizeConversation($conversation);
+        $d = $request->validate(['tags' => 'nullable|string|max:300']);
+        $tags = collect(explode(',', (string) ($d['tags'] ?? '')))->map(fn ($t) => mb_substr(trim(strip_tags($t)), 0, 30))->filter()->unique()->take(10)->values()->all();
+        $conversation->update(['tags' => $tags]);
+
+        return back()->with('success', 'Tags saved.');
     }
 
     public function show(Conversation $conversation)

@@ -111,6 +111,11 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/widgets/{widget}/triggers/{trigger}', [\App\Http\Controllers\EngagementController::class, 'destroyTrigger'])->name('widgets.triggers.destroy');
         Route::get('/widgets/{widget}/lead-form', [\App\Http\Controllers\LeadFormController::class, 'show'])->name('widgets.leadform');
         Route::put('/widgets/{widget}/lead-form', [\App\Http\Controllers\LeadFormController::class, 'save'])->name('widgets.leadform.save');
+        Route::get('/widgets/{widget}/help', [\App\Http\Controllers\HelpCenterController::class, 'index'])->name('widgets.help');
+        Route::post('/widgets/{widget}/help/categories', [\App\Http\Controllers\HelpCenterController::class, 'storeCategory'])->name('widgets.help.categories.store');
+        Route::delete('/widgets/{widget}/help/categories/{category}', [\App\Http\Controllers\HelpCenterController::class, 'destroyCategory'])->name('widgets.help.categories.destroy');
+        Route::post('/widgets/{widget}/help/articles', [\App\Http\Controllers\HelpCenterController::class, 'saveArticle'])->name('widgets.help.articles.save');
+        Route::delete('/widgets/{widget}/help/articles/{article}', [\App\Http\Controllers\HelpCenterController::class, 'destroyArticle'])->name('widgets.help.articles.destroy');
         Route::get('/widgets/{widget}/answers', [\App\Http\Controllers\AnswerController::class, 'index'])->name('widgets.answers');
         Route::post('/widgets/{widget}/answers', [\App\Http\Controllers\AnswerController::class, 'store'])->name('widgets.answers.store');
         Route::put('/widgets/{widget}/answers/{answer}', [\App\Http\Controllers\AnswerController::class, 'update'])->name('widgets.answers.update');
@@ -145,6 +150,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/conversations', [ConversationController::class, 'index'])->name('conversations.index');
         Route::get('/conversations/export', [ConversationController::class, 'export'])->name('conversations.export');
         Route::get('/conversations/{conversation}', [ConversationController::class, 'show'])->name('conversations.show');
+        Route::put('/conversations/{conversation}/tags', [ConversationController::class, 'tags'])->name('conversations.tags');
         Route::post('/conversations/{conversation}/message', [ConversationController::class, 'sendMessage'])->name('conversations.sendMessage');
         Route::post('/conversations/{conversation}/star', [ConversationController::class, 'toggleStar'])->name('conversations.star');
         Route::post('/conversations/{conversation}/resolve', [ConversationController::class, 'resolve'])->name('conversations.resolve');
@@ -157,6 +163,14 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/conversations/{conversation}/labels', [ConversationController::class, 'removeLabel'])->name('conversations.removeLabel');
 
         // Leads
+        Route::get('/tickets', [\App\Http\Controllers\TicketController::class, 'index'])->name('tickets.index');
+        Route::get('/tickets/create', [\App\Http\Controllers\TicketController::class, 'create'])->name('tickets.create');
+        Route::post('/tickets', [\App\Http\Controllers\TicketController::class, 'store'])->name('tickets.store');
+        Route::put('/tickets/settings', [\App\Http\Controllers\TicketController::class, 'saveSettings'])->name('tickets.settings');
+        Route::get('/tickets/{ticket}', [\App\Http\Controllers\TicketController::class, 'show'])->name('tickets.show');
+        Route::post('/tickets/{ticket}/reply', [\App\Http\Controllers\TicketController::class, 'reply'])->name('tickets.reply');
+        Route::put('/tickets/{ticket}', [\App\Http\Controllers\TicketController::class, 'update'])->name('tickets.update');
+        Route::post('/tickets/{ticket}/merge', [\App\Http\Controllers\TicketController::class, 'merge'])->name('tickets.merge');
         Route::get('/leads', [LeadController::class, 'index'])->name('leads.index');
         Route::get('/leads/export', [LeadController::class, 'export'])->name('leads.export');
         Route::put('/leads/pipeline', [LeadController::class, 'pipeline'])->name('leads.pipeline');
@@ -270,3 +284,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/activity', [AdminController::class, 'activity'])->name('activity');
     });
 });
+
+// Customer ticket page (signed link from the ticket emails)
+Route::get('/t/{id}/{token}', [\App\Http\Controllers\PublicTicketController::class, 'show'])->whereNumber('id')->name('tickets.public');
+Route::post('/t/{id}/{token}', [\App\Http\Controllers\PublicTicketController::class, 'reply'])->whereNumber('id')->middleware('throttle:10,1')->name('tickets.public.reply');
+
+// Public help centre
+Route::get('/help/{uuid}', [\App\Http\Controllers\PublicHelpController::class, 'index'])->name('help.index');
+Route::get('/help/{uuid}/c/{slug}', [\App\Http\Controllers\PublicHelpController::class, 'category'])->name('help.category');
+Route::get('/help/{uuid}/a/{slug}', [\App\Http\Controllers\PublicHelpController::class, 'article'])->name('help.article');

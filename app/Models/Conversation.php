@@ -18,7 +18,7 @@ class Conversation extends Model
         'uuid', 'widget_id', 'visitor_id', 'user_id', 'assigned_agent_id',
         'status', 'channel', 'subject', 'language', 'detected_language',
         'current_page_url', 'referrer_url',
-        'context_data', 'ai_context', 'message_count', 'ai_message_count',
+        'context_data', 'tags', 'ai_context', 'message_count', 'ai_message_count',
         'total_tokens_used', 'avg_sentiment', 'offline_message_sent',
         'is_read', 'is_starred', 'first_response_at', 'resolved_at', 'last_message_at',
         'csat_score', 'csat_comment', 'csat_submitted_at',
@@ -30,6 +30,7 @@ class Conversation extends Model
     {
         return [
             'context_data'         => 'array',
+            'tags'                 => 'array',
             'ai_context'           => 'array',
             'action_items'         => 'array',
             'labels'               => 'array',
