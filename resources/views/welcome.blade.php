@@ -24,7 +24,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         [x-cloak] { display: none !important; }
-        html, body { overflow-x: hidden; }
+        html, body { overflow-x: clip; }
         .pfx-hero { background: radial-gradient(55rem 35rem at 90% -10%, #ff6a2b26, transparent 60%), radial-gradient(40rem 28rem at -10% 100%, #8fb4e31f, transparent 60%); }
         .dark .pfx-hero { background: radial-gradient(55rem 35rem at 90% -10%, #ff6a2b55, transparent 60%), radial-gradient(40rem 28rem at -10% 100%, #8fb4e333, transparent 60%); }
         .pfx-grid { background-image: linear-gradient(#0d1a330a 1px, transparent 1px), linear-gradient(90deg, #0d1a330a 1px, transparent 1px); background-size: 48px 48px; mask-image: linear-gradient(to bottom, #000 30%, transparent 85%); }

@@ -395,3 +395,9 @@ html.light .pfx-shell main .text-gray-500 { color: #6b7a90 !important; }
 }
 /* Alpine: keep x-cloak elements hidden until Alpine has started (prevents flashes on load) */
 [x-cloak] { display: none !important; }
+
+/* Sticky page header on desktop dashboards (mobile uses the sticky app bar). */
+@media (min-width: 1024px) {
+    .pfx-pagehead { background: rgb(8 18 42 / .94); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgb(255 255 255 / .06); }
+    html.light .pfx-pagehead { background: rgb(244 246 251 / .94); border-bottom-color: #e6eaf1; }
+}

@@ -90,8 +90,8 @@
                 </div>
                 @endif
 
-                <div class="max-w-[1400px] mx-auto px-4 sm:px-6 pt-8 pb-12">
-                    <div class="mb-7 flex items-start justify-between gap-4">
+                <div class="max-w-[1400px] mx-auto px-4 sm:px-6 pt-4 lg:pt-0 pb-12">
+                    <div class="pfx-pagehead mb-7 -mx-4 sm:-mx-6 px-4 sm:px-6 pt-4 pb-4 flex items-start justify-between gap-4 lg:sticky lg:top-0 lg:z-30 lg:pt-6">
                         <div>
                         <p class="text-xs font-semibold uppercase tracking-[0.18em] text-accent-400">{{ now()->format('l, j F') }}</p>
                         <h1 class="mt-1.5 text-2xl sm:text-3xl font-extrabold tracking-tight text-white">@yield('page-title', 'Dashboard')</h1>
