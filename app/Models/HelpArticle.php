@@ -15,6 +15,11 @@ class HelpArticle extends Model
         return ['is_published' => 'boolean'];
     }
 
+    public function widget(): BelongsTo
+    {
+        return $this->belongsTo(Widget::class);
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(HelpCategory::class, 'help_category_id');

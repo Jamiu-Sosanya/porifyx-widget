@@ -24,6 +24,7 @@ Route::get('/offline', function () {
 // Landing page
 Route::get('/', [\App\Http\Controllers\LandingController::class, 'index'])->name('home');
 Route::post('/demo-chat', [\App\Http\Controllers\LandingController::class, 'chat'])->middleware('throttle:20,1')->name('demo.chat');
+Route::post('/demo-site', [\App\Http\Controllers\LandingController::class, 'site'])->middleware('throttle:6,1')->name('demo.site');
 // Public site pages (footer links)
 
 foreach (['about', 'careers', 'privacy', 'terms', 'documentation', 'api-reference' => 'api.reference', 'changelog', 'roadmap'] as $slug => $name) {
@@ -320,3 +321,14 @@ Route::post('/changelog/seen', function () {
     auth()->user()?->update(['changelog_seen_at' => now()]);
     return response()->noContent();
 })->middleware('auth')->name('changelog.seen');
+
+// SEO: sitemap of public pages, blog posts and published help articles
+Route::get('/sitemap.xml', function () {
+    $urls = collect(['/', '/about', '/blog', '/contact', '/documentation', '/api-reference', '/roadmap', '/status', '/careers', '/privacy', '/terms', '/changelog'])->map(fn ($p) => url($p));
+    $urls = $urls->merge(collect(array_keys(\App\Http\Controllers\SiteController::POSTS))->map(fn ($slug) => url('/blog/' . $slug)));
+    $urls = $urls->merge(\App\Models\HelpArticle::where('is_published', true)->with('widget:id,uuid,is_active')->limit(5000)->get()
+        ->filter(fn ($a) => $a->widget?->is_active)->map(fn ($a) => route('help.article', [$a->widget->uuid, $a->slug])));
+    $xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+        . $urls->map(fn ($u) => '<url><loc>' . e($u) . '</loc></url>')->implode('') . '</urlset>';
+    return response($xml, 200, ['Content-Type' => 'application/xml']);
+})->name('sitemap');

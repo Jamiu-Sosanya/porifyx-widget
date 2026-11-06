@@ -39,6 +39,16 @@
         @keyframes pfxMarquee { to { transform: translateX(calc(-50% - .5rem)); } }
         @media (prefers-reduced-motion: reduce) { .pfx-rise, .pfx-dot, .pfx-marquee-track { animation: none; } .pfx-marquee-track { flex-wrap: wrap; width: auto; justify-content: center; } }
     </style>
+@php
+    $pfxLd = [
+        ['@context' => 'https://schema.org', '@type' => 'Organization', 'name' => config('branding.name'), 'url' => url('/'), 'logo' => url('/images/icon-512x512.png')],
+        ['@context' => 'https://schema.org', '@type' => 'SoftwareApplication', 'name' => config('branding.name'), 'applicationCategory' => 'BusinessApplication', 'operatingSystem' => 'Web',
+            'description' => config('branding.tagline'),
+            'offers' => $plans->map(fn ($p) => ['@type' => 'Offer', 'name' => $p->name, 'price' => (string) $p->price_monthly, 'priceCurrency' => 'USD'])->values()->all()],
+        ['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => collect(\App\Http\Controllers\LandingController::FAQ)->map(fn ($f) => ['@type' => 'Question', 'name' => $f[1], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f[2]]])->values()->all()],
+    ];
+@endphp
+<script type="application/ld+json">{!! json_encode($pfxLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}</script>
 </head>
 @php
     $name = config('branding.name');
@@ -87,7 +97,7 @@
                 <div class="shrink-0 flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-brand-500 to-brand-600 text-white">
                     <span class="grid place-items-center w-10 h-10 rounded-full bg-white text-brand-600 font-extrabold">P</span>
                     <div class="min-w-0 flex-1">
-                        <p class="font-bold leading-tight truncate">{{ $name }} Assistant</p>
+                        <p class="font-bold leading-tight truncate" x-text="site ? 'Trained on ' + site.host : @js($name . ' Assistant')">{{ $name }} Assistant</p>
                         <p class="text-xs text-white/80 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-300"></span> Online · replies instantly</p>
                     </div>
                     <button type="button" @click="reset()" title="New conversation" aria-label="New conversation" class="grid place-items-center w-8 h-8 rounded-lg bg-white/15 hover:bg-white/25">
@@ -125,6 +135,17 @@
                     </form>
                 </div>
             </div>
+            {{-- Try it on your own website --}}
+            <form @submit.prevent="trySite()" class="mx-auto mt-4 w-full max-w-md">
+                <label for="pfx-demo-site" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Try it on your own website</label>
+                <div class="flex gap-2">
+                    <input id="pfx-demo-site" x-model="siteInput" maxlength="500" inputmode="url" autocomplete="url" placeholder="yourbusiness.com"
+                           class="flex-1 min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-base sm:text-sm dark:bg-white/5 dark:border-white/10 dark:text-white">
+                    <button type="submit" :disabled="siteBusy" class="shrink-0 px-4 rounded-xl bg-[#0d1a33] dark:bg-white dark:text-[#0d1a33] text-white text-sm font-semibold disabled:opacity-60" x-text="siteBusy ? 'Reading…' : 'Train'">Train</button>
+                </div>
+                <p x-show="siteError" x-cloak class="mt-1.5 text-xs text-rose-500" x-text="siteError"></p>
+                <p x-show="site" x-cloak class="mt-1.5 text-xs text-emerald-600 dark:text-emerald-400">Ready. Ask it a question about your site above.</p>
+            </form>
         </div>
     </div>
 </section>
@@ -484,9 +505,24 @@
 function pfxChat() {
     const greeting = { role: 'assistant', content: @js("Hi! I'm the {$name} assistant. Ask me anything about pricing, setup or features.") };
     return {
-        messages: [greeting], draft: '', busy: false,
+        messages: [greeting], draft: '', busy: false, site: null, siteInput: '', siteBusy: false, siteError: '',
         starters: ['How much does it cost?', 'How do I install it?', 'Which AI models?', 'Can my team take over?'],
-        reset() { this.messages = [greeting]; this.draft = ''; },
+        reset() { this.messages = [greeting]; this.draft = ''; this.site = null; this.starters = ['How much does it cost?', 'How do I install it?', 'Which AI models?', 'Can my team take over?']; },
+        async trySite() {
+            if (!this.siteInput.trim() || this.siteBusy) return;
+            this.siteBusy = true; this.siteError = '';
+            try {
+                const res = await fetch(@js(route('demo.site')), { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content }, body: JSON.stringify({ url: this.siteInput.trim() }) });
+                const d = await res.json().catch(() => ({}));
+                if (!res.ok) { this.siteError = d.error || (res.status === 429 ? 'Too many tries. Wait a minute.' : 'Please enter a valid website address.'); }
+                else {
+                    this.site = d;
+                    this.messages = [{ role: 'assistant', content: 'I just read ' + d.host + '. Ask me anything a customer of ' + (d.title || d.host) + ' might ask.' }];
+                    this.starters = ['What do you offer?', 'What are your prices?', 'How can I contact you?'];
+                }
+            } catch (e) { this.siteError = 'Connection lost. Please try again.'; }
+            this.siteBusy = false;
+        },
         async send(text) {
             const message = (text ?? this.draft).trim();
             if (!message || this.busy) return;
@@ -499,7 +535,7 @@ function pfxChat() {
                 const res = await fetch(@js(route('demo.chat')), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content },
-                    body: JSON.stringify({ message, history }),
+                    body: JSON.stringify({ message, history, site_url: this.site ? this.site.url : undefined }),
                 });
                 const data = await res.json().catch(() => ({}));
                 this.messages.push({ role: 'assistant', content: res.ok ? data.reply

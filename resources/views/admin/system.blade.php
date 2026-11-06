@@ -222,8 +222,8 @@
     <h3 class="text-sm font-semibold text-white mb-1">Artisan Command Runner</h3>
     <p class="text-xs text-gray-500 mb-4">Run safe, pre-approved Artisan commands directly from the admin panel.</p>
 
-    <div class="flex gap-3 mb-3">
-        <select x-model="artisanCmd" class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-brand-500/50 transition">
+    <div class="flex flex-col sm:flex-row gap-3 mb-3">
+        <select x-model="artisanCmd" class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-brand-500/50 transition">
             <option value="">— Select a command —</option>
             @foreach([
                 'cache:clear', 'config:clear', 'config:cache',
@@ -252,7 +252,7 @@
 
 {{-- Log viewer --}}
 <div class="bg-gray-900/50 border border-white/5 rounded-2xl p-6">
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div>
             <h3 class="text-sm font-semibold text-white">Application Logs</h3>
             <p class="text-xs text-gray-500 mt-0.5">storage/logs/laravel.log — last N lines</p>
