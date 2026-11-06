@@ -60,6 +60,7 @@ class CrmService
     private static function summary(Appointment $a): string
     {
         return collect([
+            'Booking number: ' . $a->reference,
             'Service: ' . $a->service_name . ' (' . $a->duration . ' min)',
             $a->staff_name ? 'With: ' . $a->staff_name : null,
             'Status: ' . $a->status,

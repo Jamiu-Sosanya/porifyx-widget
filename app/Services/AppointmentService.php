@@ -248,6 +248,7 @@ class AppointmentService
     {
         return [
             'id'             => $a->id,
+            'reference'      => $a->reference,
             'widget_id'      => $a->widget_id,
             'status'         => $a->status,
             'service_id'     => $a->service_id,

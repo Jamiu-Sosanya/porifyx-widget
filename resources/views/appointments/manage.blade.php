@@ -45,6 +45,7 @@
     <div class="p-6 sm:p-8">
         <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{{ $s['business_name'] }}</p>
         <h1 class="mt-2 text-2xl font-extrabold tracking-tight">Your booking</h1>
+        <p class="mt-1 text-sm text-slate-500">Booking number <span class="font-mono font-bold text-slate-900 tracking-wider">{{ $a->reference }}</span></p>
         <span class="mt-3 inline-block px-2.5 py-1 rounded-full text-xs font-bold {{ $state[1] }}">{{ $state[0] }}</span>
 
         @if(session('notice'))

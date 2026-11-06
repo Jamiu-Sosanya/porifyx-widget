@@ -201,7 +201,7 @@ class CalendarService
     {
         $title = ($a->status === 'pending' ? '[Pending] ' : '') . $a->service_name . ' – ' . $a->name;
         $lines = array_filter([
-            'Booked through ' . $a->widget->name,
+            'Booking ' . $a->reference . ' through ' . $a->widget->name,
             'Name: ' . $a->name, 'Email: ' . $a->email, $a->phone ? 'Phone: ' . $a->phone : null,
             $a->staff_name ? 'With: ' . $a->staff_name : null, $a->notes ? 'Notes: ' . $a->notes : null,
             ...collect($a->answers ?? [])->map(fn ($v, $k) => $k . ': ' . (is_bool($v) ? ($v ? 'Yes' : 'No') : $v))->values()->all(),

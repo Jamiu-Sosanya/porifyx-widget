@@ -217,6 +217,44 @@ class BookingAdvancedTest extends TestCase
         Queue::assertPushed(SyncAppointment::class, fn ($j) => $j->event === 'appointment.rescheduled');
     }
 
+    public function test_booking_number_lets_visitor_manage_from_chat(): void
+    {
+        $w = $this->widget();
+        $ref = $this->book($w)->assertCreated()->json('reference');
+        $this->assertMatchesRegularExpression('/^BK-[2-9A-HJ-NP-Z]{6}$/', $ref);
+        Mail::assertQueued(\App\Mail\AppointmentMail::class, fn ($m) => $m->kind === 'booked' && str_contains($m->envelope()->subject, $ref));
+
+        // Wrong email or number: nothing found.
+        $this->postJson("/api/widget/{$w->uuid}/booking/lookup", ['reference' => $ref, 'email' => 'eve@example.com'])->assertNotFound();
+        // Typed loosely ("bk xxxxxx", any case) with the right email: found.
+        $loose = 'bk ' . strtolower(substr($ref, 3));
+        $d = $this->postJson("/api/widget/{$w->uuid}/booking/lookup", ['reference' => $loose, 'email' => 'ADA@example.com'])
+            ->assertOk()->assertJsonPath('reference', $ref)->assertJsonPath('can_move', true)->json();
+
+        $this->postJson("/api/widget/{$w->uuid}/booking/manage/{$d['token']}/reschedule", ['start' => '2026-11-10T10:00:00Z'])
+            ->assertOk()->assertJsonPath('when', 'Tuesday 10 November, 10:00 AM');
+        $this->postJson("/api/widget/{$w->uuid}/booking/manage/{$d['token']}/cancel")->assertOk()->assertJsonPath('status', 'cancelled');
+        $this->postJson("/api/widget/{$w->uuid}/booking/manage/{$d['token']}/cancel")->assertForbidden();
+
+        // A token from another widget does not work here.
+        $other = $this->widget();
+        $this->postJson("/api/widget/{$other->uuid}/booking/manage/{$d['token']}/cancel")->assertNotFound();
+    }
+
+    public function test_visitor_cannot_move_booking_into_the_no_change_window(): void
+    {
+        $w = $this->widget(['cancel_notice' => 12, 'max_days_ahead' => 5]);
+        $this->postJson("/api/widget/{$w->uuid}/booking", [
+            'service_id' => 'checkup', 'start' => '2026-11-12T09:00:00Z', 'name' => 'Ada', 'email' => 'ada@example.com',
+        ])->assertCreated();
+        $token = Appointment::first()->token;
+
+        // Now is 06:00 on the 10th: 09:00 today is inside 12 hours, so it is not offered or accepted.
+        $this->assertSame([], $this->getJson("/api/widget/{$w->uuid}/booking/slots?service=checkup&date=2026-11-10&ignore={$token}")->json('slots'));
+        $this->postJson("/api/widget/{$w->uuid}/booking/manage/{$token}/reschedule", ['start' => '2026-11-10T09:00:00Z'])->assertStatus(422);
+        $this->postJson("/api/widget/{$w->uuid}/booking/manage/{$token}/reschedule", ['start' => '2026-11-11T10:00:00Z'])->assertOk();
+    }
+
     public function test_assistant_is_told_to_offer_booking(): void
     {
         $w = $this->widget();

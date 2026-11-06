@@ -138,8 +138,11 @@ hr { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 24px 0;
         <div class="card">
             @yield('content')
 
-            {{-- Standard footer --}}
+            {{-- Standard footer (emails to non-account holders can override it) --}}
             <div class="card-footer">
+                @hasSection('footer')
+                <p class="email-footer-text">@yield('footer')</p>
+                @else
                 <p class="email-footer-text">
                     You're receiving this email because you have an account at
                     <a href="{{ config('app.url') }}" style="color:#6b7280;">{{ config('branding.name') }}</a>.
@@ -152,6 +155,7 @@ hr { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 24px 0;
                     <a href="{{ config('branding.support_url') }}">Support</a>
                     @endif
                 </p>
+                @endif
             </div>
         </div>
 

@@ -25,6 +25,9 @@
     ][$kind];
 @endphp
 @section('subject', $heading)
+@unless($owner)
+@section('footer', 'You are receiving this email because you booked an appointment with ' . $s['business_name'] . '. Keep your booking number ' . $a->reference . ' to change or cancel it.')
+@endunless
 @section('content')
 <div class="card-hero">
     <p style="font-size:36px;margin:0 0 12px;">📅</p>
@@ -33,6 +36,13 @@
 </div>
 
 <div class="card-body">
+    <div style="text-align:center;margin:0 0 22px;padding:18px;border-radius:14px;background:rgba(47,94,232,0.10);border:1px solid rgba(47,94,232,0.30);">
+        <p style="margin:0;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#93a4c8;">Booking number</p>
+        <p style="margin:6px 0 0;font-size:28px;font-weight:800;letter-spacing:0.08em;color:#ffffff;font-family:'SFMono-Regular',Consolas,monospace;">{{ $a->reference }}</p>
+        @unless($owner || $kind === 'cancelled')
+        <p style="margin:10px 0 0;font-size:13px;line-height:1.6;color:#b6c2dc;">Need to change or cancel? Open the chat on our website, choose <strong>Manage my booking</strong> and enter this number with your email. Or use the button below.</p>
+        @endunless
+    </div>
     <table class="data-table">
         <tr class="data-row"><td class="data-label">Service</td><td class="data-value">{{ $a->service_name }} ({{ $a->duration }} min)</td></tr>
         @if($a->staff_name)<tr class="data-row"><td class="data-label">With</td><td class="data-value">{{ $a->staff_name }}</td></tr>@endif
@@ -45,7 +55,7 @@
         @if($a->notes)<tr class="data-row"><td class="data-label">Notes</td><td class="data-value">{{ $a->notes }}</td></tr>@endif
         @foreach($a->answers ?? [] as $q => $v)<tr class="data-row"><td class="data-label">{{ $q }}</td><td class="data-value">{{ is_bool($v) ? ($v ? 'Yes' : 'No') : $v }}</td></tr>@endforeach
         @else
-        <tr class="data-row"><td class="data-label">With</td><td class="data-value">{{ $s['business_name'] }}</td></tr>
+        <tr class="data-row"><td class="data-label">Business</td><td class="data-value">{{ $s['business_name'] }}</td></tr>
         @endif
     </table>
 

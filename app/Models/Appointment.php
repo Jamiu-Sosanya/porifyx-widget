@@ -20,7 +20,7 @@ class Appointment extends Model
     public const ACTIVE = ['pending', 'confirmed'];
 
     protected $fillable = [
-        'widget_id', 'user_id', 'conversation_id', 'lead_id', 'service_id', 'staff_id', 'staff_name', 'service_name', 'duration', 'answers',
+        'reference', 'widget_id', 'user_id', 'conversation_id', 'lead_id', 'service_id', 'staff_id', 'staff_name', 'service_name', 'duration', 'answers',
         'payment_status', 'amount', 'currency', 'payment_ref', 'external_refs', 'source',
         'name', 'email', 'phone', 'notes', 'starts_at', 'ends_at', 'visitor_timezone', 'status', 'token', 'reminder_sent_at',
     ];
@@ -57,7 +57,28 @@ class Appointment extends Model
 
     protected static function booted(): void
     {
-        static::creating(fn (self $a) => $a->token ??= Str::random(48));
+        static::creating(function (self $a) {
+            $a->token ??= Str::random(48);
+            $a->reference ??= self::newReference();
+        });
+    }
+
+    /** Unique booking number like BK-7F3K9Q (no 0/O/1/I so it reads cleanly). */
+    public static function newReference(): string
+    {
+        do {
+            $ref = 'BK-' . collect(range(1, 6))->map(fn () => '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'[random_int(0, 31)])->implode('');
+        } while (self::where('reference', $ref)->exists());
+
+        return $ref;
+    }
+
+    /** Normalise what a visitor types: "bk 7f3k9q" -> "BK-7F3K9Q". */
+    public static function normaliseReference(string $input): string
+    {
+        $clean = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $input));
+
+        return 'BK-' . (str_starts_with($clean, 'BK') ? substr($clean, 2) : $clean);
     }
 
     public function widget(): BelongsTo { return $this->belongsTo(Widget::class); }
@@ -90,7 +111,7 @@ class Appointment extends Model
             'DTSTART:' . $fmt($this->starts_at),
             'DTEND:' . $fmt($this->ends_at),
             'SUMMARY:' . $esc($this->service_name . ' with ' . $this->widget->bookingSettings()['business_name']),
-            'DESCRIPTION:' . $esc('Manage or cancel: ' . $this->manageUrl()),
+            'DESCRIPTION:' . $esc('Booking number ' . $this->reference . '. Manage or cancel: ' . $this->manageUrl()),
             'STATUS:' . ($this->status === 'cancelled' ? 'CANCELLED' : 'CONFIRMED'),
             'END:VEVENT', 'END:VCALENDAR', '',
         ]);

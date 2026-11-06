@@ -132,6 +132,7 @@
     function renderMarkdown(text) {
         // The assistant ends a reply with [[BOOKING]] to offer the booking button.
         if (/\[\[BOOKING\]\]/.test(text)) { text = text.replace(/\s*\[\[BOOKING\]\]\s*/g, ''); addBookingChip(); }
+        if (/\[\[MANAGE_BOOKING\]\]/.test(text)) { text = text.replace(/\s*\[\[MANAGE_BOOKING\]\]\s*/g, ''); addBookingChip('manage'); }
         text = text.replace(/\s*\[\[[A-Z]*\]?$/, ''); // hide a half-streamed marker
         let html = escapeHtml(text);
         // Code blocks
@@ -1003,6 +1004,13 @@
         return el;
     }
 
+    const BK_MANAGE_LINK = '<button type="button" class="pfx-bk-link pfx-bk-manage" style="display:block;margin:14px auto 0;background:none;border:none;cursor:pointer;font-family:inherit;">Already booked? Change or cancel it</button>';
+
+    function bindManageLink(el) {
+        const b = el.querySelector('.pfx-bk-manage');
+        if (b) b.onclick = function () { openManage(); };
+    }
+
     function closeBooking() {
         const el = document.getElementById('pfx-booking');
         if (el) el.style.display = 'none';
@@ -1010,12 +1018,13 @@
 
     async function openBooking() {
         if (!config || !config.booking) return;
+        bk.moving = null;
         if (!isOpen) await toggleChat();
         bkPanel(config.booking.label, '<div class="pfx-bk-muted">Loading…</div>');
         const r = await bkApi('GET', '');
         if (!r.ok) { bkPanel(config.booking.label, '<div class="pfx-bk-muted">Booking is not available right now.</div>'); return; }
         bk.info = r.data;
-        if (bk.info.services.length === 1) { bk.service = bk.info.services[0]; return bkStaff(); }
+        // Always start on the service list: it also holds the "Already booked?" link.
         bkServices();
     }
 
@@ -1023,7 +1032,7 @@
         bk.staff = null;
         const team = bk.service.staff || [];
         if (team.length < 2) { bk.staff = team[0] ? team[0].id : null; return bkDates(); }
-        const back = bk.info.services.length > 1 ? bkServices : null;
+        const back = bkServices;
         const el = bkPanel('Who would you like?',
             '<button type="button" class="pfx-bk-card" data-s=""><strong>Anyone available</strong><br><span class="pfx-bk-muted">Shows the most times</span></button>' +
             team.map(function (m) { return '<button type="button" class="pfx-bk-card" data-s="' + escapeAttr(m.id) + '"><strong>' + escapeHtml(m.name) + '</strong></button>'; }).join(''), back);
@@ -1037,21 +1046,22 @@
             return '<button type="button" class="pfx-bk-card" data-i="' + i + '">' +
                 '<span class="pfx-bk-card-top"><strong>' + escapeHtml(s.name) + '</strong><span>' + escapeHtml(s.charge ? bk.info.currency + ' ' + Number(s.charge).toFixed(2) : (s.price || '')) + '</span></span>' +
                 '<span class="pfx-bk-muted">' + s.duration + ' min' + (s.description ? ' · ' + escapeHtml(s.description) : '') + '</span></button>';
-        }).join(''));
+        }).join('') + BK_MANAGE_LINK);
+        bindManageLink(el);
         el.querySelectorAll('.pfx-bk-card').forEach(function (b) {
             b.onclick = function () { bk.service = bk.info.services[+b.getAttribute('data-i')]; bk.date = null; bkStaff(); };
         });
     }
 
     function bkDates() {
-        const back = (bk.service.staff || []).length > 1 ? bkStaff : (bk.info.services.length > 1 ? bkServices : null);
+        const back = bk.moving ? function () { bkManageView(bk.moving); } : ((bk.service.staff || []).length > 1 ? bkStaff : bkServices);
         if (!bk.info.dates.length) { bkPanel(bk.service.name, '<div class="pfx-bk-muted">No dates are open for booking at the moment.</div>', back); return; }
         const chips = bk.info.dates.map(function (d) {
             const dt = new Date(d + 'T12:00:00');
             return '<button type="button" class="pfx-bk-date" data-d="' + d + '">' +
                 '<span>' + dt.toLocaleDateString(undefined, { weekday: 'short' }) + '</span><strong>' + dt.getDate() + '</strong><span>' + dt.toLocaleDateString(undefined, { month: 'short' }) + '</span></button>';
         }).join('');
-        const el = bkPanel(bk.service.name,
+        const el = bkPanel(bk.moving ? 'Pick a new time' : bk.service.name,
             '<div class="pfx-bk-label">Pick a day</div><div class="pfx-bk-dates">' + chips + '</div>' +
             '<div class="pfx-bk-label">Pick a time <span class="pfx-bk-muted">(' + escapeHtml(bk.info.timezone) + ')</span></div><div id="pfx-bk-slots" class="pfx-bk-slots"></div>', back);
         const pick = function (d, auto) {
@@ -1072,14 +1082,14 @@
         bk.date = date;
         const box = document.getElementById('pfx-bk-slots');
         box.innerHTML = '<div class="pfx-bk-muted">Loading times…</div>';
-        const r = await bkApi('GET', '/slots?service=' + encodeURIComponent(bk.service.id) + '&date=' + date + (bk.staff ? '&staff=' + encodeURIComponent(bk.staff) : ''));
+        const r = await bkApi('GET', '/slots?service=' + encodeURIComponent(bk.service.id) + '&date=' + date + (bk.staff ? '&staff=' + encodeURIComponent(bk.staff) : '') + (bk.moving ? '&ignore=' + encodeURIComponent(bk.moving.token) : ''));
         if (bk.date !== date) return -1;
         bk.slots = (r.ok && r.data.slots) || [];
         box.innerHTML = bk.slots.length
             ? bk.slots.map(function (s, i) { return '<button type="button" class="pfx-bk-slot" data-i="' + i + '">' + escapeHtml(s.label) + '</button>'; }).join('')
             : '<div class="pfx-bk-muted">No free times on this day. Try another day.</div>';
         box.querySelectorAll('.pfx-bk-slot').forEach(function (b) {
-            b.onclick = function () { bk.slot = bk.slots[+b.getAttribute('data-i')]; bkDetails(); };
+            b.onclick = function () { bk.slot = bk.slots[+b.getAttribute('data-i')]; if (bk.moving) bkConfirmMove(); else bkDetails(); };
         });
         return bk.slots.length;
     }
@@ -1133,6 +1143,7 @@
             const pay = bkPanel('Almost done',
                 '<div class="pfx-bk-done"><div class="pfx-bk-tick">£</div>' +
                 '<strong>' + escapeHtml(d.service) + (d.staff ? ' with ' + escapeHtml(d.staff) : '') + '</strong><span>' + escapeHtml(d.when) + ' (' + escapeHtml(d.timezone) + ')</span>' +
+                bkRefBox(d.reference) +
                 '<p class="pfx-bk-muted">We are holding this time for 30 minutes. Pay ' + escapeHtml(d.amount) + ' securely with Stripe to confirm it.</p>' +
                 '<a href="' + escapeAttr(d.checkout_url) + '" target="_blank" rel="noopener" class="pfx-btn-primary" style="display:block;text-decoration:none;margin-top:8px;">Pay ' + escapeHtml(d.amount) + '</a>' +
                 '<a href="' + escapeAttr(d.manage_url) + '" target="_blank" rel="noopener" class="pfx-bk-link">View booking</a></div>');
@@ -1143,30 +1154,136 @@
         bkPanel(d.status === 'pending' ? 'Request sent' : 'You are booked in',
             '<div class="pfx-bk-done"><div class="pfx-bk-tick">✓</div>' +
             '<strong>' + escapeHtml(d.service) + (d.staff ? ' with ' + escapeHtml(d.staff) : '') + '</strong><span>' + escapeHtml(d.when) + ' (' + escapeHtml(d.timezone) + ')</span>' +
-            '<p class="pfx-bk-muted">' + (d.status === 'pending' ? 'We will confirm by email shortly.' : 'A confirmation and calendar invite are on their way to ' + escapeHtml(bk.form.email) + '.') + '</p>' +
+            bkRefBox(d.reference) +
+            '<p class="pfx-bk-muted">' + (d.status === 'pending' ? 'We will confirm by email shortly.' : 'A confirmation and calendar invite are on their way to ' + escapeHtml(bk.form.email) + '.') + ' Keep your booking number to change or cancel here in the chat.</p>' +
             '<a href="' + escapeAttr(d.manage_url) + '" target="_blank" rel="noopener" class="pfx-bk-link">Manage or cancel</a></div>');
         bk.form = null;
     }
 
+    function bkRefBox(ref) {
+        if (!ref) return '';
+        return '<div style="margin:10px 0 6px;padding:10px 14px;border-radius:12px;border:1px dashed ' + (config.primary_color || '#2f5ee8') + ';">' +
+            '<div class="pfx-bk-muted" style="text-transform:uppercase;letter-spacing:0.12em;font-size:10px;">Booking number</div>' +
+            '<div style="font-size:20px;font-weight:800;letter-spacing:0.08em;font-family:ui-monospace,Consolas,monospace;">' + escapeHtml(ref) + '</div></div>';
+    }
+
+    async function openManage(prefill) {
+        if (!config || !config.booking) return;
+        if (!isOpen) await toggleChat();
+        bk.moving = null;
+        const v = bk.lookup || {};
+        const el = bkPanel('Manage my booking',
+            '<p class="pfx-bk-muted" style="margin:0 0 12px;">Enter the booking number from your confirmation email (it starts with BK-) and the email you booked with.</p>' +
+            '<div id="pfx-bk-lerr" class="pfx-bk-error" style="display:none"></div>' +
+            '<input id="pfx-bk-ref" class="pfx-offline-input" placeholder="Booking number, e.g. BK-7F3K9Q" autocomplete="off" style="text-transform:uppercase;letter-spacing:0.06em;" value="' + escapeAttr(prefill || v.reference || '') + '">' +
+            '<input id="pfx-bk-lemail" type="email" class="pfx-offline-input" placeholder="Email address" autocomplete="email" value="' + escapeAttr(v.email || '') + '">' +
+            '<button type="button" id="pfx-bk-find" class="pfx-btn-primary">Find my booking</button>' +
+            '<button type="button" class="pfx-bk-link pfx-bk-new" style="display:block;margin:14px auto 0;background:none;border:none;cursor:pointer;font-family:inherit;">Make a new booking instead</button>');
+        el.querySelector('.pfx-bk-new').onclick = openBooking;
+        el.querySelector('#pfx-bk-find').onclick = async function () {
+            const ref = el.querySelector('#pfx-bk-ref').value.trim(), email = el.querySelector('#pfx-bk-lemail').value.trim();
+            const err = el.querySelector('#pfx-bk-lerr');
+            if (!ref || !/^\S+@\S+\.\S+$/.test(email)) { err.textContent = 'Please enter your booking number and email.'; err.style.display = 'block'; return; }
+            this.disabled = true; this.textContent = 'Looking…';
+            const r = await bkApi('POST', '/lookup', { reference: ref, email: email });
+            bk.lookup = { reference: ref, email: email };
+            if (!r.ok) {
+                this.disabled = false; this.textContent = 'Find my booking';
+                err.textContent = r.status === 429 ? 'Too many attempts. Please wait a minute and try again.' : ((r.data && r.data.message) || 'Something went wrong. Please try again.');
+                err.style.display = 'block';
+                return;
+            }
+            bkManageView(r.data);
+        };
+    }
+
+    function bkManageView(d, notice) {
+        const labels = { pending: 'Waiting for confirmation', confirmed: 'Confirmed', completed: 'Completed', cancelled: 'Cancelled', no_show: 'Missed' };
+        const el = bkPanel('Your booking',
+            (notice ? '<div class="pfx-bk-summary" style="text-align:center;">' + escapeHtml(notice) + '</div>' : '') +
+            bkRefBox(d.reference) +
+            '<div class="pfx-bk-summary"><strong>' + escapeHtml(d.service) + (d.staff ? ' with ' + escapeHtml(d.staff) : '') + '</strong>' +
+            '<span>' + escapeHtml(d.when) + ' (' + escapeHtml(d.timezone) + ')</span><span class="pfx-bk-muted">' + escapeHtml(labels[d.status] || d.status) + '</span></div>' +
+            (d.can_move ? '<button type="button" id="pfx-bk-move" class="pfx-btn-primary" style="margin-bottom:8px;">Change time</button>' : '') +
+            (d.can_cancel ? '<button type="button" id="pfx-bk-cancel" class="pfx-bk-card" style="text-align:center;color:#ef4444;font-weight:700;">Cancel booking</button>' : '') +
+            (!d.can_move && !d.can_cancel && (d.status === 'pending' || d.status === 'confirmed') ? '<p class="pfx-bk-muted">This booking can no longer be changed online. Please contact us directly.</p>' : '') +
+            '<a href="' + escapeAttr(d.manage_url) + '" target="_blank" rel="noopener" class="pfx-bk-link" style="display:block;text-align:center;">Open booking page</a>',
+            function () { openManage(d.reference); });
+        const mv = el.querySelector('#pfx-bk-move');
+        if (mv) mv.onclick = async function () {
+            if (!bk.info) { const r = await bkApi('GET', ''); if (!r.ok) return; bk.info = r.data; }
+            bk.service = bk.info.services.find(function (x) { return x.id === d.service_id; }) || { id: d.service_id, name: d.service, staff: [] };
+            bk.staff = d.staff_id || null;
+            bk.moving = d; bk.date = null;
+            bkDates();
+        };
+        const cn = el.querySelector('#pfx-bk-cancel');
+        if (cn) cn.onclick = function () {
+            const c = bkPanel('Cancel booking?',
+                '<p style="font-size:13px;margin:0 0 14px;">Cancel ' + escapeHtml(d.service) + ' on ' + escapeHtml(d.when) + '?' + (d.refund ? ' Your payment will be refunded.' : '') + '</p>' +
+                '<button type="button" id="pfx-bk-yes" class="pfx-btn-primary" style="background:#ef4444;margin-bottom:8px;">Yes, cancel it</button>' +
+                '<button type="button" id="pfx-bk-no" class="pfx-bk-card" style="text-align:center;">Keep my booking</button>',
+                function () { bkManageView(d); });
+            c.querySelector('#pfx-bk-no').onclick = function () { bkManageView(d); };
+            c.querySelector('#pfx-bk-yes').onclick = async function () {
+                this.disabled = true; this.textContent = 'Cancelling…';
+                const r = await bkApi('POST', '/manage/' + encodeURIComponent(d.token) + '/cancel');
+                if (!r.ok) return bkManageView(d, (r.data && r.data.message) || 'We could not cancel it. Please try again.');
+                bkManageView(r.data, 'Your booking is cancelled. We have emailed you a confirmation.');
+                if (conversationUuid) appendMessage('ai', '❌ Booking ' + d.reference + ' cancelled.', null, new Date().toISOString());
+            };
+        };
+    }
+
+    function bkConfirmMove() {
+        const d = bk.moving;
+        const when = new Date(bk.date + 'T12:00:00').toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' }) + ', ' + bk.slot.label;
+        const el = bkPanel('Confirm new time',
+            '<div class="pfx-bk-summary"><span class="pfx-bk-muted">From</span><span>' + escapeHtml(d.when) + '</span><span class="pfx-bk-muted" style="margin-top:6px;">To</span><strong>' + escapeHtml(when) + '</strong></div>' +
+            '<button type="button" id="pfx-bk-domove" class="pfx-btn-primary">Move my booking</button>', bkDates);
+        el.querySelector('#pfx-bk-domove').onclick = async function () {
+            this.disabled = true; this.textContent = 'Moving…';
+            const r = await bkApi('POST', '/manage/' + encodeURIComponent(d.token) + '/reschedule', { start: bk.slot.start });
+            if (!r.ok) {
+                if (r.data && r.data.errors && r.data.errors.start) { bk.slot = null; return bkDates(); }
+                return bkManageView(d, (r.data && r.data.message) || 'We could not move it. Please try again.');
+            }
+            bk.moving = null;
+            bkManageView(r.data, 'Done. Your booking has moved and we have emailed you the new time.');
+            if (conversationUuid) appendMessage('ai', '📅 Booking ' + d.reference + ' moved to ' + r.data.when + '.', null, new Date().toISOString());
+        };
+    }
+
     function addBookingChip(fromAi) {
-        if (!config || !config.booking || bk.chipTimer) return;
-        bk.chipTimer = setTimeout(function () {
-            bk.chipTimer = null;
+        if (!config || !config.booking) return;
+        const key = fromAi === 'manage' ? 'chipTimerM' : 'chipTimer';
+        if (bk[key]) return;
+        bk[key] = setTimeout(function () {
+            bk[key] = null;
             const wrap = document.getElementById('pfx-messages');
-            if (!wrap || (wrap.lastElementChild && wrap.lastElementChild.classList.contains('pfx-bk-chip'))) return;
+            const manage = fromAi === 'manage';
+            if (!wrap || (wrap.lastElementChild && wrap.lastElementChild.classList.contains(manage ? 'pfx-bk-chip-m' : 'pfx-bk-chip'))) return;
             const b = document.createElement('button');
             b.type = 'button';
-            b.className = 'pfx-chip pfx-bk-chip';
+            b.className = 'pfx-chip ' + (manage ? 'pfx-bk-chip-m' : 'pfx-bk-chip');
             b.style.alignSelf = 'flex-start';
-            b.textContent = '📅 ' + config.booking.label;
-            b.onclick = function () { bk.fromAi = true; openBooking(); };
+            b.textContent = manage ? '🔎 Manage my booking' : '📅 ' + config.booking.label;
+            const ref = bk.refHint;
+            b.onclick = manage ? function () { openManage(ref); } : function () { bk.fromAi = true; openBooking(); };
             wrap.appendChild(b);
             wrap.scrollTop = wrap.scrollHeight;
         }, 1200);
     }
 
     function maybeOfferBooking(text) {
-        if (config.booking && /\b(book|booking|appointments?|schedule|reserve|reservation|slots?|availability)\b/i.test(text)) addBookingChip();
+        if (!config.booking) return;
+        const ref = text.match(/\bBK[-\s]?([A-Z0-9]{6})\b/i);
+        if (ref) bk.refHint = 'BK-' + ref[1].toUpperCase();
+        if (ref || /\b(cancel|reschedul\w*|change|move|amend|my)\b[\s\S]*\b(booking|appointment)\b|\bbooking (number|ref\w*)\b/i.test(text)) {
+            addBookingChip('manage');
+        } else if (/\b(book|booking|appointments?|schedule|reserve|reservation|slots?|availability)\b/i.test(text)) {
+            addBookingChip();
+        }
     }
 
     // ── Proactive messaging ───────────────────────────────────────────────────

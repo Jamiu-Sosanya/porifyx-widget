@@ -62,7 +62,7 @@
         @endforeach
     </div>
     <input type="hidden" name="view" value="{{ $view }}">
-    <input type="search" name="q" value="{{ request('q') }}" placeholder="Search name or email" class="{{ $field }} w-52">
+    <input type="search" name="q" value="{{ request('q') }}" placeholder="Name, email or BK- number" class="{{ $field }} w-52">
     <select name="status" class="{{ $field }}" onchange="this.form.submit()">
         <option value="">Any status</option>
         @foreach(Appointment::STATUSES as $key => $label)<option value="{{ $key }}" @selected(request('status') === $key)>{{ $label }}</option>@endforeach
@@ -125,6 +125,7 @@
                     <div class="md:w-28 shrink-0">
                         <p class="text-lg font-extrabold text-white leading-none">{{ $a->localStart()->format('g:i A') }}</p>
                         <p class="mt-1 text-xs text-gray-500">{{ $a->duration }} min</p>
+                        <p class="mt-1 text-[11px] font-mono text-gray-500">{{ $a->reference }}</p>
                     </div>
                     <div class="flex-1 min-w-0">
                         <p class="font-semibold text-white truncate">{{ $a->name }}

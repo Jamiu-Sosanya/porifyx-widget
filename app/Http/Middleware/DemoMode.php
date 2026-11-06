@@ -32,6 +32,7 @@ class DemoMode
         'api/widget/*/stream',
         'api/widget/*/proactive',
         'api/widget/*/booking',
+        'api/widget/*/booking/*',
         'appointments/manage/*/cancel',
         'appointments/manage/*/reschedule',
     ];

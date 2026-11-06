@@ -266,6 +266,12 @@ class Booking
         return collect($s['staff'])->first(fn ($m) => (string) $m['id'] === $pick) ?? false;
     }
 
+    /** Visitors may only move a booking to a time they could still change later. */
+    public static function visitorMoveAllowed(array $s, string $startIso): bool
+    {
+        return CarbonImmutable::parse($startIso)->greaterThanOrEqualTo(now()->addHours((int) $s['cancel_notice']));
+    }
+
     /** True when visitors may still change this booking themselves. */
     public static function visitorCanChange(Appointment $a, array $s): bool
     {

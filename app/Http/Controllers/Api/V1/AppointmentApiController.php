@@ -57,6 +57,7 @@ class AppointmentApiController extends Controller
             'widget_id'     => 'nullable|integer',
             'status'        => ['nullable', Rule::in(array_keys(Appointment::STATUSES))],
             'email'         => 'nullable|email',
+            'reference'     => 'nullable|string|max:20',
             'from'          => 'nullable|date',
             'to'            => 'nullable|date',
             'updated_since' => 'nullable|date',
@@ -66,6 +67,7 @@ class AppointmentApiController extends Controller
             ->when($data['widget_id'] ?? null, fn ($q, $v) => $q->where('widget_id', $v))
             ->when($data['status'] ?? null, fn ($q, $v) => $q->where('status', $v))
             ->when($data['email'] ?? null, fn ($q, $v) => $q->where('email', $v))
+            ->when($data['reference'] ?? null, fn ($q, $v) => $q->where('reference', Appointment::normaliseReference($v)))
             ->when($data['from'] ?? null, fn ($q, $v) => $q->where('starts_at', '>=', $v))
             ->when($data['to'] ?? null, fn ($q, $v) => $q->where('starts_at', '<', $v))
             ->when($data['updated_since'] ?? null, fn ($q, $v) => $q->where('updated_at', '>=', $v))

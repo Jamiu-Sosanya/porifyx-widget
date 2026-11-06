@@ -37,7 +37,7 @@ class AppointmentMail extends Mailable
             'owner_rescheduled' => "{$a->name} moved their booking to {$when}",
         };
 
-        return new Envelope(subject: $subject, replyTo: $this->forOwner() ? [$a->email] : []);
+        return new Envelope(subject: $subject . ' · ' . $a->reference, replyTo: $this->forOwner() ? [$a->email] : []);
     }
 
     public function content(): Content

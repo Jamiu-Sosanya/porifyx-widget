@@ -44,7 +44,10 @@ Route::prefix('widget')->middleware([WidgetRateLimit::class])->group(function ()
     // Bookings
     Route::get('/{widgetUuid}/booking', [\App\Http\Controllers\Api\BookingApiController::class, 'show']);
     Route::get('/{widgetUuid}/booking/slots', [\App\Http\Controllers\Api\BookingApiController::class, 'slots']);
-    Route::post('/{widgetUuid}/booking', [\App\Http\Controllers\Api\BookingApiController::class, 'store'])->middleware('throttle:6,1');
+    Route::post('/{widgetUuid}/booking', [\App\Http\Controllers\Api\BookingApiController::class, 'store'])->middleware('throttle:6,1,bk-store');
+    Route::post('/{widgetUuid}/booking/lookup', [\App\Http\Controllers\Api\BookingApiController::class, 'lookup'])->middleware('throttle:10,1,bk-lookup');
+    Route::post('/{widgetUuid}/booking/manage/{token}/cancel', [\App\Http\Controllers\Api\BookingApiController::class, 'manageCancel'])->middleware('throttle:10,1,bk-manage');
+    Route::post('/{widgetUuid}/booking/manage/{token}/reschedule', [\App\Http\Controllers\Api\BookingApiController::class, 'manageReschedule'])->middleware('throttle:10,1,bk-manage');
 });
 
 // PWA Routes (authenticated)

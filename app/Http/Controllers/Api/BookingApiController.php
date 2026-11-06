@@ -69,9 +69,81 @@ class BookingApiController extends Controller
         abort_unless($service, 404, 'Unknown service.');
 
         $ignore = ! empty($data['ignore']) ? $widget->appointments()->where('token', $data['ignore'])->value('id') : null;
-        $slots = array_map(fn ($x) => ['start' => $x['start'], 'label' => $x['label']], Booking::slots($widget, $service, $data['date'], $data['staff'] ?? null, $ignore));
+        $s = Booking::settings($widget);
+        $slots = collect(Booking::slots($widget, $service, $data['date'], $data['staff'] ?? null, $ignore))
+            ->filter(fn ($x) => ! $ignore || Booking::visitorMoveAllowed($s, $x['start']))
+            ->map(fn ($x) => ['start' => $x['start'], 'label' => $x['label']])->values()->all();
 
         return response()->json(['slots' => $slots]);
+    }
+
+    // ── Returning visitors: find a booking by number + email, then change or cancel it ──
+
+    private function details(\App\Models\Appointment $a, array $s): array
+    {
+        $canChange = Booking::visitorCanChange($a, $s) && $a->payment_status !== 'unpaid';
+
+        return [
+            'reference'  => $a->reference,
+            'token'      => $a->token,
+            'status'     => $a->status,
+            'service_id' => $a->service_id,
+            'service'    => $a->service_name,
+            'staff_id'   => $a->staff_id,
+            'staff'      => $a->staff_name,
+            'when'       => $a->localStart()->format('l j F, g:i A'),
+            'timezone'   => $s['timezone'],
+            'can_cancel' => $canChange,
+            'can_move'   => $canChange && $s['allow_reschedule'],
+            'refund'     => $a->payment_status === 'paid' && $s['payments']['refund_on_cancel'],
+            'manage_url' => $a->manageUrl(),
+        ];
+    }
+
+    public function lookup(Request $request, string $widgetUuid): JsonResponse
+    {
+        $widget = $this->widget($widgetUuid);
+        $data = $request->validate(['reference' => 'required|string|max:20', 'email' => 'required|email|max:190']);
+
+        $a = $widget->appointments()
+            ->where('reference', \App\Models\Appointment::normaliseReference($data['reference']))
+            ->whereRaw('lower(email) = ?', [mb_strtolower($data['email'])])
+            ->first();
+        if (! $a) {
+            return response()->json(['message' => 'We could not find a booking with that number and email. Please check both and try again.'], 404);
+        }
+
+        return response()->json($this->details($a, Booking::settings($widget)));
+    }
+
+    private function managed(string $widgetUuid, string $token): array
+    {
+        $widget = $this->widget($widgetUuid);
+        $a = $widget->appointments()->where('token', $token)->firstOrFail();
+
+        return [$a, Booking::settings($widget)];
+    }
+
+    public function manageCancel(string $widgetUuid, string $token, AppointmentService $appointments): JsonResponse
+    {
+        [$a, $s] = $this->managed($widgetUuid, $token);
+        abort_unless($this->details($a, $s)['can_cancel'], 403, 'This booking can no longer be cancelled online. Please contact ' . $s['business_name'] . ' directly.');
+        $appointments->setStatus($a, 'cancelled', byVisitor: true);
+
+        return response()->json($this->details($a->fresh(), $s));
+    }
+
+    public function manageReschedule(Request $request, string $widgetUuid, string $token, AppointmentService $appointments): JsonResponse
+    {
+        [$a, $s] = $this->managed($widgetUuid, $token);
+        abort_unless($this->details($a, $s)['can_move'], 403, 'This booking can no longer be moved online. Please contact ' . $s['business_name'] . ' directly.');
+        $start = $request->validate(['start' => 'required|date'])['start'];
+        if (! Booking::visitorMoveAllowed($s, $start)) {
+            throw \Illuminate\Validation\ValidationException::withMessages(['start' => 'Please choose a time at least ' . $s['cancel_notice'] . ' hours from now.']);
+        }
+        $appointments->reschedule($a, $start, null, byVisitor: true);
+
+        return response()->json($this->details($a->fresh(), $s));
     }
 
     public function store(Request $request, string $widgetUuid, AppointmentService $appointments, BookingPaymentService $payments): JsonResponse
@@ -119,6 +191,7 @@ class BookingApiController extends Controller
             'when'         => $a->localStart()->format('l j F, g:i A'),
             'timezone'     => $s['timezone'],
             'manage_url'   => $a->manageUrl(),
+            'reference'    => $a->reference,
         ], 201);
     }
 }

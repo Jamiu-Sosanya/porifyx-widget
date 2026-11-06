@@ -25,7 +25,7 @@ class AppointmentController extends Controller
             ->when($request->filled('widget'), fn ($q) => $q->where('widget_id', $request->widget))
             ->when($request->filled('staff'), fn ($q) => $q->where('staff_id', $request->staff))
             ->when(array_key_exists((string) $request->status, Appointment::STATUSES), fn ($q) => $q->where('status', $request->status))
-            ->when($request->filled('q'), fn ($q) => $q->where(fn ($w) => $w->where('name', 'like', "%{$request->q}%")->orWhere('email', 'like', "%{$request->q}%")));
+            ->when($request->filled('q'), fn ($q) => $q->where(fn ($w) => $w->where('name', 'like', "%{$request->q}%")->orWhere('email', 'like', "%{$request->q}%")->orWhere('reference', \App\Models\Appointment::normaliseReference($request->q))));
 
         $week = null;
         if ($view === 'week') {
@@ -238,6 +238,9 @@ class AppointmentController extends Controller
         $s = Booking::settings($appointment->widget);
         abort_unless($s['allow_reschedule'] && Booking::visitorCanChange($appointment, $s), 403);
         $data = $request->validate(['start' => 'required|date']);
+        if (! Booking::visitorMoveAllowed($s, $data['start'])) {
+            return back()->withErrors(['start' => 'Please choose a time at least ' . $s['cancel_notice'] . ' hours from now.']);
+        }
         $service->reschedule($appointment, $data['start'], null, byVisitor: true);
 
         return redirect()->route('appointments.manage', $token)->with('notice', 'Done. Your booking has moved and we have emailed you the new time.');

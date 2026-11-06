@@ -180,7 +180,10 @@ class AiChatService
             $services = collect($booking['services'])->map(fn ($x) => $x['name'] . ' (' . $x['duration'] . ' min' . ($x['price'] ? ', ' . $x['price'] : '') . ')')->implode('; ');
             $prompt .= "\n\nAppointments: visitors can book online with " . $booking['business_name'] . '. Services: ' . $services . '. '
                 . 'When the visitor wants to book, reschedule or check availability, answer briefly and end your reply with the exact token [[BOOKING]] on its own line. '
-                . 'The chat shows a booking button in its place. Never invent available times; the button shows real availability.';
+                . 'The chat shows a booking button in its place. Never invent available times; the button shows real availability. '
+                . 'Every booking has a booking number like BK-7F3K9Q sent by email. When the visitor wants to change, move, check or cancel an existing booking, '
+                . 'answer briefly and end your reply with the exact token [[MANAGE_BOOKING]] on its own line; the chat then asks for their booking number and email. '
+                . 'Never confirm, change or cancel a booking yourself.';
         }
         $prompt .= "\n\nRules:\n";
         $prompt .= "- Keep responses concise and helpful\n";
