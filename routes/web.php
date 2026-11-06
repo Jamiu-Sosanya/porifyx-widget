@@ -163,6 +163,7 @@ Route::middleware(['auth', \App\Http\Middleware\WorkspaceContext::class])->group
         // Conversations
         Route::get('/conversations', [ConversationController::class, 'index'])->name('conversations.index');
         Route::get('/conversations/export', [ConversationController::class, 'export'])->name('conversations.export');
+        Route::post('/conversations/cleanup', [ConversationController::class, 'cleanup'])->name('conversations.cleanup');
         Route::get('/conversations/{conversation}', [ConversationController::class, 'show'])->name('conversations.show');
         Route::get('/visitors/{visitor}/export', [\App\Http\Controllers\VisitorDataController::class, 'export'])->name('visitors.export');
         Route::delete('/visitors/{visitor}', [\App\Http\Controllers\VisitorDataController::class, 'erase'])->name('visitors.erase');
@@ -203,6 +204,8 @@ Route::middleware(['auth', \App\Http\Middleware\WorkspaceContext::class])->group
 
         // Automations
         Route::resource('automations', AutomationController::class)->except(['show']);
+        Route::post('/automations/{automation}/duplicate', [AutomationController::class, 'duplicate'])->name('automations.duplicate');
+        Route::post('/automations/{automation}/test', [AutomationController::class, 'test'])->name('automations.test');
         Route::post('/automations/{automation}/toggle', [AutomationController::class, 'toggleActive'])->name('automations.toggle');
 
     }); // end subscription group

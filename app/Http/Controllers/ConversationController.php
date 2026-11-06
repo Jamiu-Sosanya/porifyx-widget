@@ -22,6 +22,13 @@ class ConversationController extends Controller
             ->withCount('messages'); // real count; the stored message_count column is not always updated
 
         // Filters
+        // Quick views
+        match ($request->get('view')) {
+            'needs_human' => $query->whereIn('status', ['open', 'human_takeover', 'waiting']),
+            'live' => $query->where('last_message_at', '>=', now()->subMinutes(5))->where('status', '!=', 'resolved'),
+            'engaged' => $query->where('message_count', '>', 1),
+            default => null,
+        };
         if ($tag = trim((string) $request->get('tag'))) {
             $query->where('tags', 'like', '%"' . str_replace(['%', '_', '"'], '', $tag) . '"%');
         }
@@ -54,6 +61,9 @@ class ConversationController extends Controller
             'active'   => Conversation::whereIn('widget_id', $widgetIds)->whereIn('status', ['ai_active', 'human_active', 'open'])->count(),
             'unread'   => Conversation::whereIn('widget_id', $widgetIds)->where('is_read', false)->count(),
             'resolved' => Conversation::whereIn('widget_id', $widgetIds)->where('status', 'resolved')->count(),
+            'needs_human' => Conversation::whereIn('widget_id', $widgetIds)->whereIn('status', ['open', 'human_takeover', 'waiting'])->count(),
+            'live' => Conversation::whereIn('widget_id', $widgetIds)->where('last_message_at', '>=', now()->subMinutes(5))->where('status', '!=', 'resolved')->count(),
+            'empty' => Conversation::whereIn('widget_id', $widgetIds)->where('message_count', '<=', 1)->where('created_at', '<', now()->subHour())->count(),
         ];
 
         return view('conversations.index', compact('conversations', 'widgets', 'stats'));
@@ -115,6 +125,17 @@ class ConversationController extends Controller
         }, $filename, [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
+    }
+
+    /** Remove chats where the visitor never wrote anything (only the greeting), older than an hour. */
+    public function cleanup(Request $request)
+    {
+        $ids = $request->user()->widgets()->pluck('id');
+        $n = 0;
+        Conversation::whereIn('widget_id', $ids)->where('message_count', '<=', 1)->where('created_at', '<', now()->subHour())->whereDoesntHave('lead')
+            ->chunkById(200, function ($cs) use (&$n) { foreach ($cs as $c) { $c->messages()->delete(); $c->delete(); $n++; } });
+
+        return back()->with('success', "Deleted {$n} empty conversation(s).");
     }
 
     public function tags(Request $request, Conversation $conversation)
@@ -196,6 +217,7 @@ class ConversationController extends Controller
     {
         $this->authorizeConversation($conversation);
 
+        if ($conversation->widget) \App\Services\AutomationRunner::fire('chat_completed', $conversation->widget, ['conversation' => $conversation, 'lead' => $conversation->lead]);
         $conversation->update([
             'status'      => 'resolved',
             'resolved_at' => now(),

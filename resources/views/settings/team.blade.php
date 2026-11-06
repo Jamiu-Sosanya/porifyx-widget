@@ -2,6 +2,7 @@
 @section('title', 'Team')
 @section('page-title', 'Settings')
 @section('settings')
+@include('partials.plan-limit', ['metric' => 'team_members', 'label' => 'team seats'])
 <div class="w-full">
 
     @if(session('success'))

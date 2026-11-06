@@ -19,8 +19,9 @@ class AutomationController extends Controller
             ->paginate(20);
 
         $widgets = $user->widgets()->get();
+        $recent = \App\Models\AutomationLog::whereIn('automation_id', Automation::where('user_id', $user->id)->pluck('id'))->with('automation:id,name')->latest()->limit(15)->get();
 
-        return view('automations.index', compact('automations', 'widgets'));
+        return view('automations.index', compact('automations', 'widgets', 'recent'));
     }
 
     public function create()
@@ -127,6 +128,31 @@ class AutomationController extends Controller
         $automation->update(['is_active' => !$automation->is_active]);
 
         return back()->with('success', $automation->is_active ? 'Automation activated.' : 'Automation paused.');
+    }
+
+    public function duplicate(Request $request, Automation $automation)
+    {
+        abort_unless($automation->user_id === $request->user()->id, 403);
+        if (! $request->user()->canUse('automations')) return back()->with('error', 'Your plan does not include more automations. Upgrade to add more.');
+        $copy = $automation->replicate(['trigger_count', 'success_count', 'last_triggered_at']);
+        $copy->name = $automation->name . ' (copy)';
+        $copy->is_active = false;
+        $copy->save();
+
+        return redirect()->route('automations.edit', $copy)->with('success', 'Copied. It is paused until you switch it on.');
+    }
+
+    /** Send a test with sample data (real email/Telegram/webhook; lead changes are only previewed). */
+    public function test(Request $request, Automation $automation)
+    {
+        abort_unless($automation->user_id === $request->user()->id, 403);
+        $widget = $automation->widget ?? $request->user()->widgets()->first();
+        if (! $widget) return back()->with('error', 'Create a widget first.');
+        $lead = new \App\Models\Lead(['name' => 'Test Lead', 'email' => 'test@example.com', 'score' => 82, 'temperature' => 'hot', 'status' => 'new']);
+        $dry = ! in_array($automation->action, ['send_email', 'send_telegram', 'webhook', 'add_to_crm'], true);
+        $r = (new \App\Services\AutomationRunner)->run($automation, $widget, ['lead' => $lead, 'message' => 'This is a test from PoriFyx'], $dry);
+
+        return back()->with($r['status'] === 'success' ? 'success' : 'error', $r['status'] === 'success' ? ($dry ? 'Looks good: this action would update the lead or chat.' : 'Test sent.') : 'Test failed: ' . $r['error']);
     }
 
     public function destroy(Automation $automation)

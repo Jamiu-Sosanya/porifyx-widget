@@ -147,6 +147,7 @@
             </div>
 
             {{-- Hidden fallback for required action_config --}}
+            @include('automations.partials.config', ['automation' => $automation ?? null])
             <input type="hidden" name="action_config[_set]" value="1">
         </div>
 

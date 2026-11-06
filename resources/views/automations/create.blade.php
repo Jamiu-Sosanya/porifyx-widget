@@ -4,7 +4,7 @@
 @section('content')
 <div class="max-w-3xl">
     <a href="{{ route('automations.index') }}" class="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-white mb-6 transition">← Back</a>
-    <form method="POST" action="{{ route('automations.store') }}" class="space-y-6" x-data="{ trigger: '', action: '' }">
+    <form method="POST" action="{{ route('automations.store') }}" class="space-y-6" x-data="{ trigger: @js(old('trigger', request('trigger', ''))), action: @js(old('action', request('action', ''))) }">
         @csrf
         @if($errors->any())
         <div class="p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl text-sm text-rose-400 space-y-1">
@@ -15,7 +15,7 @@
             <h3 class="text-base font-semibold text-white">Basic Info</h3>
             <div>
                 <label class="block text-sm font-medium text-gray-300 mb-1.5">Name</label>
-                <input name="name" required value="{{ old('name') }}" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-500/50 transition" placeholder="e.g. Notify on hot lead">
+                <input name="name" required value="{{ old('name', request('name')) }}" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-500/50 transition" placeholder="e.g. Notify on hot lead">
                 @error('name') <p class="text-xs text-rose-400 mt-1">{{ $message }}</p> @enderror
             </div>
             <div><label class="block text-sm font-medium text-gray-300 mb-1.5">Description</label><textarea name="description" rows="2" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-500/50 transition resize-none">{{ old('description') }}</textarea></div>
@@ -57,6 +57,7 @@
                 <input name="action_config[tags]" value="{{ old('action_config.tags') }}" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-500/50 transition" placeholder="vip, high-value">
             </div>
             {{-- Ensures action_config is always present as an array in the POST body --}}
+            @include('automations.partials.config', ['automation' => $automation ?? null])
             <input type="hidden" name="action_config[_set]" value="1">
         </div>
         <button type="submit" class="px-6 py-2.5 bg-linear-to-r from-brand-600 to-accent-600 hover:from-brand-500 hover:to-accent-500 text-white text-sm font-medium rounded-xl transition shadow-lg shadow-brand-500/20">Create Automation</button>

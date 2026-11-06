@@ -2,6 +2,7 @@
 @section('title', 'Knowledge Base: ' . $knowledgeBase->name)
 @section('page-title', $knowledgeBase->name)
 @section('content')
+@include('partials.plan-limit', ['metric' => 'training_sources', 'label' => 'training sources'])
 <div class="max-w-4xl">
     <a href="{{ route('widgets.knowledge.index', $widget) }}" class="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-white mb-6 transition">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg>

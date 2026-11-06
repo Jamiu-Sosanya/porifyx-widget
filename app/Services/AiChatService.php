@@ -307,6 +307,7 @@ class AiChatService
         $chunks = $this->retrievalService->findRelevantChunks($widget, $query);
         if ($this->calculateConfidence($chunks) < ($widget->min_confidence !== null ? (float) $widget->min_confidence : config('ai.response.confidence_threshold', 0.6)) && $widget->activeKnowledgeBase) {
             KnowledgeGap::record($widget, $userMessage);
+            \App\Services\AutomationRunner::fire('ai_fallback', $widget, ['conversation' => $conversation, 'message' => $userMessage]);
         }
 
         $this->lastSources = $widget->show_sources ?? true

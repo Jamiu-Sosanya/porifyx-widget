@@ -62,6 +62,7 @@ class LeadCaptureController extends Controller
 
         if ($isNew) {
             if (! $widget->isPlaygroundRequest()) $owner->incrementUsage('leads');
+            \App\Services\AutomationRunner::fire('new_lead', $widget, ['lead' => $lead, 'conversation' => $conversation]);
             try {
                 $notify->notifyLeadQualified($widget, $lead);
                 $webhooks->dispatch($widget, 'lead.captured', ['lead' => $lead->only(['id', 'name', 'email', 'phone', 'company', 'form_data', 'created_at'])]);

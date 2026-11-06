@@ -9,6 +9,22 @@
         New Automation
     </a>
 </div>
+@include('partials.plan-limit', ['metric' => 'automations', 'label' => 'automations'])
+@php
+    $tpl = [
+        ['🔥', 'Hot lead → email sales', 'hot_lead', 'send_email'], ['🆕', 'New lead → CRM', 'new_lead', 'add_to_crm'],
+        ['😠', 'Angry words → escalate', 'keyword_detected', 'assign_priority'], ['🤷', 'AI unsure → Telegram', 'ai_fallback', 'send_telegram'],
+        ['✅', 'Chat resolved → webhook', 'chat_completed', 'webhook'], ['🏷️', 'New lead → tag', 'new_lead', 'tag_lead'],
+    ];
+@endphp
+<div class="mb-6">
+    <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Start from a template</p>
+    <div class="flex gap-2 overflow-x-auto pb-1">
+        @foreach($tpl as [$i, $n, $t, $a])
+        <a href="{{ route('automations.create', ['trigger' => $t, 'action' => $a, 'name' => $n]) }}" class="shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl border border-white/5 bg-gray-900/50 hover:border-brand-500/40 text-xs text-gray-200"><span>{{ $i }}</span>{{ $n }}</a>
+        @endforeach
+    </div>
+</div>
 
 <div class="space-y-3">
     @forelse($automations as $auto)
@@ -32,6 +48,8 @@
                     <p>{{ $auto->trigger_count }} runs · {{ $auto->success_rate }}% success</p>
                     <p>{{ $auto->last_triggered_at?->diffForHumans() ?? 'Never run' }}</p>
                 </div>
+                <form method="POST" action="{{ route('automations.test', $auto) }}">@csrf<button class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-[11px] font-semibold text-gray-200" title="Run once with sample data">Test</button></form>
+                <form method="POST" action="{{ route('automations.duplicate', $auto) }}">@csrf<button class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-[11px] font-semibold text-gray-200">Duplicate</button></form>
                 <a href="{{ route('automations.edit', $auto) }}" class="p-1.5 text-gray-500 hover:text-brand-400 rounded-lg transition" title="Edit">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" /></svg>
                 </a>
@@ -56,4 +74,19 @@
     @endforelse
 </div>
 <div class="mt-6">{{ $automations->links() }}</div>
+@if($recent->isNotEmpty())
+<section class="mt-8 rounded-2xl border border-white/5 bg-gray-900/50">
+    <h3 class="px-5 pt-5 text-sm font-semibold text-white">Recent runs</h3>
+    <ul class="mt-3 divide-y divide-white/5">
+        @foreach($recent as $log)
+        <li class="px-5 py-2.5 flex items-center gap-3 text-xs">
+            <span class="w-2 h-2 rounded-full {{ $log->status === 'success' ? 'bg-emerald-400' : 'bg-rose-400' }}"></span>
+            <span class="text-gray-200 truncate flex-1">{{ $log->automation?->name }}</span>
+            <span class="text-gray-500 truncate max-w-[40%]">{{ $log->error_message ?: ($log->payload['lead']['email'] ?? $log->payload['event'] ?? '') }}</span>
+            <span class="text-gray-500 shrink-0">{{ $log->created_at->diffForHumans(short: true) }}</span>
+        </li>
+        @endforeach
+    </ul>
+</section>
+@endif
 @endsection

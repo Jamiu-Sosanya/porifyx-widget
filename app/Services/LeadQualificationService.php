@@ -106,6 +106,10 @@ class LeadQualificationService
             // Record A/B test lead if this is a new lead
             if ($lead->wasRecentlyCreated && $owner) {
                 $owner->incrementUsage('leads');
+                \App\Services\AutomationRunner::fire('new_lead', $conversation->widget, ['lead' => $lead, 'conversation' => $conversation]);
+            }
+            if ($lead->temperature === 'hot' && $previousTemp !== 'hot') {
+                \App\Services\AutomationRunner::fire('hot_lead', $conversation->widget, ['lead' => $lead, 'conversation' => $conversation]);
             }
             if ($lead->wasRecentlyCreated && $visitor) {
                 $this->recordAbTestLead($conversation->widget, $visitor->fingerprint);

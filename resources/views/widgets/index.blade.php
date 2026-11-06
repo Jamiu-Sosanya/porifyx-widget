@@ -2,6 +2,7 @@
 @section('title', 'Widgets')
 @section('page-title', 'Widgets')
 @section('content')
+@include('partials.plan-limit', ['metric' => 'widgets', 'label' => 'widgets'])
 <div class="flex items-center justify-between mb-6">
     <p class="text-gray-400 text-sm">Manage your AI chat widgets</p>
     <a href="{{ route('widgets.create') }}" class="flex items-center gap-2 px-4 py-2.5 bg-linear-to-r from-brand-600 to-accent-600 hover:from-brand-500 hover:to-accent-500 text-white text-sm font-medium rounded-xl transition shadow-lg shadow-brand-500/20">

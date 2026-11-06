@@ -283,6 +283,7 @@ class WidgetApiController extends Controller
             ]);
 
             $widget->increment('total_conversations');
+            if (! $widget->isPlaygroundRequest()) \App\Services\AutomationRunner::fire('chat_started', $widget, ['conversation' => $conversation]);
 
             // Record A/B test conversation
             $this->recordAbTestEvent($widget, $validated['fingerprint'], 'conversation');
@@ -344,6 +345,8 @@ class WidgetApiController extends Controller
             'sentiment_score' => $sentiment['score'],
             'sentiment_label' => $sentiment['label'],
         ]);
+
+        \App\Services\AutomationRunner::fire('keyword_detected', $widget, ['conversation' => $conversation, 'message' => $validated['content']]);
 
         $aiResponse = null;
         $flow = $conversation->isAiActive() ? $this->applyFlow($widget, $conversation, $validated['content']) : null;
@@ -464,6 +467,7 @@ class WidgetApiController extends Controller
             'sentiment_label' => $sentiment['label'],
         ]);
 
+        \App\Services\AutomationRunner::fire('keyword_detected', $widget, ['conversation' => $conversation, 'message' => $validated['content']]);
         if ($flow = $this->applyFlow($widget, $conversation, $validated['content'])) {
             $m = Message::create(['conversation_id' => $conversation->id, 'role' => 'ai', 'content' => $flow['reply'], 'smart_suggestions' => $flow['choices'], 'metadata' => ['provider' => 'flow']]);
             $conversation->update(['message_count' => $conversation->messages()->count(), 'last_message_at' => now(), 'is_read' => false]);

@@ -13,6 +13,16 @@
 </div>
 
 {{-- Filters --}}
+<div class="flex flex-wrap items-center gap-2 mb-4">
+    @foreach(['' => ['All', null], 'needs_human' => ['✋ Needs human', $stats['needs_human']], 'live' => ['🎧 Live now', $stats['live']], 'engaged' => ['Engaged only', null]] as $k => [$l, $n])
+    <a href="{{ route('conversations.index', array_merge(request()->except(['view', 'page']), $k ? ['view' => $k] : [])) }}"
+       class="px-3 py-1.5 rounded-full text-xs font-semibold border {{ request('view', '') === $k ? 'bg-white text-gray-900 border-white' : 'border-white/10 text-gray-300 hover:bg-white/5' }}">{{ $l }}@if($n) <span class="ml-1 opacity-70">{{ $n }}</span>@endif</a>
+    @endforeach
+    @if($stats['empty'])
+    <form method="POST" action="{{ route('conversations.cleanup') }}" class="ml-auto" onsubmit="return confirm('Delete {{ $stats['empty'] }} conversation(s) where the visitor never wrote anything?')">@csrf
+        <button class="px-3 py-1.5 rounded-lg border border-white/10 text-xs font-semibold text-gray-300 hover:bg-white/5">🗑 Delete {{ $stats['empty'] }} empty</button></form>
+    @endif
+</div>
 <div class="grid grid-cols-2 gap-2.5 sm:flex sm:flex-wrap sm:items-center sm:gap-3 mb-6">
     <a href="{{ route('conversations.export', request()->query()) }}" class="col-span-2 sm:order-last justify-center inline-flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-medium text-gray-300 hover:text-white transition shrink-0">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
