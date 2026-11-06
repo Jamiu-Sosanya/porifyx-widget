@@ -242,3 +242,4 @@ html.light main :is([class*="bg-brand-5"], [class*="bg-brand-6"], [class*="bg-ro
 html.light main :is([class*="bg-brand-5"], [class*="bg-brand-6"], [class*="bg-rose-5"], [class*="bg-emerald-5"], [class*="from-brand"]):not([class*="/"]) * { color: #fff !important; }
 html.light main .pfx-code { background: #f1f5f9 !important; color: #1e3a8a !important; border-color: #e2e8f0 !important; }
 html.light main input[type=file]::file-selector-button { background: #e2e8f0 !important; color: #0f172a !important; }
+html.light main pre, html.light main code.bg-black\/30 { background: #f1f5f9 !important; color: #1e3a8a !important; }

@@ -17,13 +17,6 @@
 </div>
 @endif
 
-{{-- Section tabs --}}
-<div class="flex flex-wrap gap-2 mb-6 text-sm font-semibold">
-    @foreach(['setup' => 'Services & hours', 'team' => 'Team', 'form' => 'Booking form', 'payments' => 'Payments', 'integrations' => 'Calendars & CRM'] as $id => $text)
-        <a href="#{{ $id }}" class="px-3.5 py-2 rounded-xl bg-white/5 text-gray-300 hover:text-white hover:bg-white/10">{{ $text }}</a>
-    @endforeach
-</div>
-
 <form method="POST" action="{{ route('widgets.booking.update', $widget) }}" enctype="multipart/form-data"
       x-data="{
           services: @js(old('services', $settings['services'])),
