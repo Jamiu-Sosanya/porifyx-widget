@@ -17,7 +17,27 @@
         $widgetMenu[] = [route('widgets.embed', $openWidget), 'Embed code', $is('widgets.embed')];
     }
     $groups = $isAdmin
-        ? ['Admin' => [[route('admin.dashboard'), 'Admin panel', $is('admin.*'), 'M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z', []]]]
+        ? [
+            'Platform' => [
+                [route('admin.dashboard'), 'Dashboard', $is('admin.dashboard'), 'M4 5h7v7H4zM13 5h7v4h-7zM13 11h7v8h-7zM4 14h7v5H4z', []],
+                [route('admin.users'), 'Users', $is('admin.users*'), 'M16 19v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1M9.5 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM21 19v-1a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75', []],
+                [route('admin.widgets'), 'Widgets', $is('admin.widgets*'), 'M8 10h8M8 14h5M5 4h14a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-6l-5 4v-4H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z', []],
+                [route('admin.conversations'), 'Conversations', $is('admin.conversations*'), 'M7 8h10M7 12h6m-9 8 3-3h11a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14z', []],
+                [route('admin.reports'), 'Reports', $is('admin.reports*'), 'M4 20V10m6 10V4m6 16v-7m4 7H2', []],
+                [route('admin.inbox'), 'Inbox', $is('admin.inbox*'), 'M3 13h4l2 3h6l2-3h4M3 13l2.5-8h13L21 13v6H3z', []],
+            ],
+            'Business' => [
+                [route('admin.plans'), 'Plans', $is('admin.plans*'), 'M3 8h18M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zm2 10h4', []],
+                [route('admin.channels'), 'Channels', $is('admin.channels*'), 'M8.3 15a5.3 5.3 0 0 1 7.4 0M5.1 11.9a9.7 9.7 0 0 1 13.8 0M12 19h.01', []],
+                [route('admin.broadcasts'), 'Broadcasts', $is('admin.broadcasts*'), 'M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1zm13-3a5 5 0 0 1 0 8', []],
+                [route('admin.consent'), 'Cookie consent', $is('admin.consent*'), 'M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4zm-3 9 2 2 4-4', []],
+            ],
+            'System' => [
+                [route('admin.system'), 'System', $is('admin.system*'), 'M4 6h16M4 12h16M4 18h16', []],
+                [route('admin.activity'), 'Activity log', $is('admin.activity*'), 'M12 6v6l4 2m5-2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z', []],
+                [route('admin.settings'), 'Settings', $is('admin.settings*', 'admin.profile*'), 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm8-3a8 8 0 0 0-.2-1.7l2-1.6-2-3.4-2.4 1a8 8 0 0 0-2.9-1.7L14 2h-4l-.5 2.6a8 8 0 0 0-2.9 1.7l-2.4-1-2 3.4 2 1.6a8 8 0 0 0 0 3.4l-2 1.6 2 3.4 2.4-1a8 8 0 0 0 2.9 1.7L10 22h4l.5-2.6a8 8 0 0 0 2.9-1.7l2.4 1 2-3.4-2-1.6c.1-.6.2-1.1.2-1.7z', []],
+            ],
+        ]
         : [
             'Workspace' => [
                 [route('dashboard'), 'Overview', $is('dashboard'), 'M4 5h7v7H4zM13 5h7v4h-7zM13 11h7v8h-7zM4 14h7v5H4z', []],
@@ -64,7 +84,7 @@
        :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
     <div class="h-full flex flex-col rounded-3xl border border-white/[0.07] bg-gradient-to-b from-[#0d1428] to-[#080c18] shadow-2xl shadow-black/40 overflow-hidden">
         <div class="px-5 pt-5 pb-4 flex items-center justify-between">
-            <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5 min-w-0">
+            <a href="{{ $isAdmin ? route('admin.dashboard') : route('dashboard') }}" class="flex items-center gap-2.5 min-w-0">
                 @include('layouts.partials.logo')
                 <span class="text-[15px] font-bold text-white tracking-tight truncate">{{ config('branding.name') }}</span>
             </a>

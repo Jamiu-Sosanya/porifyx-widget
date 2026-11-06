@@ -276,3 +276,116 @@ main input[type=file] { max-width: 100%; min-width: 0; }
 body.pfx-shell { overflow-x: clip; }
 main img, main video, main iframe { max-width: 100%; }
 main .grid > * { min-width: 0; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   App design layer: one look for every dashboard page (light and dark).
+   Works on top of the utility classes already used in the views.
+   ══════════════════════════════════════════════════════════════════════ */
+.pfx-shell {
+    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-feature-settings: 'cv11', 'ss01';
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    letter-spacing: -0.003em;
+}
+.pfx-shell main { font-size: 14px; line-height: 1.55; }
+.pfx-shell main :is(h1, h2, h3, h4) { letter-spacing: -0.015em; line-height: 1.25; }
+.pfx-shell main h2 { font-weight: 700; }
+.pfx-shell main h3 { font-weight: 650; }
+/* Tiny labels were too small to read */
+.pfx-shell main .text-\[10px\] { font-size: 11px; }
+.pfx-shell main .text-\[9px\] { font-size: 10.5px; }
+.pfx-shell main :is(.tabular, td, .text-3xl, .text-2xl, .text-4xl) { font-variant-numeric: tabular-nums; }
+
+/* Cards */
+.pfx-shell main .rounded-2xl.border:is(.bg-gray-900\/50, .bg-gray-900) {
+    border-radius: 1.125rem;
+    transition: border-color .2s, box-shadow .2s;
+}
+html.dark .pfx-shell main .rounded-2xl.border.bg-gray-900\/50 { border-color: rgba(255, 255, 255, .07); }
+html.light .pfx-shell main .rounded-2xl.border.bg-gray-900\/50 { border-color: #e6eaf1 !important; box-shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 8px 24px -16px rgba(15, 23, 42, .12); }
+
+/* Form fields */
+.pfx-shell main :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]), select, textarea):not(.bg-transparent):not(.sr-only) {
+    border-radius: .75rem;
+    transition: border-color .15s, box-shadow .15s, background-color .15s;
+}
+.pfx-shell main :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]), select, textarea):not(.bg-transparent):focus {
+    outline: none;
+    border-color: rgb(47 94 232 / .65) !important;
+    box-shadow: 0 0 0 4px rgb(47 94 232 / .14) !important;
+}
+html.light .pfx-shell main :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]), select, textarea):not(.bg-transparent) {
+    background-color: #fff !important;
+    border-color: #d8dee8 !important;
+    color: #0f172a !important;
+}
+html.light .pfx-shell main :is(input, textarea)::placeholder { color: #94a3b8 !important; }
+.pfx-shell main select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2394a3b8'%3E%3Cpath fill-rule='evenodd' d='M5.2 7.2a.75.75 0 0 1 1.06.02L10 11.1l3.74-3.88a.75.75 0 1 1 1.08 1.04l-4.28 4.44a.75.75 0 0 1-1.08 0L5.18 8.26a.75.75 0 0 1 .02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right .7rem center;
+    background-size: 1.1rem;
+    padding-right: 2.25rem !important;
+}
+.pfx-shell main select option { background: #0f172a; color: #e2e8f0; }
+html.light .pfx-shell main select option { background: #fff; color: #0f172a; }
+.pfx-shell main input[type=checkbox], .pfx-shell main input[type=radio] { accent-color: #2f5ee8; }
+.pfx-shell main input[type=range] { accent-color: #2f5ee8; }
+
+/* Buttons */
+.pfx-shell main :is(button, a):is([class*=" bg-brand-5"], [class*=" bg-brand-6"], [class^="bg-brand-5"], [class^="bg-brand-6"]):not([class*="/"]) {
+    font-weight: 600;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .12) inset, 0 6px 16px -8px rgb(47 94 232 / .65);
+    transition: transform .12s, box-shadow .15s, background-color .15s, filter .15s;
+}
+.pfx-shell main :is(button, a):is([class*=" bg-brand-5"], [class*=" bg-brand-6"], [class^="bg-brand-5"], [class^="bg-brand-6"]):not([class*="/"]):hover { filter: brightness(1.06); }
+.pfx-shell main :is(button, a, [role=button]):active { transform: translateY(1px); }
+.pfx-shell :is(button, a, input, select, textarea, [tabindex]):focus-visible { outline: 2px solid #6b8cff; outline-offset: 2px; }
+
+/* Tables */
+.pfx-shell main table { border-collapse: separate; border-spacing: 0; }
+.pfx-shell main thead th {
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+    white-space: nowrap;
+}
+html.light .pfx-shell main thead th { color: #64748b !important; background: #f8fafc; }
+html.dark .pfx-shell main thead th { color: #8a97b3; background: rgba(255, 255, 255, .02); }
+.pfx-shell main tbody tr { transition: background-color .12s; }
+html.light .pfx-shell main tbody tr:hover { background: #f8fafc; }
+html.dark .pfx-shell main tbody tr:hover { background: rgba(255, 255, 255, .025); }
+@media (max-width: 640px) {
+    .pfx-shell main :is(td, th) { padding-left: .75rem !important; padding-right: .75rem !important; }
+}
+
+/* Badges / pills */
+.pfx-shell main .rounded-full:is(.text-\[10px\], .text-\[11px\], .text-xs):is([class*="bg-"]) { font-weight: 600; letter-spacing: .01em; }
+
+/* Links inside text */
+.pfx-shell main p a:not([class]) { color: #4f7bff; text-decoration: underline; text-underline-offset: 3px; }
+
+/* Scrollbars */
+.pfx-shell * { scrollbar-width: thin; scrollbar-color: rgba(148, 163, 184, .35) transparent; }
+.pfx-shell ::-webkit-scrollbar { width: 8px; height: 8px; }
+.pfx-shell ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, .35); border-radius: 8px; }
+.pfx-shell ::-webkit-scrollbar-track { background: transparent; }
+
+/* Light mode page and text */
+html.light body.pfx-shell { background: radial-gradient(1000px 420px at 90% -10%, rgba(47, 94, 232, .07), transparent 60%), #f4f6fb; background-attachment: fixed; }
+html.light .pfx-shell main .text-gray-500 { color: #6b7a90 !important; }
+
+/* Phones: tighter page padding, headings scale down, tap targets */
+@media (max-width: 640px) {
+    .pfx-shell main h1 { font-size: 1.6rem !important; }
+    .pfx-shell main .p-6 { padding: 1.1rem; }
+    .pfx-shell main .p-5 { padding: 1rem; }
+    .pfx-shell main .gap-6 { gap: 1rem; }
+    .pfx-shell main :is(button, a.inline-flex) { min-height: 36px; }
+}
+
+/* Motion off when the user asks for it */
+@media (prefers-reduced-motion: reduce) {
+    .pfx-shell *, .pfx-shell *::before, .pfx-shell *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
