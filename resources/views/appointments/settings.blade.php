@@ -26,7 +26,7 @@
           days: @js(\App\Support\Booking::DAYS),
           uid(p) { return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); },
       }"
-      class="grid xl:grid-cols-3 gap-6 items-start">
+      class="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
     @csrf @method('PUT')
 
     <div class="xl:col-span-2 space-y-6">
@@ -240,7 +240,7 @@
     <h2 class="text-xl font-extrabold text-white">Calendars & CRM</h2>
     <p class="text-sm text-gray-400">Connected calendars block times you are already busy and receive every booking as an event. Connected CRMs get the contact and the appointment, and stay updated when it moves or is cancelled.</p>
 
-    <div class="mt-5 grid lg:grid-cols-2 gap-6">
+    <div class="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
         {{-- Calendars --}}
         <div class="{{ $card }}">
             <p class="font-semibold text-white">Calendars</p>

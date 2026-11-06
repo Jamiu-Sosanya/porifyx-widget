@@ -271,3 +271,8 @@ html.light main .bg-brand-600\/20 { background-color: #dbeafe !important; }
 /* iOS zooms into inputs under 16px: keep form text 16px on phones */
 @media (max-width: 640px) { main input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]), main textarea, main select { font-size: 16px !important; } }
 html.light main textarea.bg-transparent { background-color: transparent !important; border: 0 !important; box-shadow: none !important; }
+/* No sideways scrolling on phones: file inputs and wide content stay inside the page */
+main input[type=file] { max-width: 100%; min-width: 0; }
+body.pfx-shell { overflow-x: clip; }
+main img, main video, main iframe { max-width: 100%; }
+main .grid > * { min-width: 0; }
