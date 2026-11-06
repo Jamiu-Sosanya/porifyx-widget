@@ -18,7 +18,9 @@ class MarketingTheme
 
     public static function current(): string
     {
-        $t = (string) SystemSetting::get('marketing_theme', 'aurora');
+        // ?preview_theme=… shows a theme without applying it (used by the admin preview).
+        $p = (string) request()->query('preview_theme', '');
+        $t = isset(self::THEMES[$p]) ? $p : (string) SystemSetting::get('marketing_theme', 'aurora');
 
         return isset(self::THEMES[$t]) ? $t : 'aurora';
     }

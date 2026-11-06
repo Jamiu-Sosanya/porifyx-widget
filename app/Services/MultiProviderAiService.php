@@ -29,6 +29,7 @@ class MultiProviderAiService
                 throw $e;
             }
             Log::warning("AI provider {$provider} failed, failing over to {$fallback}", ['error' => $e->getMessage()]);
+            \App\Support\WidgetEvents::record($widget->id, 'failover', "{$provider} failed, answered by {$fallback}: " . $e->getMessage(), 'warning');
 
             return $this->dispatch($fallback, $this->defaultModel($fallback), $messages, $maxTokens, $temp);
         }

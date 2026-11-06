@@ -144,4 +144,5 @@
 
 <h2 id="contact">Contact us</h2>
 <p>For privacy questions or requests, email <a href="mailto:{{ $email }}">{{ $email }}</a> or use our <a href="{{ route('contact', ['topic' => 'other']) }}">contact form</a>. Please mention "Privacy" in your message so it reaches the right person quickly.</p>
+@include('pages.partials.privacy-request')
 @endsection

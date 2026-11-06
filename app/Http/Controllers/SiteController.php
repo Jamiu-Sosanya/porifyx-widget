@@ -22,6 +22,8 @@ class SiteController extends Controller
 
     public function page(string $view)
     {
+        if ($view === 'privacy' && \App\Support\PrivacyPolicy::get()['enabled']) $view = 'privacy-custom';
+
         return view("pages.{$view}");
     }
 

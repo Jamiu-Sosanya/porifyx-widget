@@ -2,6 +2,29 @@
 @section('title', 'Admin Dashboard')
 @section('page-title', 'Admin Dashboard')
 @section('content')
+@php
+    $pfxChecks = collect(\App\Support\SiteHealth::checks());
+    $pfxOpen = \Illuminate\Support\Facades\DB::table('widget_events')->whereNull('resolved_at')->count();
+    $pfx24 = \Illuminate\Support\Facades\DB::table('widget_events')->where('created_at', '>=', now()->subDay())->count();
+    $pfxPay = \App\Models\ManualPayment::where('status', 'pending')->count();
+@endphp
+<div class="grid sm:grid-cols-3 gap-3 mb-6">
+    <a href="{{ route('admin.monitor') }}" class="rounded-2xl border p-4 {{ $pfxOpen ? 'border-amber-500/30 bg-amber-500/10' : 'border-emerald-500/20 bg-emerald-500/5' }}">
+        <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Widget monitor</p>
+        <p class="mt-1 text-lg font-bold text-white">{{ $pfxOpen ? $pfxOpen . ' open problem' . ($pfxOpen > 1 ? 's' : '') : 'All clear' }}</p>
+        <p class="text-xs text-gray-400">{{ $pfx24 }} event(s) in the last 24 hours →</p>
+    </a>
+    <a href="{{ route('admin.system') }}" class="rounded-2xl border p-4 {{ $pfxChecks->where(1, 'fail')->count() ? 'border-rose-500/30 bg-rose-500/10' : 'border-white/5 bg-gray-900/50' }}">
+        <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Site health</p>
+        <p class="mt-1 text-lg font-bold text-white">{{ $pfxChecks->where(1, 'ok')->count() }}/{{ $pfxChecks->count() }} checks passing</p>
+        <p class="text-xs text-gray-400">{{ $pfxChecks->where(1, 'fail')->pluck(0)->implode(', ') ?: 'No failures' }} →</p>
+    </a>
+    <a href="{{ route('admin.payments') }}" class="rounded-2xl border border-white/5 bg-gray-900/50 p-4">
+        <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Bank transfers</p>
+        <p class="mt-1 text-lg font-bold text-white">{{ $pfxPay }} waiting</p>
+        <p class="text-xs text-gray-400">Approve when the money arrives →</p>
+    </a>
+</div>
 
 {{-- KPI Stats --}}
 <div class="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-3 mb-6">

@@ -286,11 +286,16 @@ Route::middleware(['auth', \App\Http\Middleware\WorkspaceContext::class])->group
         // Conversations management
         Route::get('/conversations', [AdminController::class, 'conversations'])->name('conversations');
         Route::get('/monitor', [\App\Http\Controllers\Admin\ToolsController::class, 'monitor'])->name('monitor');
+        Route::post('/monitor/resolve', [\App\Http\Controllers\Admin\ToolsController::class, 'resolveEvents'])->name('monitor.resolve');
         Route::get('/search', [\App\Http\Controllers\Admin\ToolsController::class, 'search'])->name('search');
         Route::get('/changelog', [\App\Http\Controllers\Admin\ToolsController::class, 'changelog'])->name('changelog');
         Route::post('/changelog', [\App\Http\Controllers\Admin\ToolsController::class, 'storeChangelog'])->name('changelog.store');
         Route::post('/changelog/{id}/toggle', [\App\Http\Controllers\Admin\ToolsController::class, 'toggleChangelog'])->whereNumber('id')->name('changelog.toggle');
         Route::delete('/changelog/{id}', [\App\Http\Controllers\Admin\ToolsController::class, 'destroyChangelog'])->whereNumber('id')->name('changelog.destroy');
+        Route::get('/marketing', [\App\Http\Controllers\Admin\ToolsController::class, 'marketing'])->name('marketing');
+        Route::put('/marketing', [\App\Http\Controllers\Admin\ToolsController::class, 'saveMarketing'])->name('marketing.save');
+        Route::get('/privacy', [\App\Http\Controllers\Admin\PrivacyController::class, 'index'])->name('privacy');
+        Route::put('/privacy', [\App\Http\Controllers\Admin\PrivacyController::class, 'save'])->name('privacy.save');
         Route::get('/translations', [\App\Http\Controllers\Admin\TranslationController::class, 'index'])->name('translations');
         Route::put('/translations', [\App\Http\Controllers\Admin\TranslationController::class, 'save'])->name('translations.save');
         Route::post('/translations/generate', [\App\Http\Controllers\Admin\TranslationController::class, 'generate'])->name('translations.generate');
@@ -353,3 +358,13 @@ Route::get('/lang/{code}', function (string $code) {
     \App\Support\I18n::ensure($l);
     return back()->withCookie(cookie()->forever('pfx_lang', $l));
 })->name('lang.switch');
+
+// Public privacy request (GDPR): emailed to the privacy contact, logged for the admin
+Route::post('/privacy/request', function (\Illuminate\Http\Request $request) {
+    if (filled($request->input('website'))) return back()->with('privacy_sent', true); // bot trap
+    $d = $request->validate(['type' => 'required|in:access,delete,correct,restrict,other', 'email' => 'required|email|max:190', 'website_used' => 'nullable|string|max:190', 'details' => 'nullable|string|max:2000']);
+    $to = \App\Support\PrivacyPolicy::get()['contact_email'] ?: config('branding.support_email') ?: config('mail.from.address');
+    \Illuminate\Support\Facades\Mail::raw("Privacy request: {$d['type']}\nFrom: {$d['email']}\nWebsite: " . ($d['website_used'] ?? '-') . "\n\n" . ($d['details'] ?? ''), fn ($m) => $m->to($to)->replyTo($d['email'])->subject('Privacy request (' . $d['type'] . ') from ' . $d['email']));
+    activity('privacy')->event('privacy.request')->withProperties($d)->log('privacy.request');
+    return back()->with('privacy_sent', true);
+})->middleware('throttle:5,1')->name('privacy.request');

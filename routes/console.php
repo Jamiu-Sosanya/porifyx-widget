@@ -38,3 +38,11 @@ Artisan::command('appointments:remind', function (App\Services\AppointmentServic
 Schedule::command('appointments:remind')->everyFifteenMinutes();
 Schedule::command('tickets:escalate')->hourly();
 Schedule::call(fn () => \Illuminate\Support\Facades\Cache::put('pfx:scheduler_heartbeat', now()->toIso8601String(), 3600))->everyMinute()->name('scheduler-heartbeat');
+
+// GDPR retention: delete visitor conversations older than the admin's setting
+Schedule::call(function () {
+    $days = (int) \App\Support\PrivacyPolicy::get()['retention_days'];
+    if ($days < 1) return;
+    \App\Models\Conversation::where('last_message_at', '<', now()->subDays($days))->orWhere(fn ($q) => $q->whereNull('last_message_at')->where('created_at', '<', now()->subDays($days)))
+        ->chunkById(200, function ($cs) { foreach ($cs as $c) { $c->messages()->delete(); $c->delete(); } });
+})->daily()->at('03:15')->name('privacy-retention');

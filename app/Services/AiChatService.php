@@ -91,6 +91,7 @@ class AiChatService
                 'detected_language' => $lang,
             ];
         } catch (\Exception $e) {
+            \App\Support\WidgetEvents::record($widget->id, 'provider_down', $e->getMessage());
             Log::error('AI API error: ' . $e->getMessage(), [
                 'conversation_id' => $conversation->id,
                 'widget_id'       => $widget->id,
@@ -151,10 +152,12 @@ class AiChatService
             }
             // Provider returned nothing (bad key, timeout): never leave the visitor with an empty bubble.
             if (! $sent) {
+                \App\Support\WidgetEvents::record($widget->id, 'reply_failed', 'AI stream returned no content');
                 Log::warning('AI stream returned no content', ['provider' => \App\Services\MultiProviderAiService::platformProvider()]);
                 yield 'Sorry, I could not answer that just now. Please try again in a moment, or leave your email and our team will reply.';
             }
         } catch (\Throwable $e) {
+            \App\Support\WidgetEvents::record($widget->id, 'provider_down', $e->getMessage());
             Log::error('AI stream error: ' . $e->getMessage(), [
                 'provider' => \App\Services\MultiProviderAiService::platformProvider(),
             ]);
