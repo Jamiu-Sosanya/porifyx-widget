@@ -199,7 +199,7 @@
                 ['Proactive messages', 'Greet visitors on key pages, after a delay or on exit intent, in their own language.', 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.42-4.03 8-9 8a9.86 9.86 0 0 1-4.26-.95L3 20l1.4-3.72A7.56 7.56 0 0 1 3 12c0-4.42 4.03-8 9-8s9 3.58 9 8z', false],
                 ['Analytics that matter', 'Conversations, conversion, CSAT, sentiment and the questions your AI could not answer yet.', 'M9 19v-6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2zm0 0V9a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v10m-6 0a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2m0 0V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z', false],
                 ['Looks like your brand', 'Colours, avatar, launcher, tone and greeting, previewed live. A/B test variants to find what converts best.', 'M7 21a4 4 0 0 1-4-4V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v12a4 4 0 0 1-4 4zm0 0h12a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2.34M11 7.34l1.66-1.66a2 2 0 0 1 2.83 0l2.83 2.83a2 2 0 0 1 0 2.83L9.83 19.83', true],
-                ['Bookings in the chat', 'Services, team diaries, payments and calendar sync. Every booking gets a number visitors can use to change or cancel.', 'M8 2v3m8-3v3M3.5 9h17M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm4 10 2 2 4-4', false],
+                ['Bookings in the chat', 'Services, team diaries, reminders and calendar sync. Every booking gets a number visitors can use to change or cancel.', 'M8 2v3m8-3v3M3.5 9h17M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm4 10 2 2 4-4', false],
             ] as [$title, $body, $icon, $wide])
             <article class="rounded-3xl p-7 {{ $wide ? 'lg:col-span-2 bg-[#0b1324] text-white dark:bg-brand-500/10 dark:ring-1 dark:ring-brand-400/20' : 'bg-slate-50 border border-slate-200 dark:bg-white/[0.03] dark:border-white/10' }}">
                 <span class="grid place-items-center w-11 h-11 rounded-xl {{ $wide ? 'bg-white/10 text-accent-300' : 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300' }}">
@@ -268,7 +268,7 @@
             <h2 class="{{ $h2 }}">Questions become bookings, right inside the chat.</h2>
             <p class="mt-5 text-lg {{ $muted }}">Visitors pick a service, a person and a free time without leaving the conversation. They get a booking number by email and can come back to the chat to change or cancel.</p>
             <ul class="mt-8 grid sm:grid-cols-2 gap-3 text-sm font-medium">
-                @foreach(['Google & Outlook calendar sync', 'Team diaries and opening hours', 'Take payment with your own Stripe', 'Sync to HubSpot, Pipedrive & more', 'Reminders and calendar invites', 'Change or cancel by booking number'] as $x)
+                @foreach(['Google & Outlook calendar sync', 'Team diaries and opening hours', 'Custom booking questions', 'Sync to HubSpot, Pipedrive & more', 'Reminders and calendar invites', 'Change or cancel by booking number'] as $x)
                 <li class="flex gap-2"><span class="text-brand-500">✓</span>{{ $x }}</li>
                 @endforeach
             </ul>

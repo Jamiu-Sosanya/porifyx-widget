@@ -5,11 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Models\Widget;
 use App\Services\AppointmentService;
-use App\Services\BookingPaymentService;
 use App\Support\Booking;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Validation\Rule;
 
 class AppointmentController extends Controller
@@ -52,8 +50,6 @@ class AppointmentController extends Controller
             'week'    => (clone $base)->holdingSlot()->whereBetween('starts_at', [now(), now()->addDays(7)])->count(),
             'pending' => (clone $base)->where('status', 'pending')->where('starts_at', '>=', now())->count(),
             'no_show' => $done ? round((clone $base)->where('status', 'no_show')->count() / $done * 100) : 0,
-            'revenue' => (clone $base)->where('payment_status', 'paid')->where('created_at', '>=', now()->subDays(30))->get(['amount', 'currency'])
-                ->groupBy('currency')->map(fn ($g, $cur) => strtoupper($cur) . ' ' . number_format($g->sum('amount') / 100, 2))->implode(' · '),
         ];
         $staff = $widgets->flatMap(fn ($w) => Booking::settings($w)['staff'])->unique('id')->values();
 
@@ -134,7 +130,6 @@ class AppointmentController extends Controller
             'services.*.name'        => 'required|string|max:80',
             'services.*.duration'    => 'required|integer|min:5|max:600',
             'services.*.price'       => 'nullable|string|max:30',
-            'services.*.charge'      => 'nullable|numeric|min:0|max:100000',
             'services.*.description' => 'nullable|string|max:200',
             'staff'                  => 'nullable|array|max:50',
             'staff.*.id'             => 'required|string|max:40|alpha_dash|distinct',
@@ -153,12 +148,10 @@ class AppointmentController extends Controller
             'hours.*.*.0'            => $time,
             'hours.*.*.1'            => $time,
             'blocked_dates'          => 'nullable|string|max:4000',
-            'payments_currency'      => 'required|string|size:3|alpha',
             'website'                => 'nullable|url:http,https|max:255',
             'reply_to'               => 'nullable|email|max:190',
             'logo'                   => 'nullable|image|mimes:png,jpg,jpeg,webp|max:1024|dimensions:max_width=2000,max_height=2000',
-            'payments_secret'        => ['nullable', 'string', 'max:255', 'regex:/^(sk|rk)_(test|live)_[A-Za-z0-9]+$/'],
-        ], ['payments_secret.regex' => 'That does not look like a Stripe secret key (it starts with sk_live_ or sk_test_).']);
+        ]);
 
         $old = Booking::settings($widget);
         $hours = [];
@@ -173,11 +166,6 @@ class AppointmentController extends Controller
             ->filter(fn ($d) => preg_match('/^\d{4}-\d{2}-\d{2}$/', $d) && strtotime($d))
             ->unique()->sort()->values()->all();
 
-        $secret = filled($data['payments_secret'] ?? null) ? Crypt::encryptString($data['payments_secret']) : $old['payments']['secret'];
-        if ($request->boolean('payments_remove_key')) {
-            $secret = null;
-        }
-
         $logo = $old['logo'];
         if ($request->hasFile('logo') || $request->boolean('remove_logo')) {
             if ($logo) {
@@ -187,7 +175,7 @@ class AppointmentController extends Controller
         }
 
         $serviceIds = array_column($data['services'], 'id');
-        $booking = array_merge(collect($data)->except(['payments_currency', 'payments_secret', 'logo'])->all(), [
+        $booking = array_merge(collect($data)->except(['logo'])->all(), [
             'logo'             => $logo,
             'website'          => $data['website'] ?? '',
             'reply_to'         => $data['reply_to'] ?? '',
@@ -196,7 +184,7 @@ class AppointmentController extends Controller
             'require_phone'    => $request->boolean('require_phone'),
             'allow_reschedule' => $request->boolean('allow_reschedule'),
             'ai_booking'       => $request->boolean('ai_booking'),
-            'services'         => array_map(fn ($x) => $x + ['charge' => (float) ($x['charge'] ?? 0)], array_values($data['services'])),
+            'services'         => array_values($data['services']),
             'staff'            => array_map(fn ($m) => [
                 'id'       => $m['id'],
                 'name'     => $m['name'],
@@ -207,12 +195,6 @@ class AppointmentController extends Controller
             'questions'        => array_map(fn ($q) => $q + ['required' => ! empty($q['required'])], array_values($data['questions'] ?? [])),
             'hours'            => $hours,
             'blocked_dates'    => $blocked,
-            'payments'         => [
-                'enabled'          => $request->boolean('payments_enabled') && $secret,
-                'currency'         => strtolower($data['payments_currency']),
-                'secret'           => $secret,
-                'refund_on_cancel' => $request->boolean('payments_refund'),
-            ],
         ]);
         $widget->update(['booking' => $booking]);
 
@@ -229,10 +211,8 @@ class AppointmentController extends Controller
         return view('appointments.manage', [
             'a'          => $appointment,
             's'          => $s,
-            'canChange'  => Booking::visitorCanChange($appointment, $s) && $appointment->payment_status !== 'unpaid',
+            'canChange'  => Booking::visitorCanChange($appointment, $s),
             'canMove'    => $s['allow_reschedule'] && $s['enabled'],
-            'payAgain'   => $appointment->payment_status === 'unpaid' && $appointment->status !== 'cancelled'
-                && $appointment->created_at->gt(now()->subMinutes(Appointment::PAYMENT_HOLD)),
         ]);
     }
 
@@ -260,28 +240,4 @@ class AppointmentController extends Controller
         return redirect()->route('appointments.manage', $token)->with('notice', 'Done. Your booking has moved and we have emailed you the new time.');
     }
 
-    /** Stripe sends the visitor back here after paying. */
-    public function paid(Request $request, string $token, BookingPaymentService $payments, AppointmentService $service)
-    {
-        $a = Appointment::where('token', $token)->with('widget')->firstOrFail();
-        if ($a->payment_status === 'unpaid' && $request->filled('session_id')) {
-            $secret = Booking::stripeSecret(Booking::settings($a->widget));
-            if ($secret && $payments->confirm($a, $secret, $request->session_id)) {
-                $service->announce($a->fresh());
-            }
-        }
-
-        return redirect()->route('appointments.manage', $token)->with('notice', $a->fresh()->payment_status === 'paid'
-            ? 'Payment received. Your booking is ' . ($a->status === 'pending' ? 'waiting for confirmation' : 'confirmed') . '. Check your email for the details.'
-            : 'We could not confirm your payment yet. If you paid, refresh this page in a minute.');
-    }
-
-    public function pay(string $token, BookingPaymentService $payments)
-    {
-        $a = Appointment::where('token', $token)->with('widget')->firstOrFail();
-        $secret = Booking::stripeSecret(Booking::settings($a->widget));
-        abort_unless($secret && $a->payment_status === 'unpaid' && $a->created_at->gt(now()->subMinutes(Appointment::PAYMENT_HOLD)), 410);
-
-        return redirect()->away($payments->checkoutUrl($a, $secret));
-    }
 }

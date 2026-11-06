@@ -22,9 +22,9 @@
 <div x-data="bookingDesk(@js($bookable), @js(url('/api/widget')))">
 
 {{-- Stats --}}
-<div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-    @foreach([['Today', $stats['today'], 'Booked for today'], ['Next 7 days', $stats['week'], 'Pending and confirmed'], ['Awaiting you', $stats['pending'], 'Need confirming'], ['No-show rate', $stats['no_show'] . '%', 'Of finished bookings'], ['Paid, 30 days', $stats['revenue'] ?: '0', 'Taken online']] as [$label, $value, $hint])
-    <div class="bg-gray-900/50 border border-white/5 rounded-2xl p-5 {{ $loop->last ? 'col-span-2 lg:col-span-1' : '' }}">
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    @foreach([['Today', $stats['today'], 'Booked for today'], ['Next 7 days', $stats['week'], 'Pending and confirmed'], ['Awaiting you', $stats['pending'], 'Need confirming'], ['No-show rate', $stats['no_show'] . '%', 'Of finished bookings']] as [$label, $value, $hint])
+    <div class="bg-gray-900/50 border border-white/5 rounded-2xl p-5">
         <p class="text-xs font-semibold uppercase tracking-wider text-gray-400">{{ $label }}</p>
         <p class="mt-2 text-2xl sm:text-3xl font-extrabold text-white truncate">{{ $value }}</p>
         <p class="mt-1 text-xs text-gray-500">{{ $hint }}</p>
@@ -36,7 +36,7 @@
 <div class="bg-gray-900/50 border border-white/5 rounded-2xl p-5 mb-6 flex flex-wrap items-center justify-between gap-4">
     <div>
         <p class="font-semibold text-white">Booking setup</p>
-        <p class="text-sm text-gray-400">Services, team, payments, calendars and CRM for each widget.</p>
+        <p class="text-sm text-gray-400">Services, team, calendars and CRM for each widget.</p>
         <div class="mt-3 flex flex-wrap gap-2">
             @forelse($widgets as $w)
                 @php $on = (bool) ($w->booking['enabled'] ?? false); @endphp
@@ -130,7 +130,6 @@
                     <div class="flex-1 min-w-0">
                         <p class="font-semibold text-white truncate">{{ $a->name }}
                             <span class="ml-1 px-2 py-0.5 rounded-full text-[11px] font-bold {{ $badge[$a->status] }}">{{ Appointment::STATUSES[$a->status] }}</span>
-                            @if($a->amount)<span class="ml-1 px-2 py-0.5 rounded-full text-[11px] font-bold {{ $a->payment_status === 'paid' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-white/5 text-gray-400' }}">{{ $a->priceLabel() }} · {{ $a->payment_status }}</span>@endif
                             @if($a->source !== 'widget')<span class="ml-1 text-[11px] text-gray-500">via {{ $a->source }}</span>@endif
                         </p>
                         <p class="text-sm text-gray-400 truncate">{{ $a->service_name }}@if($a->staff_name) · with {{ $a->staff_name }}@endif · {{ $a->widget->name }} · <a href="mailto:{{ $a->email }}" class="hover:text-white">{{ $a->email }}</a>@if($a->phone) · {{ $a->phone }}@endif</p>
@@ -149,7 +148,7 @@
                             'no_show'   => $a->status === 'confirmed' && $a->starts_at->isPast() ? 'No-show' : null,
                             'cancelled' => in_array($a->status, Appointment::ACTIVE) ? 'Cancel' : null,
                         ]) as $status => $label)
-                        <form method="POST" action="{{ route('appointments.update', $a) }}" @if($status === 'cancelled') onsubmit="return confirm('Cancel this booking? {{ $a->name }} will get an email{{ $a->payment_status === 'paid' ? ' and a refund if automatic refunds are on' : '' }}.')" @endif>
+                        <form method="POST" action="{{ route('appointments.update', $a) }}" @if($status === 'cancelled') onsubmit="return confirm('Cancel this booking? {{ $a->name }} will get an email.')" @endif>
                             @csrf @method('PATCH')
                             <input type="hidden" name="status" value="{{ $status }}">
                             <button class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $status === 'confirmed' ? 'bg-brand-500 text-white hover:bg-brand-600' : ($status === 'cancelled' ? 'text-rose-400 hover:bg-rose-500/10' : 'text-gray-300 bg-white/5 hover:bg-white/10') }}">{{ $label }}</button>

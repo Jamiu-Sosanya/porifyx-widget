@@ -38,8 +38,6 @@ Route::post('/contact', [SiteController::class, 'sendContact'])->middleware('thr
 Route::get('/appointments/manage/{token}', [\App\Http\Controllers\AppointmentController::class, 'manage'])->name('appointments.manage');
 Route::post('/appointments/manage/{token}/cancel', [\App\Http\Controllers\AppointmentController::class, 'cancel'])->middleware('throttle:10,1')->name('appointments.cancel');
 Route::post('/appointments/manage/{token}/reschedule', [\App\Http\Controllers\AppointmentController::class, 'visitorReschedule'])->middleware('throttle:10,1')->name('appointments.reschedule.visitor');
-Route::get('/appointments/manage/{token}/pay', [\App\Http\Controllers\AppointmentController::class, 'pay'])->middleware('throttle:10,1')->name('appointments.pay');
-Route::get('/appointments/manage/{token}/paid', [\App\Http\Controllers\AppointmentController::class, 'paid'])->name('appointments.paid');
 
 // Admin login (separate from user login, IP-restricted)
 Route::middleware('admin.ip')->group(function () {

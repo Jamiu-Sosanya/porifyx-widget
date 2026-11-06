@@ -77,50 +77,6 @@ class BookingAdvancedTest extends TestCase
         $this->assertSame(['First visit?' => 'Yes'], Appointment::first()->answers);
     }
 
-    public function test_paid_service_holds_slot_until_paid_then_confirms(): void
-    {
-        Http::fake([
-            'api.stripe.com/v1/checkout/sessions/cs_1' => Http::response(['id' => 'cs_1', 'payment_status' => 'paid', 'payment_intent' => 'pi_1']),
-            'api.stripe.com/v1/checkout/sessions' => Http::response(['id' => 'cs_1', 'url' => 'https://checkout.stripe.com/c/cs_1']),
-            'api.stripe.com/v1/refunds' => Http::response(['id' => 're_1']),
-        ]);
-        $w = $this->widget([
-            'services' => [['id' => 'checkup', 'name' => 'Check-up', 'duration' => 60, 'price' => '£40', 'charge' => 40]],
-            'payments' => ['enabled' => true, 'currency' => 'gbp', 'secret' => Crypt::encryptString('sk_test_abc'), 'refund_on_cancel' => true],
-        ]);
-
-        $this->book($w)->assertCreated()->assertJsonPath('checkout_url', 'https://checkout.stripe.com/c/cs_1')->assertJsonPath('payment', 'unpaid');
-        $a = Appointment::first();
-        $this->assertSame(4000, $a->amount);
-        Mail::assertNothingQueued(); // no confirmation until paid
-
-        // Slot is held while unpaid…
-        $this->book($w, ['email' => 'other@example.com'])->assertStatus(422);
-
-        // …and confirmed after Stripe sends the visitor back.
-        $this->get(route('appointments.paid', $a->token) . '?session_id=cs_1')->assertRedirect();
-        $this->assertSame('paid', $a->fresh()->payment_status);
-        Mail::assertQueued(\App\Mail\AppointmentMail::class, fn ($m) => $m->kind === 'booked');
-
-        // Owner cancels: refund goes out.
-        $this->actingAs($w->user)->patch(route('appointments.update', $a), ['status' => 'cancelled']);
-        $this->assertSame('refunded', $a->fresh()->payment_status);
-        Http::assertSent(fn ($r) => str_contains($r->url(), '/v1/refunds') && $r['payment_intent'] === 'pi_1');
-    }
-
-    public function test_unpaid_hold_expires(): void
-    {
-        $w = $this->widget();
-        Appointment::create([
-            'widget_id' => $w->id, 'user_id' => $w->user_id, 'service_id' => 'checkup', 'service_name' => 'Check-up', 'duration' => 60,
-            'name' => 'X', 'email' => 'x@example.com', 'starts_at' => '2026-11-10 09:00:00', 'ends_at' => '2026-11-10 10:00:00',
-            'status' => 'confirmed', 'payment_status' => 'unpaid', 'amount' => 100, 'currency' => 'gbp',
-        ]);
-        $this->assertCount(1, $this->getJson("/api/widget/{$w->uuid}/booking/slots?service=checkup&date=2026-11-10")->json('slots'));
-        $this->travel(31)->minutes();
-        $this->assertCount(2, $this->getJson("/api/widget/{$w->uuid}/booking/slots?service=checkup&date=2026-11-10")->json('slots'));
-    }
-
     public function test_connected_calendar_busy_time_blocks_slots(): void
     {
         config(['services.google.client_id' => 'id', 'services.google.client_secret' => 'secret']);

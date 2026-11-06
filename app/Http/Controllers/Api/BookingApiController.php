@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Conversation;
 use App\Models\Widget;
 use App\Services\AppointmentService;
-use App\Services\BookingPaymentService;
 use App\Support\Booking;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -31,21 +30,18 @@ class BookingApiController extends Controller
     public function show(string $widgetUuid): JsonResponse
     {
         $s = Booking::settings($this->widget($widgetUuid));
-        $paid = (bool) Booking::stripeSecret($s);
 
         return response()->json([
             'business_name' => $s['business_name'],
             'timezone'      => $s['timezone'],
             'require_phone' => (bool) $s['require_phone'],
             'auto_confirm'  => (bool) $s['auto_confirm'],
-            'currency'      => $paid ? strtoupper($s['payments']['currency']) : null,
             'services'      => array_map(fn ($x) => [
                 'id'          => $x['id'],
                 'name'        => $x['name'],
                 'duration'    => (int) $x['duration'],
                 'price'       => $x['price'] ?? '',
                 'description' => $x['description'] ?? '',
-                'charge'      => $paid ? (float) ($x['charge'] ?? 0) : 0,
                 'staff'       => array_map(fn ($m) => ['id' => $m['id'], 'name' => $m['name']], Booking::staffFor($s, $x)),
             ], $s['services']),
             'questions'     => array_map(fn ($q) => [
@@ -81,7 +77,7 @@ class BookingApiController extends Controller
 
     private function details(\App\Models\Appointment $a, array $s): array
     {
-        $canChange = Booking::visitorCanChange($a, $s) && $a->payment_status !== 'unpaid';
+        $canChange = Booking::visitorCanChange($a, $s);
 
         return [
             'reference'  => $a->reference,
@@ -95,7 +91,6 @@ class BookingApiController extends Controller
             'timezone'   => $s['timezone'],
             'can_cancel' => $canChange,
             'can_move'   => $canChange && $s['allow_reschedule'],
-            'refund'     => $a->payment_status === 'paid' && $s['payments']['refund_on_cancel'],
             'manage_url' => $a->manageUrl(),
         ];
     }
@@ -146,7 +141,7 @@ class BookingApiController extends Controller
         return response()->json($this->details($a->fresh(), $s));
     }
 
-    public function store(Request $request, string $widgetUuid, AppointmentService $appointments, BookingPaymentService $payments): JsonResponse
+    public function store(Request $request, string $widgetUuid, AppointmentService $appointments): JsonResponse
     {
         $widget = $this->widget($widgetUuid);
         $s = Booking::settings($widget);
@@ -170,22 +165,9 @@ class BookingApiController extends Controller
 
         $a = $appointments->book($widget, $data, $conversation, $data['source'] ?? 'widget');
 
-        $checkout = null;
-        if ($a->payment_status === 'unpaid') {
-            try {
-                $checkout = $payments->checkoutUrl($a, Booking::stripeSecret($s));
-            } catch (\Throwable $e) {
-                report($e);
-                $a->update(['status' => 'cancelled']);
-                abort(response()->json(['message' => 'Online payment is not available right now. Please try again later.'], 502));
-            }
-        }
 
         return response()->json([
             'status'       => $a->status,
-            'payment'      => $a->payment_status,
-            'amount'       => $a->priceLabel(),
-            'checkout_url' => $checkout,
             'service'      => $a->service_name,
             'staff'        => $a->staff_name,
             'when'         => $a->localStart()->format('l j F, g:i A'),

@@ -7,7 +7,6 @@ use App\Models\Widget;
 use App\Services\CalendarService;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
-use Illuminate\Support\Facades\Crypt;
 
 /**
  * Booking rules for one widget: settings, open days, staff and free time slots.
@@ -39,13 +38,11 @@ class Booking
             'allow_reschedule' => true,
             'cancel_notice'  => 0,    // hours before start after which visitors can no longer cancel/reschedule
             'ai_booking'     => true, // let the AI offer the booking button in conversation
-            // charge: amount in major units (e.g. 40 = 40.00), 0 = free
-            'services'       => [['id' => 'consult', 'name' => 'Consultation', 'duration' => 30, 'price' => '', 'description' => '', 'charge' => 0]],
+            'services'       => [['id' => 'consult', 'name' => 'Consultation', 'duration' => 30, 'price' => '', 'description' => '']],
             // staff: [{id, name, email, services: [ids] (empty = all), days: [mon..] (empty = every open day)}]
             'staff'          => [],
             // questions: [{id, label, type, options: "a, b", required}]
             'questions'      => [],
-            'payments'       => ['enabled' => false, 'currency' => 'gbp', 'secret' => null, 'refund_on_cancel' => true],
             'hours'          => ['mon' => $weekday, 'tue' => $weekday, 'wed' => $weekday, 'thu' => $weekday, 'fri' => $weekday, 'sat' => [], 'sun' => []],
             'blocked_dates'  => [],
             // Branding for emails and pages visitors see
@@ -58,29 +55,9 @@ class Booking
     public static function settings(Widget $widget): array
     {
         $s = array_replace(self::defaults(), (array) $widget->booking);
-        $s['payments'] = array_replace(self::defaults()['payments'], (array) $s['payments']);
         $s['business_name'] = $s['business_name'] ?: $widget->name;
 
         return $s;
-    }
-
-    /** Stripe secret key for this widget, decrypted. */
-    public static function stripeSecret(array $s): ?string
-    {
-        if (empty($s['payments']['enabled']) || empty($s['payments']['secret'])) {
-            return null;
-        }
-        try {
-            return Crypt::decryptString($s['payments']['secret']);
-        } catch (\Throwable) {
-            return null;
-        }
-    }
-
-    /** Amount to charge for a service in minor units (0 when payments are off). */
-    public static function chargeFor(array $s, array $service): int
-    {
-        return self::stripeSecret($s) ? (int) round(((float) ($service['charge'] ?? 0)) * 100) : 0;
     }
 
     public static function service(array $s, ?string $id): ?array

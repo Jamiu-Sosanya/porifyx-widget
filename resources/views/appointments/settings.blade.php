@@ -46,23 +46,21 @@
         <div class="{{ $card }}">
             <div class="flex items-center justify-between">
                 <p class="font-semibold text-white">Services</p>
-                <button type="button" @click="services.push({ id: uid('s'), name: '', duration: 30, price: '', charge: 0, description: '' })" class="text-sm font-semibold text-brand-400 hover:text-brand-300">+ Add service</button>
+                <button type="button" @click="services.push({ id: uid('s'), name: '', duration: 30, price: '', description: '' })" class="text-sm font-semibold text-brand-400 hover:text-brand-300">+ Add service</button>
             </div>
             <div class="mt-4 space-y-3">
                 <template x-for="(s, i) in services" :key="s.id">
                     <div class="grid grid-cols-12 gap-2 p-3 rounded-xl bg-white/[0.03] border border-white/5">
                         <input type="hidden" :name="`services[${i}][id]`" :value="s.id">
                         <div class="col-span-12 sm:col-span-4"><label class="{{ $label }}">Name</label><input :name="`services[${i}][name]`" x-model="s.name" required maxlength="80" class="{{ $field }}" placeholder="e.g. First consultation"></div>
-                        <div class="col-span-4 sm:col-span-2"><label class="{{ $label }}">Minutes</label><input type="number" min="5" max="600" step="5" :name="`services[${i}][duration]`" x-model="s.duration" required class="{{ $field }}"></div>
-                        <div class="col-span-4 sm:col-span-3"><label class="{{ $label }}">Price shown</label><input :name="`services[${i}][price]`" x-model="s.price" maxlength="30" class="{{ $field }}" placeholder="£40 or Free"></div>
-                        <div class="col-span-4 sm:col-span-2"><label class="{{ $label }}">Charge online</label><input type="number" min="0" step="0.01" :name="`services[${i}][charge]`" x-model="s.charge" class="{{ $field }}" placeholder="0"></div>
+                        <div class="col-span-6 sm:col-span-2"><label class="{{ $label }}">Minutes</label><input type="number" min="5" max="600" step="5" :name="`services[${i}][duration]`" x-model="s.duration" required class="{{ $field }}"></div>
+                        <div class="col-span-6 sm:col-span-4"><label class="{{ $label }}">Price shown</label><input :name="`services[${i}][price]`" x-model="s.price" maxlength="30" class="{{ $field }}" placeholder="£40 or Free"></div>
                         <div class="col-span-12 sm:col-span-1 flex items-end justify-end">
                             <button type="button" @click="services.length > 1 && services.splice(i, 1)" class="p-2 rounded-lg text-gray-500 hover:text-rose-400" title="Remove">✕</button>
                         </div>
                         <div class="col-span-12"><input :name="`services[${i}][description]`" x-model="s.description" maxlength="200" class="{{ $field }}" placeholder="Short description shown to visitors (optional)"></div>
                     </div>
                 </template>
-                <p class="text-xs text-gray-500">"Charge online" takes payment when booking (set up Payments below). Leave 0 for pay-on-the-day or free services.</p>
             </div>
         </div>
 
@@ -172,36 +170,6 @@
             </div>
         </div>
 
-        {{-- Payments --}}
-        <div id="payments" class="{{ $card }} space-y-4 scroll-mt-24">
-            <div class="flex items-start justify-between gap-4">
-                <div>
-                    <p class="font-semibold text-white">Take payment when booking</p>
-                    <p class="text-sm text-gray-400">Payments go straight to your own Stripe account. Services with a "Charge online" amount ask the visitor to pay before the booking is confirmed; unpaid bookings are released after {{ \App\Models\Appointment::PAYMENT_HOLD }} minutes.</p>
-                </div>
-                <label class="cursor-pointer shrink-0">
-                    <input type="checkbox" name="payments_enabled" value="1" class="peer sr-only" @checked(old('payments_enabled', $settings['payments']['enabled']))>
-                    <span class="{{ $toggle }}"></span>
-                </label>
-            </div>
-            <div class="grid sm:grid-cols-3 gap-3">
-                <div class="sm:col-span-2">
-                    <label class="{{ $label }}">Stripe secret key</label>
-                    <input type="password" name="payments_secret" autocomplete="off" class="{{ $field }}" placeholder="{{ $settings['payments']['secret'] ? 'Saved. Paste a new key to replace it.' : 'sk_live_… or a restricted key rk_live_…' }}">
-                    <p class="mt-1 text-xs text-gray-500">Stored encrypted. In Stripe: Developers › API keys. A restricted key needs write access to Checkout Sessions and Refunds.</p>
-                </div>
-                <div>
-                    <label class="{{ $label }}">Currency</label>
-                    <input name="payments_currency" value="{{ old('payments_currency', strtoupper($settings['payments']['currency'])) }}" maxlength="3" class="{{ $field }} uppercase">
-                </div>
-            </div>
-            <div class="flex flex-wrap gap-x-6 gap-y-2">
-                <label class="flex items-center gap-2 text-sm text-gray-300"><input type="checkbox" name="payments_refund" value="1" class="accent-brand-500" @checked(old('payments_refund', $settings['payments']['refund_on_cancel']))> Refund automatically when a paid booking is cancelled</label>
-                @if($settings['payments']['secret'])
-                <label class="flex items-center gap-2 text-sm text-rose-300"><input type="checkbox" name="payments_remove_key" value="1" class="accent-rose-500"> Remove saved key</label>
-                @endif
-            </div>
-        </div>
     </div>
 
     {{-- Rules --}}

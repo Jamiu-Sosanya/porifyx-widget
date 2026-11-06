@@ -17,9 +17,6 @@
         'cancelled' => ['Cancelled', 'bg-rose-100 text-rose-800'],
         'no_show'   => ['Missed', 'bg-slate-100 text-slate-700'],
     ][$a->status];
-    if ($a->payment_status === 'unpaid' && $a->status !== 'cancelled') {
-        $state = ['Waiting for payment', 'bg-amber-100 text-amber-800'];
-    }
 @endphp
 <main class="w-full max-w-md bg-white rounded-3xl shadow-xl shadow-slate-900/5 border border-slate-200 overflow-hidden"
       x-data="{
@@ -63,14 +60,8 @@
             @if($a->staff_name)<div class="flex justify-between gap-4"><dt class="text-slate-500">With</dt><dd class="font-semibold text-right">{{ $a->staff_name }}</dd></div>@endif
             <div class="flex justify-between gap-4"><dt class="text-slate-500">Date</dt><dd class="font-semibold text-right">{{ $start->format('l j F Y') }}</dd></div>
             <div class="flex justify-between gap-4"><dt class="text-slate-500">Time</dt><dd class="font-semibold text-right">{{ $start->format('g:i A') }} – {{ $a->ends_at->copy()->setTimezone($s['timezone'])->format('g:i A') }}<br><span class="font-normal text-slate-500">{{ $s['timezone'] }}</span></dd></div>
-            @if($a->amount)<div class="flex justify-between gap-4"><dt class="text-slate-500">Payment</dt><dd class="font-semibold text-right">{{ $a->priceLabel() }} · {{ ucfirst($a->payment_status) }}</dd></div>@endif
             <div class="flex justify-between gap-4"><dt class="text-slate-500">Name</dt><dd class="font-semibold text-right">{{ $a->name }}</dd></div>
         </dl>
-
-        @if($payAgain)
-            <a href="{{ route('appointments.pay', $a->token) }}" class="mt-8 block w-full py-3 rounded-xl bg-slate-900 text-white text-center font-semibold hover:bg-slate-800">Pay {{ $a->priceLabel() }} to confirm</a>
-            <p class="mt-2 text-xs text-center text-slate-500">We hold this time for {{ \App\Models\Appointment::PAYMENT_HOLD }} minutes from booking.</p>
-        @endif
 
         @if($canChange)
             <div class="mt-8 space-y-3">
@@ -97,11 +88,8 @@
                     @csrf
                     <button class="w-full py-3 rounded-xl border border-rose-200 text-rose-700 font-semibold hover:bg-rose-50 transition">Cancel booking</button>
                 </form>
-                @if($a->payment_status === 'paid' && $s['payments']['refund_on_cancel'])
-                    <p class="text-xs text-center text-slate-500">Cancelling refunds your payment to the card you used.</p>
-                @endif
             </div>
-        @elseif(in_array($a->status, \App\Models\Appointment::ACTIVE, true) && $a->payment_status !== 'unpaid')
+        @elseif(in_array($a->status, \App\Models\Appointment::ACTIVE, true))
             <p class="mt-8 text-xs text-center text-slate-500">This booking can no longer be changed online. Please contact {{ $s['business_name'] }} directly.</p>
         @endif
     </div>

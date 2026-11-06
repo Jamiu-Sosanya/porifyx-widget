@@ -36,11 +36,3 @@ Artisan::command('appointments:remind', function (App\Services\AppointmentServic
     $this->info("Sent {$sent} reminder(s).");
 })->purpose('Email booking reminders');
 Schedule::command('appointments:remind')->everyFifteenMinutes();
-
-// Free slots held by bookings that were never paid.
-Artisan::command('appointments:expire-unpaid', function () {
-    $n = App\Models\Appointment::where('payment_status', 'unpaid')->whereIn('status', App\Models\Appointment::ACTIVE)
-        ->where('created_at', '<', now()->subMinutes(App\Models\Appointment::PAYMENT_HOLD))->update(['status' => 'cancelled']);
-    $this->info("Expired {$n} unpaid booking(s).");
-})->purpose('Cancel unpaid booking holds');
-Schedule::command('appointments:expire-unpaid')->everyTenMinutes();

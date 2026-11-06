@@ -60,7 +60,6 @@
     <table class="data-table">
         <tr class="data-row"><td class="data-label">Service</td><td class="data-value">{{ $a->service_name }} ({{ $a->duration }} min)</td></tr>
         @if($a->staff_name)<tr class="data-row"><td class="data-label">With</td><td class="data-value">{{ $a->staff_name }}</td></tr>@endif
-        @if($a->amount)<tr class="data-row"><td class="data-label">Payment</td><td class="data-value">{{ $a->priceLabel() }} ({{ $a->payment_status }})</td></tr>@endif
         <tr class="data-row"><td class="data-label">When</td><td class="data-value">{{ $a->localStart()->format('l j F Y, g:i A') }} ({{ $s['timezone'] }})</td></tr>
         @if($owner)
         <tr class="data-row"><td class="data-label">Name</td><td class="data-value">{{ $a->name }}</td></tr>

@@ -1044,7 +1044,7 @@
     function bkServices() {
         const el = bkPanel('Choose a service', bk.info.services.map(function (s, i) {
             return '<button type="button" class="pfx-bk-card" data-i="' + i + '">' +
-                '<span class="pfx-bk-card-top"><strong>' + escapeHtml(s.name) + '</strong><span>' + escapeHtml(s.charge ? bk.info.currency + ' ' + Number(s.charge).toFixed(2) : (s.price || '')) + '</span></span>' +
+                '<span class="pfx-bk-card-top"><strong>' + escapeHtml(s.name) + '</strong><span>' + escapeHtml(s.price || '') + '</span></span>' +
                 '<span class="pfx-bk-muted">' + s.duration + ' min' + (s.description ? ' · ' + escapeHtml(s.description) : '') + '</span></button>';
         }).join('') + BK_MANAGE_LINK);
         bindManageLink(el);
@@ -1112,7 +1112,7 @@
                 return '<input data-q="' + escapeAttr(q.id) + '" class="pfx-offline-input" placeholder="' + ph + '" value="' + escapeAttr(val || '') + '">';
             }).join('') +
             '<textarea id="pfx-bk-notes" class="pfx-offline-input" rows="2" style="resize:none" placeholder="Anything we should know? (optional)">' + escapeHtml(v.notes || '') + '</textarea>' +
-            '<button type="button" id="pfx-bk-go" class="pfx-btn-primary">' + (bk.service.charge ? 'Continue to payment' : (bk.info.auto_confirm ? 'Confirm booking' : 'Request booking')) + '</button>', bkDates);
+            '<button type="button" id="pfx-bk-go" class="pfx-btn-primary">' + (bk.info.auto_confirm ? 'Confirm booking' : 'Request booking') + '</button>', bkDates);
         el.querySelector('#pfx-bk-go').onclick = bkSubmit;
     }
 
@@ -1139,18 +1139,6 @@
             return bkDetails(first || (r.status === 429 ? 'Too many attempts. Please wait a minute.' : 'Something went wrong. Please try again.'));
         }
         const d = r.data;
-        if (d.checkout_url) {
-            const pay = bkPanel('Almost done',
-                '<div class="pfx-bk-done"><div class="pfx-bk-tick">£</div>' +
-                '<strong>' + escapeHtml(d.service) + (d.staff ? ' with ' + escapeHtml(d.staff) : '') + '</strong><span>' + escapeHtml(d.when) + ' (' + escapeHtml(d.timezone) + ')</span>' +
-                bkRefBox(d.reference) +
-                '<p class="pfx-bk-muted">We are holding this time for 30 minutes. Pay ' + escapeHtml(d.amount) + ' securely with Stripe to confirm it.</p>' +
-                '<a href="' + escapeAttr(d.checkout_url) + '" target="_blank" rel="noopener" class="pfx-btn-primary" style="display:block;text-decoration:none;margin-top:8px;">Pay ' + escapeHtml(d.amount) + '</a>' +
-                '<a href="' + escapeAttr(d.manage_url) + '" target="_blank" rel="noopener" class="pfx-bk-link">View booking</a></div>');
-            pay.querySelector('.pfx-bk-tick').textContent = '💳';
-            bk.form = null;
-            return;
-        }
         bkPanel(d.status === 'pending' ? 'Request sent' : 'You are booked in',
             '<div class="pfx-bk-done"><div class="pfx-bk-tick">✓</div>' +
             '<strong>' + escapeHtml(d.service) + (d.staff ? ' with ' + escapeHtml(d.staff) : '') + '</strong><span>' + escapeHtml(d.when) + ' (' + escapeHtml(d.timezone) + ')</span>' +
@@ -1220,7 +1208,7 @@
         const cn = el.querySelector('#pfx-bk-cancel');
         if (cn) cn.onclick = function () {
             const c = bkPanel('Cancel booking?',
-                '<p style="font-size:13px;margin:0 0 14px;">Cancel ' + escapeHtml(d.service) + ' on ' + escapeHtml(d.when) + '?' + (d.refund ? ' Your payment will be refunded.' : '') + '</p>' +
+                '<p style="font-size:13px;margin:0 0 14px;">Cancel ' + escapeHtml(d.service) + ' on ' + escapeHtml(d.when) + '?' + '</p>' +
                 '<button type="button" id="pfx-bk-yes" class="pfx-btn-primary" style="background:#ef4444;margin-bottom:8px;">Yes, cancel it</button>' +
                 '<button type="button" id="pfx-bk-no" class="pfx-bk-card" style="text-align:center;">Keep my booking</button>',
                 function () { bkManageView(d); });

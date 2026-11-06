@@ -21,8 +21,7 @@ class AppointmentService
 
     /**
      * Book a slot. Re-checks availability inside a transaction so two visitors
-     * cannot take the same time. Paid services start as "unpaid" and hold the
-     * slot for Appointment::PAYMENT_HOLD minutes.
+     * cannot take the same time.
      *
      * $data: service_id, start, name, email, phone?, notes?, timezone?, staff_id?, answers?
      */
@@ -36,9 +35,8 @@ class AppointmentService
 
         $answers = $this->answers($s, (array) ($data['answers'] ?? []));
         $start = CarbonImmutable::parse($data['start'])->utc();
-        $charge = $source === 'dashboard' ? 0 : Booking::chargeFor($s, $service);
 
-        $appointment = DB::transaction(function () use ($widget, $data, $service, $s, $start, $conversation, $answers, $charge, $source) {
+        $appointment = DB::transaction(function () use ($widget, $data, $service, $s, $start, $conversation, $answers, $source) {
             // Lock the widget row so concurrent bookings for it run one at a time.
             Widget::whereKey($widget->id)->lockForUpdate()->first();
 
@@ -68,16 +66,11 @@ class AppointmentService
                 'ends_at'          => $start->addMinutes((int) $service['duration']),
                 'visitor_timezone' => $data['timezone'] ?? null,
                 'status'           => $s['auto_confirm'] || $source === 'dashboard' ? 'confirmed' : 'pending',
-                'payment_status'   => $charge ? 'unpaid' : 'none',
-                'amount'           => $charge,
-                'currency'         => $charge ? $s['payments']['currency'] : null,
                 'source'           => $source,
             ]);
         });
 
-        if (! $charge) {
-            $this->announce($appointment);
-        }
+        $this->announce($appointment);
 
         return $appointment;
     }
@@ -175,13 +168,6 @@ class AppointmentService
             $this->mail($appointment, 'confirmed');
         }
         if ($status === 'cancelled') {
-            if (Booking::settings($appointment->widget)['payments']['refund_on_cancel']) {
-                try {
-                    app(BookingPaymentService::class)->refund($appointment);
-                } catch (\Throwable $e) {
-                    Log::warning("Refund failed for appointment {$appointment->id}: " . $e->getMessage());
-                }
-            }
             $this->mail($appointment, $byVisitor ? 'owner_cancelled' : 'cancelled');
             if ($byVisitor) {
                 $this->mail($appointment, 'cancelled');
@@ -263,9 +249,6 @@ class AppointmentService
             'phone'          => $a->phone,
             'notes'          => $a->notes,
             'answers'        => $a->answers ?? (object) [],
-            'payment_status' => $a->payment_status,
-            'amount'         => $a->amount,
-            'currency'       => $a->currency,
             'source'         => $a->source,
             'lead_id'        => $a->lead_id,
             'manage_url'     => $a->manageUrl(),
