@@ -122,6 +122,10 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/widgets/{widget}/flows', [\App\Http\Controllers\FlowController::class, 'save'])->name('widgets.flows.save');
         Route::post('/widgets/{widget}/flows/test', [\App\Http\Controllers\FlowController::class, 'test'])->name('widgets.flows.test');
         Route::delete('/widgets/{widget}/flows/{flow}', [\App\Http\Controllers\FlowController::class, 'destroy'])->name('widgets.flows.destroy');
+        Route::get('/widgets/{widget}/tools', [\App\Http\Controllers\ToolsController::class, 'show'])->name('widgets.tools');
+        Route::put('/widgets/{widget}/tools/woo', [\App\Http\Controllers\ToolsController::class, 'saveWoo'])->name('widgets.tools.woo');
+        Route::post('/widgets/{widget}/tools/mcp', [\App\Http\Controllers\ToolsController::class, 'addMcp'])->name('widgets.tools.mcp');
+        Route::put('/widgets/{widget}/tools/mcp/{id}', [\App\Http\Controllers\ToolsController::class, 'saveMcp'])->name('widgets.tools.mcp.save');
         Route::get('/widgets/{widget}/answers', [\App\Http\Controllers\AnswerController::class, 'index'])->name('widgets.answers');
         Route::post('/widgets/{widget}/answers', [\App\Http\Controllers\AnswerController::class, 'store'])->name('widgets.answers.store');
         Route::put('/widgets/{widget}/answers/{answer}', [\App\Http\Controllers\AnswerController::class, 'update'])->name('widgets.answers.update');

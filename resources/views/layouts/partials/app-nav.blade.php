@@ -19,6 +19,7 @@
         $widgetMenu[] = [route('widgets.flows', $openWidget), 'Chat flows', $is('widgets.flows')];
         $widgetMenu[] = [route('widgets.leadform', $openWidget), 'Lead form', $is('widgets.leadform')];
         $widgetMenu[] = [route('widgets.help', $openWidget), 'Help centre', $is('widgets.help')];
+        $widgetMenu[] = [route('widgets.tools', $openWidget), 'AI tools', $is('widgets.tools')];
         $widgetMenu[] = [route('widgets.playground', $openWidget), 'Playground', $is('widgets.playground')];
         $widgetMenu[] = [route('widgets.embed', $openWidget), 'Embed code', $is('widgets.embed')];
     }
