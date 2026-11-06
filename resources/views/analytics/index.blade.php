@@ -6,7 +6,7 @@
 {{-- Filters --}}
 <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
     <div class="flex items-center gap-2">
-        @foreach(['7' => '7 Days', '30' => '30 Days', '90' => '90 Days'] as $val => $label)
+        @foreach(['1' => '24h', '2' => '48h', '3' => '72h', '7' => '7 days', '14' => '14 days', '30' => '30 days', '90' => '90 days'] as $val => $label)
         <a href="?period={{ $val }}&widget_id={{ $widgetId }}" class="px-4 py-2 text-xs font-medium rounded-xl transition {{ $period == $val ? 'bg-brand-500/20 text-brand-400 border border-brand-500/20' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-transparent' }}">{{ $label }}</a>
         @endforeach
     </div>
@@ -14,6 +14,65 @@
         <option value="">All Widgets</option>
         @foreach($widgets as $w)<option value="{{ $w->id }}" {{ $widgetId == $w->id ? 'selected' : '' }}>{{ $w->name }}</option>@endforeach
     </select>
+</div>
+
+{{-- Period comparison, export and scheduled email reports --}}
+@php
+    $rk = $report['kpis'];
+    $spark = function (array $vals) { $max = max(1, max($vals ?: [0])); $n = max(1, count($vals) - 1);
+        return collect($vals)->map(fn ($v, $i) => round($i / $n * 100, 1) . ',' . round(30 - $v / $max * 28, 1))->implode(' '); };
+@endphp
+<div x-data="{ email: false }" class="mb-6">
+    <div class="flex flex-wrap items-center gap-2 mb-4">
+        <p class="text-xs text-gray-500 flex-1">{{ \App\Support\AnalyticsReport::PERIODS[(int) $period] ?? $period . ' days' }} compared with the {{ (int) $period }} days before.</p>
+        <a href="{{ route('analytics.export', ['period' => $period, 'widget_id' => $widgetId]) }}" class="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-semibold text-white">⬇ Export CSV</a>
+        <button type="button" @click="email = true" class="px-3 py-2 rounded-lg text-xs font-semibold {{ $reportSettings['enabled'] ? 'bg-emerald-500/15 text-emerald-400' : 'bg-brand-500 text-white' }}">✉ Email reports{{ $reportSettings['enabled'] ? ': on' : '' }}</button>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+        @foreach(['conversations' => ['Conversations', $conversations], 'engaged' => ['Engaged chats', null], 'leads' => ['Leads', $leads], 'hot_leads' => ['Hot leads', null], 'bookings' => ['Bookings', null], 'handoffs' => ['Human handoffs', null]] as $key => [$label, $series])
+        @php $c = $rk[$key]['change']; @endphp
+        <div class="rounded-2xl border border-white/5 bg-gray-900/50 p-4">
+            <div class="flex items-center justify-between gap-2">
+                <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-500">{{ $label }}</p>
+                <span class="px-1.5 py-0.5 rounded-md text-[10px] font-bold {{ $c > 0 ? 'bg-emerald-500/15 text-emerald-400' : ($c < 0 ? 'bg-rose-500/15 text-rose-400' : 'bg-white/5 text-gray-400') }}">{{ $c > 0 ? '↗' : ($c < 0 ? '↘' : '→') }} {{ abs($c) }}%</span>
+            </div>
+            <p class="mt-2 text-2xl font-bold text-white">{{ number_format($rk[$key]['value']) }}</p>
+            <p class="text-[11px] text-gray-500">vs {{ number_format($rk[$key]['previous']) }} before</p>
+            @if($series)
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="mt-2 w-full h-8"><polyline fill="none" stroke="#ff6a2b" stroke-width="1.6" points="{{ $spark($series) }}"/></svg>
+            @endif
+        </div>
+        @endforeach
+    </div>
+    <div class="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+        <div class="rounded-xl bg-white/[0.03] px-4 py-3"><span class="text-gray-500 text-xs">Lead conversion</span><p class="font-bold text-white">{{ $report['conversion'] }}%</p></div>
+        <div class="rounded-xl bg-white/[0.03] px-4 py-3"><span class="text-gray-500 text-xs">Answered by AI</span><p class="font-bold text-white">{{ $report['answered'] }}%</p></div>
+        <div class="rounded-xl bg-white/[0.03] px-4 py-3"><span class="text-gray-500 text-xs">AI replies</span><p class="font-bold text-white">{{ number_format($rk['ai_replies']['value']) }}</p></div>
+        <div class="rounded-xl bg-white/[0.03] px-4 py-3"><span class="text-gray-500 text-xs">Tickets opened</span><p class="font-bold text-white">{{ number_format($rk['tickets']['value']) }}</p></div>
+    </div>
+
+    {{-- Email reports --}}
+    <div x-show="email" x-cloak class="fixed inset-0 z-50 grid place-items-center bg-black/60 backdrop-blur-sm p-4" @keydown.escape.window="email = false">
+        <form method="POST" action="{{ route('analytics.reports') }}" @click.outside="email = false" class="w-full max-w-md rounded-2xl bg-[#0d1a33] border border-white/10 p-5 space-y-4">
+            @csrf @method('PUT')
+            <div class="flex items-center justify-between"><h3 class="text-base font-semibold text-white">Email reports</h3><button type="button" @click="email = false" class="text-gray-400">✕</button></div>
+            <label class="flex items-center gap-2 text-sm text-gray-200"><input type="checkbox" name="enabled" value="1" @checked($reportSettings['enabled'])> Send analytics reports automatically</label>
+            <div class="grid grid-cols-2 gap-3">
+                <label class="text-xs text-gray-400">Report covers
+                    <select name="days" class="mt-1 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white">@foreach(\App\Support\AnalyticsReport::PERIODS as $d => $l)<option value="{{ $d }}" @selected($reportSettings['days'] == $d)>{{ $l }}</option>@endforeach</select></label>
+                <label class="text-xs text-gray-400">Send every
+                    <select name="every" class="mt-1 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white">@foreach([1 => 'Day', 2 => '2 days', 3 => '3 days', 7 => 'Week', 14 => '2 weeks', 30 => '30 days'] as $d => $l)<option value="{{ $d }}" @selected($reportSettings['every'] == $d)>{{ $l }}</option>@endforeach</select></label>
+            </div>
+            <label class="block text-xs text-gray-400">Send to (comma separated, up to 10)
+                <input name="recipients" value="{{ implode(', ', $reportSettings['recipients']) }}" class="mt-1 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white"></label>
+            @error('recipients')<p class="text-xs text-rose-400">{{ $message }}</p>@enderror
+            @if($reportSettings['enabled'] && $reportSettings['next_at'])<p class="text-xs text-gray-500">Next report: {{ \Carbon\Carbon::parse($reportSettings['next_at'])->format('D j M, H:i') }}</p>@endif
+            <div class="flex gap-2">
+                <button class="flex-1 py-2.5 rounded-xl bg-brand-500 text-white text-sm font-semibold">Save</button>
+                <button name="send_now" value="1" class="px-4 py-2.5 rounded-xl bg-white/10 text-white text-sm font-semibold">Save &amp; send now</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 {{-- Summary Stats --}}
@@ -508,4 +567,52 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endpush
+{{-- Where conversations start, which widgets work, pipeline and gaps --}}
+<div class="grid md:grid-cols-2 xl:grid-cols-4 gap-6 mt-6">
+    <section class="xl:col-span-2 rounded-2xl border border-white/5 bg-gray-900/50 p-5">
+        <h3 class="text-base font-semibold text-white">Top pages</h3>
+        <p class="text-xs text-gray-500">Pages where conversations started.</p>
+        <ul class="mt-4 space-y-2.5">
+            @php $topMax = max(1, $report['top_pages']->max('c') ?? 1); @endphp
+            @forelse($report['top_pages'] as $p)
+            <li>
+                <div class="flex justify-between gap-3 text-xs"><span class="truncate text-gray-300">{{ preg_replace('#^https?://#', '', $p->url) }}</span><span class="text-gray-400 shrink-0">{{ $p->c }}</span></div>
+                <div class="mt-1 h-1.5 rounded-full bg-white/5"><div class="h-full rounded-full bg-brand-500/70" style="width: {{ $p->c / $topMax * 100 }}%"></div></div>
+            </li>
+            @empty
+            <li class="text-sm text-gray-500">No page data yet. Pages appear once the widget sees traffic.</li>
+            @endforelse
+        </ul>
+    </section>
+    <section class="rounded-2xl border border-white/5 bg-gray-900/50 p-5">
+        <h3 class="text-base font-semibold text-white">By widget</h3>
+        <ul class="mt-4 space-y-2 text-sm">
+            @forelse($report['per_widget'] as $pw)<li class="flex justify-between gap-2"><span class="truncate text-gray-300">{{ $pw['name'] }}</span><strong class="text-white">{{ $pw['c'] }}</strong></li>
+            @empty<li class="text-gray-500">No conversations in this period.</li>@endforelse
+        </ul>
+    </section>
+    <section class="rounded-2xl border border-white/5 bg-gray-900/50 p-5">
+        <h3 class="text-base font-semibold text-white">Lead pipeline</h3>
+        @php $pl = \App\Support\LeadPipeline::settings(auth()->user())['statuses']; $plTotal = max(1, array_sum($report['pipeline']->all())); @endphp
+        <ul class="mt-4 space-y-2.5">
+            @foreach($pl as $st)
+            @php $n = $report['pipeline'][$st['key']] ?? 0; @endphp
+            <li><div class="flex justify-between text-xs"><span class="text-gray-300">{{ $st['label'] }}</span><span class="text-gray-400">{{ $n }} · {{ round($n / $plTotal * 100) }}%</span></div>
+                <div class="mt-1 h-1.5 rounded-full bg-white/5"><div class="h-full rounded-full" style="width: {{ $n / $plTotal * 100 }}%; background: {{ $st['color'] }}"></div></div></li>
+            @endforeach
+        </ul>
+    </section>
+</div>
+<section class="mt-6 rounded-2xl border border-white/5 bg-gray-900/50 p-5">
+    <div class="flex items-center justify-between gap-3">
+        <div><h3 class="text-base font-semibold text-white">Content gaps</h3><p class="text-xs text-gray-500">Questions creating the most friction right now.</p></div>
+        <span class="text-xs text-gray-400">{{ $report['gaps']->count() }} shown</span>
+    </div>
+    <ul class="mt-4 divide-y divide-white/5">
+        @forelse($report['gaps'] as $g)<li class="py-2.5 flex justify-between gap-3 text-sm"><span class="text-gray-200">{{ $g->question }}</span><span class="text-xs text-gray-500 shrink-0">{{ $g->times_asked }}×</span></li>
+        @empty<li class="py-6 text-center text-sm text-gray-500">No open gaps. Knowledge coverage is keeping up with visitor questions.</li>@endforelse
+    </ul>
+    @if($widgets->isNotEmpty())<a href="{{ route('widgets.answers', $widgetId ?: $widgets->first()->id) }}" class="mt-3 inline-block text-xs font-semibold text-brand-400">Answer them in Answers &amp; gaps →</a>@endif
+</section>
+
 @endsection

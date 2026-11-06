@@ -216,8 +216,10 @@ class AnalyticsController extends Controller
         $activeChannels       = $channelConfigs->where('is_enabled', true)->count();
 
         $widgets = $user->widgets()->get();
+        $report = \App\Support\AnalyticsReport::build($user, max(1, (int) $period), $widgetId ? (int) $widgetId : null);
+        $reportSettings = array_merge(['enabled' => false, 'days' => 7, 'every' => 7, 'recipients' => [$user->email], 'next_at' => null], (array) $user->report_settings);
 
-        return view('analytics.index', compact(
+        return view('analytics.index', compact('report', 'reportSettings',
             'labels', 'conversations', 'messages', 'leads', 'visitors',
             'totalConversations', 'totalMessages', 'totalLeads', 'totalVisitors',
             'avgResolution', 'avgResponseTime', 'aiAccuracy', 'totalFallbacks',
@@ -228,5 +230,49 @@ class AnalyticsController extends Controller
             'channelStats', 'totalChannelMessages', 'activeChannels',
             'widgets', 'period', 'widgetId'
         ));
+    }
+
+    /** Scheduled email reports: which period, how often, to whom. */
+    public function saveReports(Request $request)
+    {
+        $d = $request->validate([
+            'days' => 'required|in:' . implode(',', array_keys(\App\Support\AnalyticsReport::PERIODS)),
+            'every' => 'required|integer|in:1,2,3,7,14,30',
+            'recipients' => 'required|string|max:1000',
+        ]);
+        $emails = collect(preg_split('/[\s,;]+/', $d['recipients']))->filter()->unique()->take(10)->values();
+        if ($emails->contains(fn ($e) => ! filter_var($e, FILTER_VALIDATE_EMAIL))) return back()->withErrors(['recipients' => 'Check the email addresses.']);
+        $request->user()->update(['report_settings' => [
+            'enabled' => $request->boolean('enabled'), 'days' => (int) $d['days'], 'every' => (int) $d['every'], 'recipients' => $emails->all(),
+            'next_at' => now()->addDays((int) $d['every'])->startOfDay()->addHours(8)->toIso8601String(),
+        ]]);
+
+        if ($request->boolean('send_now')) {
+            \Illuminate\Support\Facades\Mail::to($emails->all())->send(new \App\Mail\AnalyticsReportMail($request->user(), \App\Support\AnalyticsReport::build($request->user(), (int) $d['days'])));
+            return back()->with('success', 'Report settings saved and a report was sent now.');
+        }
+
+        return back()->with('success', $request->boolean('enabled') ? 'Email reports scheduled.' : 'Email reports turned off.');
+    }
+
+    public function export(Request $request)
+    {
+        $user = $request->user();
+        $days = max(1, min(365, (int) $request->get('period', 30)));
+        $ids = $request->filled('widget_id') ? [(int) $request->get('widget_id')] : $user->widgets()->pluck('id')->all();
+        $rows = \App\Models\Conversation::whereIn('widget_id', $ids)->where('created_at', '>=', now()->subDays($days))
+            ->selectRaw('date(created_at) as d, count(*) as conversations, sum(message_count) as messages')->groupBy('d')->orderBy('d')->get()->keyBy('d');
+        $leads = \App\Models\Lead::where('user_id', $user->id)->whereIn('widget_id', $ids)->where('created_at', '>=', now()->subDays($days))
+            ->selectRaw('date(created_at) as d, count(*) as c')->groupBy('d')->pluck('c', 'd');
+
+        return response()->streamDownload(function () use ($days, $rows, $leads) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['date', 'conversations', 'messages', 'leads']);
+            for ($i = $days; $i >= 0; $i--) {
+                $d = now()->subDays($i)->toDateString();
+                fputcsv($out, [$d, (int) ($rows[$d]->conversations ?? 0), (int) ($rows[$d]->messages ?? 0), (int) ($leads[$d] ?? 0)]);
+            }
+            fclose($out);
+        }, 'analytics-' . now()->toDateString() . '.csv', ['Content-Type' => 'text/csv']);
     }
 }

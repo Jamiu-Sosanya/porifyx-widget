@@ -46,3 +46,18 @@ Schedule::call(function () {
     \App\Models\Conversation::where('last_message_at', '<', now()->subDays($days))->orWhere(fn ($q) => $q->whereNull('last_message_at')->where('created_at', '<', now()->subDays($days)))
         ->chunkById(200, function ($cs) { foreach ($cs as $c) { $c->messages()->delete(); $c->delete(); } });
 })->daily()->at('03:15')->name('privacy-retention');
+
+// Scheduled analytics emails
+Schedule::call(function () {
+    \App\Models\User::whereNotNull('report_settings')->chunkById(200, function ($users) {
+        foreach ($users as $u) {
+            $s = (array) $u->report_settings;
+            if (empty($s['enabled']) || empty($s['recipients']) || ($s['next_at'] ?? null) && now()->lt(\Carbon\Carbon::parse($s['next_at']))) continue;
+            try {
+                \Illuminate\Support\Facades\Mail::to($s['recipients'])->send(new \App\Mail\AnalyticsReportMail($u, \App\Support\AnalyticsReport::build($u, (int) ($s['days'] ?? 7))));
+            } catch (\Throwable $e) { report($e); }
+            $s['next_at'] = now()->addDays(max(1, (int) ($s['every'] ?? 7)))->toIso8601String();
+            $u->forceFill(['report_settings' => $s])->save();
+        }
+    });
+})->hourly()->name('analytics-reports');
