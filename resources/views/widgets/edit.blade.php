@@ -3,7 +3,8 @@
 @section('page-title', 'Edit Widget')
 @section('content')
 <div x-data="{
-    tab: 'appearance',
+    tab: location.hash.slice(1) || 'appearance',
+    init() { window.addEventListener('hashchange', () => { this.tab = location.hash.slice(1) || 'appearance'; window.scrollTo({ top: 0 }); }); },
     pColor: @js($widget->primary_color ?? '#2f5ee8'),
     pBg: @js($widget->bg_color ?? '#0f0f13'),
     pText: @js($widget->text_color ?? '#ffffff'),
@@ -39,28 +40,6 @@
         </div>
     </div>
 
-    {{-- Tabs --}}
-    <div class="flex items-center gap-1 bg-gray-900/50 border border-white/5 rounded-2xl p-1.5 mb-6 overflow-x-auto">
-        @foreach([
-            'appearance'    => '🎨 Appearance',
-            'behavior'      => '⚙️ Behavior',
-            'ai'            => '🤖 AI Provider',
-            'smart'         => '✨ Smart Features',
-            'proactive'     => '📣 Proactive',
-            'notifications' => '🔔 Notifications',
-            'lead'          => '🎯 Lead Capture',
-            'ab-testing'    => '🧪 A/B Testing',
-            'security'      => '🔒 Security',
-            'languages'     => '🌍 Languages',
-        ] as $key => $label)
-        <button @click="tab = '{{ $key }}'" :class="tab === '{{ $key }}' ? 'bg-white/10 text-white shadow' : 'text-gray-400 hover:text-white hover:bg-white/5'"
-                class="px-4 py-2 text-xs font-medium rounded-xl transition whitespace-nowrap">{{ $label }}</button>
-        @endforeach
-        <button @click="tab = 'channels'" :class="tab === 'channels' ? 'bg-emerald-500/20 text-emerald-300 shadow' : 'text-gray-400 hover:text-white hover:bg-white/5'"
-                class="px-4 py-2 text-xs font-medium rounded-xl transition whitespace-nowrap">📡 Channels</button>
-        <button @click="tab = 'preview'" :class="tab === 'preview' ? 'bg-accent-500/20 text-accent-300 shadow' : 'text-gray-400 hover:text-white hover:bg-white/5'"
-                class="px-4 py-2 text-xs font-medium rounded-xl transition whitespace-nowrap ml-auto">🔍 Live Preview</button>
-    </div>
 
     <form id="widget-edit-form" method="POST" action="{{ route('widgets.update', $widget) }}" enctype="multipart/form-data">
         @csrf @method('PUT')

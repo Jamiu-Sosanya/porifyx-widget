@@ -5,12 +5,23 @@
     $is = fn (...$p) => request()->routeIs(...$p);
     // [url, label, active, icon, children: [url, label, active]]
     $firstWidget = $isAdmin ? null : auth()->user()->widgets()->value('id');
+    // While editing a widget, its sections (and related pages) show under "Widgets".
+    $openWidget = request()->route('widget');
+    $widgetMenu = [];
+    if ($openWidget instanceof \App\Models\Widget && ! $isAdmin) {
+        $onEdit = $is('widgets.edit');
+        foreach (['appearance' => 'Appearance', 'behavior' => 'Behaviour', 'ai' => 'AI provider', 'smart' => 'Smart features', 'proactive' => 'Proactive', 'notifications' => 'Notifications', 'lead' => 'Lead capture', 'ab-testing' => 'A/B testing', 'security' => 'Security', 'languages' => 'Languages', 'channels' => 'Channels', 'preview' => 'Live preview'] as $hash => $label) {
+            $widgetMenu[] = [($onEdit ? '' : route('widgets.edit', $openWidget)) . '#' . $hash, $label, null];
+        }
+        $widgetMenu[] = [route('widgets.knowledge.index', $openWidget), 'Knowledge base', $is('widgets.knowledge.*')];
+        $widgetMenu[] = [route('widgets.embed', $openWidget), 'Embed code', $is('widgets.embed')];
+    }
     $groups = $isAdmin
         ? ['Admin' => [[route('admin.dashboard'), 'Admin panel', $is('admin.*'), 'M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z', []]]]
         : [
             'Workspace' => [
                 [route('dashboard'), 'Overview', $is('dashboard'), 'M4 5h7v7H4zM13 5h7v4h-7zM13 11h7v8h-7zM4 14h7v5H4z', []],
-                [route('widgets.index'), 'Widgets', $is('widgets.*') && ! $is('widgets.booking*'), 'M8 10h8M8 14h5M5 4h14a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-6l-5 4v-4H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z', []],
+                [route('widgets.index'), 'Widgets', $is('widgets.*') && ! $is('widgets.booking*'), 'M8 10h8M8 14h5M5 4h14a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-6l-5 4v-4H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z', $widgetMenu],
                 [route('conversations.index'), 'Conversations', $is('conversations.*'), 'M7 8h10M7 12h6m-9 8 3-3h11a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14z', []],
                 [route('leads.index'), 'Leads', $is('leads.*'), 'M16 19v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1M9.5 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM21 19v-1a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75', []],
                 [route('appointments.index'), 'Bookings', $is('appointments.*', 'widgets.booking*'), 'M8 2v3m8-3v3M3.5 9h17M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z', array_filter([
@@ -95,8 +106,15 @@
                         @if($children)
                         <div x-show="open" x-collapse @if(! $on) x-cloak @endif class="mt-0.5 ml-[1.35rem] pl-3 border-l border-white/[0.08] space-y-0.5">
                             @foreach($children as [$curl, $clabel, $con])
+                            @if($con === null)
+                            <a href="{{ $curl }}" x-data="{ h: location.hash || '#appearance' }" @hashchange.window="h = location.hash"
+                               :aria-current="h === '{{ strstr($curl, '#') }}' && 'page'"
+                               :class="h === '{{ strstr($curl, '#') }}' ? 'text-white bg-white/[0.06] font-semibold' : 'text-gray-400 hover:text-white hover:bg-white/[0.04]'"
+                               class="block px-3 py-2 rounded-lg text-[13px] transition">{{ $clabel }}</a>
+                            @else
                             <a href="{{ $curl }}" @if($con) aria-current="page" @endif
                                class="block px-3 py-2 rounded-lg text-[13px] transition {{ $con ? 'text-white bg-white/[0.06] font-semibold' : 'text-gray-400 hover:text-white hover:bg-white/[0.04]' }}">{{ $clabel }}</a>
+                            @endif
                             @endforeach
                         </div>
                         @endif
