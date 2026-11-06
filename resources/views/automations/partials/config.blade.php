@@ -7,7 +7,7 @@
 <div class="space-y-3">
     <div x-show="trigger === 'keyword_detected'" x-cloak class="p-4 bg-white/[0.02] rounded-xl">
         <label class="block text-sm font-medium text-gray-300 mb-1">Keywords (comma separated)</label>
-        <input name="trigger_conditions[keywords]" value="{{ $tc['keywords'] ?? '' }}" placeholder="refund, cancel, speak to manager" class="{{ $in }}">
+        <input name="trigger_conditions[keywords]" value="{{ $tc['keywords'] ?? request('keywords', '') }}" placeholder="refund, cancel, speak to manager" class="{{ $in }}">
         <p class="mt-1 text-xs text-gray-500">Runs when a visitor message contains any of these.</p>
     </div>
     <div x-show="action === 'assign_priority'" x-cloak class="p-4 bg-white/[0.02] rounded-xl">

@@ -10,21 +10,6 @@
     </a>
 </div>
 @include('partials.plan-limit', ['metric' => 'automations', 'label' => 'automations'])
-@php
-    $tpl = [
-        ['🔥', 'Hot lead → email sales', 'hot_lead', 'send_email'], ['🆕', 'New lead → CRM', 'new_lead', 'add_to_crm'],
-        ['😠', 'Angry words → escalate', 'keyword_detected', 'assign_priority'], ['🤷', 'AI unsure → Telegram', 'ai_fallback', 'send_telegram'],
-        ['✅', 'Chat resolved → webhook', 'chat_completed', 'webhook'], ['🏷️', 'New lead → tag', 'new_lead', 'tag_lead'],
-    ];
-@endphp
-<div class="mb-6">
-    <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Start from a template</p>
-    <div class="flex gap-2 overflow-x-auto pb-1">
-        @foreach($tpl as [$i, $n, $t, $a])
-        <a href="{{ route('automations.create', ['trigger' => $t, 'action' => $a, 'name' => $n]) }}" class="shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl border border-white/5 bg-gray-900/50 hover:border-brand-500/40 text-xs text-gray-200"><span>{{ $i }}</span>{{ $n }}</a>
-        @endforeach
-    </div>
-</div>
 
 <div class="space-y-3">
     @forelse($automations as $auto)

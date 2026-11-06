@@ -122,6 +122,12 @@ Route::middleware(['auth', \App\Http\Middleware\WorkspaceContext::class])->group
         Route::delete('/widgets/{widget}/help/categories/{category}', [\App\Http\Controllers\HelpCenterController::class, 'destroyCategory'])->name('widgets.help.categories.destroy');
         Route::post('/widgets/{widget}/help/articles', [\App\Http\Controllers\HelpCenterController::class, 'saveArticle'])->name('widgets.help.articles.save');
         Route::delete('/widgets/{widget}/help/articles/{article}', [\App\Http\Controllers\HelpCenterController::class, 'destroyArticle'])->name('widgets.help.articles.destroy');
+        Route::get('/flows', function () {
+            $ws = auth()->user()->widgets()->latest()->get(['id', 'name', 'is_active']);
+            if ($ws->isEmpty()) return redirect()->route('widgets.create')->with('info', 'Create a widget first, then build its chat flows.');
+
+            return $ws->count() === 1 ? redirect()->route('widgets.flows', $ws->first()) : view('flows.pick', ['widgets' => $ws]);
+        })->name('flows.index');
         Route::get('/widgets/{widget}/flows', [\App\Http\Controllers\FlowController::class, 'index'])->name('widgets.flows');
         Route::post('/widgets/{widget}/flows', [\App\Http\Controllers\FlowController::class, 'save'])->name('widgets.flows.save');
         Route::post('/widgets/{widget}/flows/test', [\App\Http\Controllers\FlowController::class, 'test'])->name('widgets.flows.test');

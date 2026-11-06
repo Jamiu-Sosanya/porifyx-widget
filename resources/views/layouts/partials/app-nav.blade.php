@@ -68,7 +68,8 @@
             'Grow' => [
                 [route('integrations.index'), 'Integrations', $is('integrations.*'), 'M14 7h3a3 3 0 0 1 0 6h-3M10 17H7a3 3 0 0 1 0-6h3M8 12h8', []],
                 [route('analytics.index'), 'Analytics', $is('analytics.*'), 'M4 20V10m6 10V4m6 16v-7m4 7H2', []],
-                [route('automations.index'), 'Automations', $is('automations.*'), 'M13 2 4 14h7l-1 8 9-12h-7l1-8z', []],
+                [route('flows.index'), 'Chat flows', $is('flows.index') || $is('widgets.flows'), 'M6 3v6m0 0a3 3 0 1 0 0 6m0-6a3 3 0 1 1 0 6m0 0v6M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 0c0 6-12 3-12 9', []],
+                [route('automations.index'), 'Automations', $is('automations.*'), 'M13 2 4 14h7l-1 8 9-12h-7l1-8z', array_merge([[route('automations.index'), 'All automations', $is('automations.index')]], array_map(fn ($t) => [route('automations.create', ['name' => $t[0], 'trigger' => $t[1], 'action' => $t[2], 'keywords' => $t[3] ?: null]), $t[0], $is('automations.create') && request('name') === $t[0]], \App\Models\Automation::TEMPLATES))],
                 [route('settings.profile'), 'Settings', $is('settings.*'), 'M10.3 4.3a1.7 1.7 0 0 1 3.4 0l.2.9a1.7 1.7 0 0 0 2.5 1l.8-.4a1.7 1.7 0 0 1 2.4 2.4l-.4.8a1.7 1.7 0 0 0 1 2.5l.9.2a1.7 1.7 0 0 1 0 3.4l-.9.2a1.7 1.7 0 0 0-1 2.5l.4.8a1.7 1.7 0 0 1-2.4 2.4l-.8-.4a1.7 1.7 0 0 0-2.5 1l-.2.9a1.7 1.7 0 0 1-3.4 0l-.2-.9a1.7 1.7 0 0 0-2.5-1l-.8.4a1.7 1.7 0 0 1-2.4-2.4l.4-.8a1.7 1.7 0 0 0-1-2.5l-.9-.2a1.7 1.7 0 0 1 0-3.4l.9-.2a1.7 1.7 0 0 0 1-2.5l-.4-.8a1.7 1.7 0 0 1 2.4-2.4l.8.4a1.7 1.7 0 0 0 2.5-1l.2-.9zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z', [
                     [route('settings.profile'), 'Profile', $is('settings.profile*', 'settings.password*')],
                     [route('settings.notifications'), 'Notifications', $is('settings.notifications*')],

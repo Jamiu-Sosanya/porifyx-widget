@@ -28,31 +28,35 @@ class AnalyticsController extends Controller
             $query->where('widget_id', $widgetId);
         }
         $analytics = $query->orderBy('date')->get();
-        $grouped = $analytics->groupBy(fn ($item) => $item->date->format('Y-m-d'));
+        // Live numbers (the daily summary table can lag or be empty, so charts read the real tables)
+        $sqlite = Conversation::query()->getConnection()->getDriverName() === 'sqlite';
+        $perDay = fn ($q, $col = 'created_at') => $q->selectRaw("DATE($col) as d, COUNT(*) as c")->groupBy('d')->pluck('c', 'd');
+        $convQ = fn () => Conversation::whereIn('widget_id', $filteredWidgetIds)->where('created_at', '>=', $startDate);
+        $msgQ = fn () => Message::whereHas('conversation', fn ($q) => $q->whereIn('widget_id', $filteredWidgetIds))->where('created_at', '>=', $startDate);
+        $leadQ = fn () => Lead::where('user_id', $user->id)->when($widgetId, fn ($q) => $q->where('widget_id', $widgetId))->where('created_at', '>=', $startDate);
+        $cDay = $perDay($convQ()); $mDay = $perDay($msgQ()); $lDay = $perDay($leadQ());
+        $vDay = $convQ()->selectRaw('DATE(created_at) as d, COUNT(DISTINCT visitor_id) as c')->groupBy('d')->pluck('c', 'd');
 
-        // Chart data
         $labels = []; $conversations = []; $messages = []; $leads = []; $visitors = [];
         for ($i = (int) $period; $i >= 0; $i--) {
             $date = now()->subDays($i)->format('Y-m-d');
-            $day  = $grouped->get($date, collect());
             $labels[]        = now()->subDays($i)->format('M d');
-            $conversations[] = $day->sum('conversations');
-            $messages[]      = $day->sum('messages');
-            $leads[]         = $day->sum('leads');
-            $visitors[]      = $day->sum('unique_visitors');
+            $conversations[] = (int) ($cDay[$date] ?? 0);
+            $messages[]      = (int) ($mDay[$date] ?? 0);
+            $leads[]         = (int) ($lDay[$date] ?? 0);
+            $visitors[]      = (int) ($vDay[$date] ?? 0);
         }
 
-        // Summary stats
-        $totalConversations = $analytics->sum('conversations');
-        $totalMessages      = $analytics->sum('messages');
-        $totalLeads         = $analytics->sum('leads');
-        $totalVisitors      = $analytics->sum('unique_visitors');
-        $avgResolution      = $analytics->avg('resolution_rate') ?? 0;
-        $avgResponseTime    = $analytics->avg('avg_response_time_ms') ?? 0;
-        $totalFallbacks     = $analytics->sum('fallbacks');
-        $totalAiResponses   = $analytics->sum('ai_responses');
+        $totalConversations = array_sum($conversations);
+        $totalMessages      = array_sum($messages);
+        $totalLeads         = array_sum($leads);
+        $totalVisitors      = (int) $convQ()->distinct()->count('visitor_id');
+        $avgResolution      = $totalConversations ? round($convQ()->where('status', 'resolved')->count() / $totalConversations * 100, 1) : 0;
+        $avgResponseTime    = (float) ($convQ()->whereNotNull('first_response_at')->get(['created_at', 'first_response_at'])
+            ->avg(fn ($c) => max(0, $c->created_at->diffInMilliseconds($c->first_response_at))) ?? 0);
+        $totalAiResponses   = $msgQ()->where('role', 'assistant')->count();
+        $totalFallbacks     = $msgQ()->where('role', 'assistant')->where('is_fallback', true)->count();
         $aiAccuracy         = $totalAiResponses > 0 ? round((1 - ($totalFallbacks / $totalAiResponses)) * 100, 1) : 0;
-
         // ── Sentiment trend (per day) ────────────────────────────────────────────
         $sentimentRaw = Message::whereHas('conversation', fn ($q) => $q->whereIn('widget_id', $filteredWidgetIds))
             ->where('created_at', '>=', $startDate)
@@ -148,6 +152,10 @@ class AnalyticsController extends Controller
                 }
                 return $carry;
             }, []);
+        if (empty($devices)) {
+            $devices = \App\Models\Visitor::whereIn('id', $convQ()->select('visitor_id'))->whereNotNull('device_type')
+                ->selectRaw('device_type, COUNT(*) as c')->groupBy('device_type')->pluck('c', 'device_type')->all();
+        }
         arsort($devices);
 
         // ── Language distribution ────────────────────────────────────────────────
@@ -162,8 +170,7 @@ class AnalyticsController extends Controller
 
         // Live language detection from messages table
         if (empty($languages)) {
-            Message::whereHas('conversation', fn ($q) => $q->whereIn('widget_id', $filteredWidgetIds))
-                ->where('created_at', '>=', $startDate)
+            $convQ()
                 ->whereNotNull('detected_language')
                 ->selectRaw('detected_language, COUNT(*) as cnt')
                 ->groupBy('detected_language')
@@ -181,6 +188,10 @@ class AnalyticsController extends Controller
             ->map(fn ($items) => $items->sum('count'))
             ->sortDesc()
             ->take(10);
+        if ($topTopics->isEmpty()) {
+            $topTopics = \App\Models\KnowledgeGap::whereIn('widget_id', $filteredWidgetIds)->where('last_asked_at', '>=', $startDate)
+                ->orderByDesc('times_asked')->take(10)->pluck('times_asked', 'question');
+        }
 
         // ── Funnel ───────────────────────────────────────────────────────────────
         $funnel = [

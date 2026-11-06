@@ -38,6 +38,11 @@
                 <div class="flex-1">
                     <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">Widget workspace</p>
                     <p class="mt-1 text-sm text-gray-400">Train it, review what it knows, test it, then go live.</p>
+                    <div class="mt-3 flex flex-wrap gap-2 text-[11px] font-semibold">
+                        <span class="px-2 py-0.5 rounded-full {{ $widget->is_active ? 'bg-emerald-500/15 text-emerald-400' : 'bg-white/5 text-gray-400' }}">{{ $widget->is_active ? '● Live' : '○ Off' }}</span>
+                        <span class="px-2 py-0.5 rounded-full bg-white/5 text-gray-300">{{ round(($widget->min_confidence ?? config('ai.response.confidence_threshold', 0.5)) * 100) }}% confidence threshold</span>
+                        <span class="px-2 py-0.5 rounded-full bg-white/5 text-gray-300">{{ $ready }}/{{ $sources }} indexed</span>
+                    </div>
                 </div>
                 <div class="sm:w-56 rounded-xl border border-white/5 bg-white/[0.03] p-4">
                     <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-500">Setup progress</p>
@@ -52,6 +57,10 @@
                     <span><span class="block text-sm font-semibold text-white">{{ $t }}</span><span class="block text-xs text-gray-500">{{ $d }}</span></span>
                 </a>
                 @endforeach
+            </div>
+            <div class="border-t border-white/5 p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center gap-3">
+                <div class="flex-1"><p class="text-sm font-semibold text-white">Review live conversations</p><p class="text-xs text-gray-500">Watch real visitor sessions and keep improving the answers.</p></div>
+                <a href="{{ route('conversations.index', ['widget_id' => $widget->id]) }}" class="shrink-0 px-4 py-2 rounded-xl bg-white text-gray-900 text-xs font-bold text-center">Review live conversations →</a>
             </div>
         </section>
 
@@ -89,6 +98,17 @@
             <p class="mt-1 text-xs text-gray-500">Paste before &lt;/body&gt; on every page that should show the widget.</p>
             <pre class="mt-3 rounded-xl bg-black/40 border border-white/10 p-3 text-[11px] text-emerald-300 whitespace-pre-wrap break-all">{{ $snippet }}</pre>
             <button type="button" @click="navigator.clipboard.writeText(@js($snippet)); copied = true; setTimeout(() => copied = false, 2000)" class="mt-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-semibold text-white" x-text="copied ? 'Copied!' : 'Copy snippet'">Copy snippet</button>
+        </section>
+        <section class="rounded-2xl border border-white/5 bg-gray-900/50 p-4">
+            <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-500">Loader URL</p>
+            <p class="mt-1 text-xs text-gray-200 break-all font-mono">{{ url('/widget.js') }}</p>
+            <p class="mt-1 text-[11px] text-gray-500">Widget ID: <span class="font-mono text-gray-300">{{ $widget->uuid }}</span></p>
+        </section>
+        <section class="rounded-2xl border border-white/5 bg-gray-900/50 p-5">
+            <p class="text-sm font-semibold text-white">Behaviour and presentation</p>
+            @foreach([['Voice and prompt', $widget->system_prompt ? 'Custom instructions are guiding the AI.' : 'Using the default instructions.', 'Settings', route('widgets.edit', $widget) . '#ai'], ['Appearance and feel', 'Colours, launcher, persona and bubbles with live preview.', 'Customise', route('widgets.edit', $widget) . '#appearance'], ['Leads and conversations', 'Jump into live sessions and captured leads.', 'Inbox', route('conversations.index', ['widget_id' => $widget->id])]] as [$t, $d, $l, $u])
+            <div class="mt-3 pt-3 border-t border-white/5 flex gap-3"><div class="flex-1"><p class="text-sm font-medium text-gray-200">{{ $t }}</p><p class="text-xs text-gray-500">{{ $d }}</p></div><a href="{{ $u }}" class="shrink-0 text-xs font-semibold text-brand-400">{{ $l }} ↗</a></div>
+            @endforeach
         </section>
         <section class="rounded-2xl border border-white/5 bg-gray-900/50 p-5">
             <p class="text-sm font-semibold text-white">System prompt</p>

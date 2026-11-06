@@ -42,7 +42,10 @@ class WorkflowsAndInboxTest extends TestCase
         $this->actingAs($u)->post(route('automations.test', $tag))->assertSessionHas('success');
         $this->actingAs($u)->post(route('automations.duplicate', $tag))->assertRedirect();
         $this->assertFalse(Automation::where('name', 'Tag (copy)')->firstOrFail()->is_active);
-        $this->actingAs($u)->get(route('automations.index'))->assertOk()->assertSee('Start from a template')->assertSee('Recent runs');
+        $this->actingAs($u)->get(route('automations.index'))->assertOk()->assertSee('Refund request: email support')->assertSee('Recent runs');
+        $this->actingAs($u)->get(route('flows.index'))->assertRedirect(route('widgets.flows', $w));
+        $this->actingAs($u)->get(route('widgets.show', $w))->assertOk()->assertSee('Review live conversations')->assertSee('Behaviour and presentation')->assertSee('Loader URL');
+        $this->actingAs($u)->get(route('analytics.index', ['period' => 7]))->assertOk();
         $this->actingAs($u)->get(route('automations.create', ['trigger' => 'hot_lead', 'name' => 'Hot lead → email sales']))->assertOk()->assertSee('Hot lead → email sales');
     }
 
