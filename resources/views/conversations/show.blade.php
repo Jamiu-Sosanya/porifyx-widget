@@ -8,26 +8,35 @@
     {{ session('success') }}
 </div>
 @endif
-<div class="flex gap-5" style="height: calc(100vh - 240px); min-height: 520px">
+<div class="flex gap-5 h-[calc(100dvh-200px)] lg:h-[calc(100dvh-230px)] min-h-[460px]" x-data="{ details: false }">
     {{-- Chat Thread --}}
     <div class="flex-1 flex flex-col bg-gray-900/50 border border-white/5 rounded-2xl overflow-hidden min-w-0">
         {{-- Header --}}
-        <div class="flex items-center justify-between px-4 py-3 border-b border-white/5 shrink-0">
-            <div class="flex items-center gap-3 min-w-0">
-                <a href="{{ route('conversations.index') }}" class="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition shrink-0">
+        @php
+            $who = $conversation->visitor?->name ?? $conversation->visitor?->email ?? 'Visitor';
+            $statusTone = ['resolved' => 'bg-emerald-500/15 text-emerald-400', 'human_takeover' => 'bg-amber-500/15 text-amber-400', 'waiting' => 'bg-amber-500/15 text-amber-400'][$conversation->status] ?? 'bg-brand-500/15 text-brand-400';
+        @endphp
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 sm:px-4 py-3 border-b border-white/5 shrink-0">
+            <div class="flex items-center gap-2.5 min-w-0 w-full sm:w-auto sm:flex-1">
+                <a href="{{ route('conversations.index') }}" class="p-1.5 -ml-1 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition shrink-0" aria-label="Back to conversations">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg>
                 </a>
+                <span class="grid place-items-center w-9 h-9 shrink-0 rounded-full bg-gradient-to-br from-brand-500 to-accent-500 text-white text-sm font-bold">{{ mb_strtoupper(mb_substr($who, 0, 1)) }}</span>
                 <div class="min-w-0">
-                    <div class="flex items-center gap-2">
-                        <p class="text-sm font-medium text-white truncate">{{ $conversation->visitor?->name ?? $conversation->visitor?->email ?? 'Visitor' }}</p>
+                    <div class="flex items-center gap-2 min-w-0">
+                        <p class="text-sm font-semibold text-white truncate">{{ $who }}</p>
                         @if($conversation->detected_language)
                         <span class="px-1.5 py-0.5 bg-sky-500/10 text-sky-400 text-[10px] font-medium rounded uppercase">{{ $conversation->detected_language }}</span>
                         @endif
                     </div>
-                    <p class="text-xs text-gray-500">{{ $conversation->widget?->name }} · {{ ucfirst(str_replace('_', ' ', $conversation->status)) }}</p>
+                    <p class="flex items-center gap-1.5 text-xs text-gray-500 min-w-0">
+                        <span class="truncate">{{ $conversation->widget?->name }}</span>
+                        <span class="shrink-0 px-1.5 py-0.5 rounded-full text-[10px] font-semibold {{ $statusTone }}">{{ ucfirst(str_replace('_', ' ', $conversation->status)) }}</span>
+                    </p>
                 </div>
             </div>
-            <div class="flex items-center gap-1.5 shrink-0">
+            <div class="flex items-center gap-1 sm:gap-1.5 shrink-0 ml-auto">
+                <button type="button" @click="details = true" class="lg:hidden px-2.5 py-1.5 rounded-lg text-xs font-semibold text-gray-300 bg-white/5 hover:bg-white/10" title="Visitor details">Details</button>
                 {{-- Labels --}}
                 <div x-data="labelManager()" class="flex items-center gap-1.5">
                     @if(!empty($conversation->labels))
@@ -56,7 +65,7 @@
                 {{-- Agent Assist --}}
                 <button id="agentAssistBtn" onclick="requestAgentAssist()" class="flex items-center gap-1.5 px-3 py-1.5 bg-brand-500/10 hover:bg-brand-500/20 text-brand-400 text-xs font-medium rounded-lg transition" title="AI suggests a reply">
                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" /></svg>
-                    AI Assist
+                    <span class="hidden sm:inline">AI Assist</span>
                 </button>
 
                 <form method="POST" action="{{ route('conversations.star', $conversation) }}">@csrf
@@ -66,7 +75,7 @@
                 </form>
                 @if($conversation->status !== 'resolved')
                 <form method="POST" action="{{ route('conversations.resolve', $conversation) }}">@csrf
-                    <button class="px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-xs font-medium rounded-lg transition">✓ Resolve</button>
+                    <button class="px-2.5 sm:px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-xs font-semibold rounded-lg transition" title="Mark as resolved">✓<span class="hidden sm:inline"> Resolve</span></button>
                 </form>
                 @endif
             </div>
@@ -165,20 +174,26 @@
 
         {{-- Reply Box --}}
         @if($conversation->status !== 'resolved' && $conversation->status !== 'spam')
-        <div class="p-4 border-t border-white/5 shrink-0">
-            <form method="POST" action="{{ route('conversations.sendMessage', $conversation) }}" class="flex items-end gap-3">
+        <div class="p-3 sm:p-4 border-t border-white/5 shrink-0">
+            <form method="POST" action="{{ route('conversations.sendMessage', $conversation) }}" class="flex items-end gap-2 p-1.5 rounded-2xl bg-white/5 border border-white/10 focus-within:border-brand-500/50 focus-within:ring-2 focus-within:ring-brand-500/20 transition">
                 @csrf
-                <textarea id="replyTextarea" name="content" rows="2" required placeholder="Type a reply as agent… (Enter to send, Shift+Enter for newline)"
-                    class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-500/50 focus:ring-2 focus:ring-brand-500/20 transition resize-none"
+                <textarea id="replyTextarea" name="content" rows="2" required placeholder="Reply as agent…" title="Enter to send, Shift+Enter for a new line"
+                    class="flex-1 min-w-0 bg-transparent border-0 px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-0 resize-none max-h-40" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,160)+'px'"
                     onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.form.submit()}"></textarea>
-                <button type="submit" class="px-5 py-3 bg-brand-600 hover:bg-brand-500 text-white text-sm font-medium rounded-xl transition shrink-0">Send</button>
+                <button type="submit" class="grid place-items-center w-11 h-11 sm:w-auto sm:px-5 bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold rounded-xl transition shrink-0" aria-label="Send"><svg class="w-5 h-5 sm:hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg><span class="hidden sm:inline">Send</span></button>
             </form>
         </div>
         @endif
     </div>
 
     {{-- Sidebar --}}
-    <div class="hidden lg:flex flex-col w-72 shrink-0 gap-4 overflow-y-auto custom-scrollbar pb-1">
+    <div x-show="details" x-transition.opacity x-cloak @click="details = false" class="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"></div>
+    <div :class="details ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'"
+         class="fixed lg:static inset-y-0 right-0 z-50 w-[88vw] max-w-sm lg:w-80 lg:max-w-none flex flex-col shrink-0 gap-4 overflow-y-auto custom-scrollbar p-4 lg:p-0 lg:pb-1 bg-[#0b1120] lg:bg-transparent transition-transform duration-300 pfx-details">
+        <div class="lg:hidden flex items-center justify-between">
+            <p class="text-sm font-semibold text-white">Visitor details</p>
+            <button type="button" @click="details = false" class="p-1.5 rounded-lg text-gray-400 hover:text-white" aria-label="Close">✕</button>
+        </div>
         {{-- Visitor Info --}}
         <div class="bg-gray-900/50 border border-white/5 rounded-2xl p-5 shrink-0">
             <h3 class="text-sm font-semibold text-white mb-4">Visitor Info</h3>
