@@ -111,7 +111,8 @@ class TrainingService
      */
     protected function extractFromUrl(string $url): string
     {
-        $response = Http::timeout(30)->get($url);
+        if (! \App\Support\SafeUrl::isPublic($url)) throw new \Exception('This address cannot be crawled (private or invalid).');
+        $response = Http::timeout(30)->withOptions(\App\Support\SafeUrl::httpOptions())->get($url);
 
         if (!$response->successful()) {
             throw new \Exception("Failed to fetch URL: {$url}");
@@ -180,7 +181,8 @@ class TrainingService
      */
     protected function extractFromSitemap(string $sitemapUrl): string
     {
-        $response = Http::timeout(30)->get($sitemapUrl);
+        if (! \App\Support\SafeUrl::isPublic($sitemapUrl)) throw new \Exception('This address cannot be crawled (private or invalid).');
+        $response = Http::timeout(30)->withOptions(\App\Support\SafeUrl::httpOptions())->get($sitemapUrl);
 
         if (!$response->successful()) {
             throw new \Exception("Failed to fetch sitemap: {$sitemapUrl}");

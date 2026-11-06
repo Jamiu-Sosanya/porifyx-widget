@@ -118,15 +118,6 @@ class FlowEngine
     /** Public https URLs only (no localhost or private network addresses). */
     public function safeUrl(string $url): bool
     {
-        if (! preg_match('#^https://#i', $url)) return false;
-        $host = parse_url($url, PHP_URL_HOST);
-        if (! $host) return false;
-        $ips = filter_var($host, FILTER_VALIDATE_IP) ? [$host] : (gethostbynamel($host) ?: []);
-        if (! $ips) return false;
-        foreach ($ips as $ip) {
-            if (! filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) return false;
-        }
-
-        return true;
+        return \App\Support\SafeUrl::isPublic($url, false);
     }
 }

@@ -431,6 +431,9 @@
         </div>
         @endforeach
     </div>
+    @if($pfxGuarantee = \App\Models\SystemSetting::get('money_back_text'))
+    <p class="mt-8 text-center text-sm font-semibold {{ $muted }}">🛡️ {{ $pfxGuarantee }}</p>
+    @endif
 </section>
 @endif
 

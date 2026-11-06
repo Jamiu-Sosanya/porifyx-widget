@@ -155,6 +155,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/conversations', [ConversationController::class, 'index'])->name('conversations.index');
         Route::get('/conversations/export', [ConversationController::class, 'export'])->name('conversations.export');
         Route::get('/conversations/{conversation}', [ConversationController::class, 'show'])->name('conversations.show');
+        Route::get('/visitors/{visitor}/export', [\App\Http\Controllers\VisitorDataController::class, 'export'])->name('visitors.export');
+        Route::delete('/visitors/{visitor}', [\App\Http\Controllers\VisitorDataController::class, 'erase'])->name('visitors.erase');
         Route::put('/conversations/{conversation}/tags', [ConversationController::class, 'tags'])->name('conversations.tags');
         Route::post('/conversations/{conversation}/message', [ConversationController::class, 'sendMessage'])->name('conversations.sendMessage');
         Route::post('/conversations/{conversation}/star', [ConversationController::class, 'toggleStar'])->name('conversations.star');
@@ -204,7 +206,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/settings/team/invite', [SettingsController::class, 'inviteTeamMember'])->name('settings.team.invite');
     Route::delete('/settings/team/{member}', [SettingsController::class, 'removeTeamMember'])->name('settings.team.remove');
     Route::get('/settings/billing', [SettingsController::class, 'billing'])->name('settings.billing');
-    Route::post('/settings/billing/change-plan', [SettingsController::class, 'changePlan'])->name('settings.billing.changePlan');
+    // Paid plans activate only after payment (Stripe Checkout or an approved bank transfer).
+    Route::post('/settings/billing/change-plan', [\App\Http\Controllers\BillingController::class, 'change'])->name('settings.billing.changePlan');
+    Route::get('/settings/billing/bank-transfer', [\App\Http\Controllers\BillingController::class, 'bank'])->name('billing.bank');
+    Route::post('/settings/billing/bank-transfer', [\App\Http\Controllers\BillingController::class, 'bankSubmit'])->name('billing.bank.submit');
+    Route::get('/settings/billing/portal', [\App\Http\Controllers\BillingController::class, 'portal'])->name('billing.portal');
     Route::post('/settings/billing/cancel', [SettingsController::class, 'cancelSubscription'])->name('settings.billing.cancel');
     Route::get('/settings/developer', [SettingsController::class, 'developer'])->name('settings.developer');
     Route::get('/settings/api-keys', [SettingsController::class, 'apiKeys'])->name('settings.apiKeys');
@@ -268,6 +274,15 @@ Route::middleware(['auth'])->group(function () {
 
         // Conversations management
         Route::get('/conversations', [AdminController::class, 'conversations'])->name('conversations');
+        Route::get('/monitor', [\App\Http\Controllers\Admin\ToolsController::class, 'monitor'])->name('monitor');
+        Route::get('/search', [\App\Http\Controllers\Admin\ToolsController::class, 'search'])->name('search');
+        Route::get('/changelog', [\App\Http\Controllers\Admin\ToolsController::class, 'changelog'])->name('changelog');
+        Route::post('/changelog', [\App\Http\Controllers\Admin\ToolsController::class, 'storeChangelog'])->name('changelog.store');
+        Route::post('/changelog/{id}/toggle', [\App\Http\Controllers\Admin\ToolsController::class, 'toggleChangelog'])->whereNumber('id')->name('changelog.toggle');
+        Route::delete('/changelog/{id}', [\App\Http\Controllers\Admin\ToolsController::class, 'destroyChangelog'])->whereNumber('id')->name('changelog.destroy');
+        Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments');
+        Route::post('/payments/{payment}/approve', [\App\Http\Controllers\Admin\PaymentController::class, 'approve'])->name('payments.approve');
+        Route::post('/payments/{payment}/reject', [\App\Http\Controllers\Admin\PaymentController::class, 'reject'])->name('payments.reject');
         Route::delete('/conversations/{conversation}', [AdminController::class, 'deleteConversation'])->name('conversations.delete');
 
         // Reports / Analytics
@@ -298,3 +313,10 @@ Route::post('/t/{id}/{token}', [\App\Http\Controllers\PublicTicketController::cl
 Route::get('/help/{uuid}', [\App\Http\Controllers\PublicHelpController::class, 'index'])->name('help.index');
 Route::get('/help/{uuid}/c/{slug}', [\App\Http\Controllers\PublicHelpController::class, 'category'])->name('help.category');
 Route::get('/help/{uuid}/a/{slug}', [\App\Http\Controllers\PublicHelpController::class, 'article'])->name('help.article');
+
+// Product changelog
+Route::get('/changelog', fn () => view('changelog', ['entries' => \Illuminate\Support\Facades\DB::table('changelog_entries')->whereNotNull('published_at')->latest('published_at')->limit(50)->get()]))->name('changelog');
+Route::post('/changelog/seen', function () {
+    auth()->user()?->update(['changelog_seen_at' => now()]);
+    return response()->noContent();
+})->middleware('auth')->name('changelog.seen');

@@ -2,6 +2,24 @@
 @section('title', 'Admin: System Health')
 @section('page-title', 'System Health')
 @section('content')
+{{-- Go-live health checks --}}
+<section class="mb-6 rounded-2xl border border-white/5 bg-gray-900/50 p-5">
+    @php $bad = collect($checks)->where(1, 'fail')->count(); $warn = collect($checks)->where(1, 'warn')->count(); @endphp
+    <div class="flex flex-wrap items-center justify-between gap-2">
+        <h3 class="text-sm font-semibold text-white">Site health</h3>
+        <span class="px-2.5 py-1 rounded-full text-xs font-semibold {{ $bad ? 'bg-rose-500/15 text-rose-400' : ($warn ? 'bg-amber-500/15 text-amber-400' : 'bg-emerald-500/15 text-emerald-400') }}">
+            {{ $bad ? $bad . ' problem' . ($bad > 1 ? 's' : '') : ($warn ? $warn . ' warning' . ($warn > 1 ? 's' : '') : 'All good') }}
+        </span>
+    </div>
+    <ul class="mt-4 grid sm:grid-cols-2 xl:grid-cols-3 gap-2">
+        @foreach($checks as [$label, $state, $detail])
+        <li class="flex items-start gap-2.5 rounded-xl border border-white/5 bg-white/[0.02] p-3">
+            <span class="mt-0.5 grid place-items-center w-5 h-5 shrink-0 rounded-full text-[11px] font-bold {{ $state === 'ok' ? 'bg-emerald-500/15 text-emerald-400' : ($state === 'warn' ? 'bg-amber-500/15 text-amber-400' : 'bg-rose-500/15 text-rose-400') }}">{{ $state === 'ok' ? '✓' : '!' }}</span>
+            <span class="min-w-0"><span class="block text-sm text-white">{{ $label }}</span><span class="block text-xs text-gray-500 break-words">{{ $detail }}</span></span>
+        </li>
+        @endforeach
+    </ul>
+</section>
 
 <div x-data="{
     artisanCmd: '',

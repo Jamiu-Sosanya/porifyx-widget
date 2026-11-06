@@ -33,6 +33,7 @@
                 [route('admin.inbox'), 'Inbox', $is('admin.inbox*'), 'M3 13h4l2 3h6l2-3h4M3 13l2.5-8h13L21 13v6H3z', []],
             ],
             'Business' => [
+                [route('admin.payments'), 'Payments', $is('admin.payments*'), 'M3 10h18M5 6h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm2 8h2m4 0h2', []],
                 [route('admin.plans'), 'Plans', $is('admin.plans*'), 'M3 8h18M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zm2 10h4', []],
                 [route('admin.channels'), 'Channels', $is('admin.channels*'), 'M8.3 15a5.3 5.3 0 0 1 7.4 0M5.1 11.9a9.7 9.7 0 0 1 13.8 0M12 19h.01', []],
                 [route('admin.broadcasts'), 'Broadcasts', $is('admin.broadcasts*'), 'M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1zm13-3a5 5 0 0 1 0 8', []],
@@ -40,6 +41,9 @@
             ],
             'System' => [
                 [route('admin.system'), 'System', $is('admin.system*'), 'M4 6h16M4 12h16M4 18h16', []],
+                [route('admin.search'), 'Search', $is('admin.search*'), 'M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z', []],
+                [route('admin.monitor'), 'Widget monitor', $is('admin.monitor*'), 'M3 12h4l3-8 4 16 3-8h4', []],
+                [route('admin.changelog'), 'Changelog', $is('admin.changelog*'), 'M9 12h6m-6 4h6M7 4h10a2 2 0 0 1 2 2v14l-4-2-3 2-3-2-4 2V6a2 2 0 0 1 2-2z', []],
                 [route('admin.activity'), 'Activity log', $is('admin.activity*'), 'M12 6v6l4 2m5-2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z', []],
                 [route('admin.settings'), 'Settings', $is('admin.settings*', 'admin.profile*'), 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm8-3a8 8 0 0 0-.2-1.7l2-1.6-2-3.4-2.4 1a8 8 0 0 0-2.9-1.7L14 2h-4l-.5 2.6a8 8 0 0 0-2.9 1.7l-2.4-1-2 3.4 2 1.6a8 8 0 0 0 0 3.4l-2 1.6 2 3.4 2.4-1a8 8 0 0 0 2.9 1.7L10 22h4l.5-2.6a8 8 0 0 0 2.9-1.7l2.4 1 2-3.4-2-1.6c.1-.6.2-1.1.2-1.7z', []],
             ],

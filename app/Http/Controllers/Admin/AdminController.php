@@ -167,6 +167,7 @@ class AdminController extends Controller
 
     public function updateUser(Request $request, User $user)
     {
+        \App\Support\Audit::log('user.updated', $user, $request->except(['_token', '_method', 'password']));
         $validated = $request->validate([
             'name'      => 'required|string|max:255',
             'email'     => 'required|email|unique:users,email,' . $user->id,
@@ -182,6 +183,7 @@ class AdminController extends Controller
 
     public function deleteUser(User $user)
     {
+        \App\Support\Audit::log('user.deleted', $user, ['email' => $user->email]);
         abort_if($user->id === request()->user()->id, 403, 'Cannot delete yourself.');
 
         $user->delete();
@@ -191,6 +193,7 @@ class AdminController extends Controller
 
     public function impersonateUser(User $user)
     {
+        \App\Support\Audit::log('user.impersonated', $user, ['email' => $user->email]);
         session(['impersonating' => request()->user()->id]);
         auth()->login($user);
 
@@ -259,6 +262,7 @@ class AdminController extends Controller
 
     public function storePlan(Request $request)
     {
+        \App\Support\Audit::log('plan.created', null, $request->only(['name', 'price_monthly', 'price_yearly']));
         $validated = $request->validate([
             'name'                       => 'required|string|max:255',
             'slug'                       => 'required|string|max:100|unique:plans,slug|regex:/^[a-z0-9-]+$/',
@@ -305,6 +309,7 @@ class AdminController extends Controller
 
     public function updatePlan(Request $request, Plan $plan)
     {
+        \App\Support\Audit::log('plan.updated', $plan, $request->only(['name', 'price_monthly', 'price_yearly', 'messages_per_month', 'bookings_per_month']));
         $validated = $request->validate([
             'name'                       => 'required|string|max:255',
             'slug'                       => 'required|string|max:100|unique:plans,slug,' . $plan->id . '|regex:/^[a-z0-9-]+$/',
@@ -351,6 +356,7 @@ class AdminController extends Controller
 
     public function deletePlan(Plan $plan)
     {
+        \App\Support\Audit::log('plan.deleted', $plan, ['name' => $plan->name]);
         $active = $plan->subscriptions()->whereIn('status', ['active', 'trialing'])->count();
 
         if ($active > 0) {
@@ -436,6 +442,7 @@ class AdminController extends Controller
 
     public function updateSettings(Request $request)
     {
+        \App\Support\Audit::log('settings.updated', null, ['keys' => array_keys((array) $request->input('settings', []))]);
         $incoming  = $request->input('settings', []);
         $envBatch  = []; // collected [envKey, envValue] pairs written once at the end
 
@@ -732,12 +739,14 @@ class AdminController extends Controller
 
     public function toggleWidget(Request $request, Widget $widget)
     {
+        \App\Support\Audit::log('widget.toggled', $widget, ['active_before' => $widget->is_active]);
         $widget->update(['is_active' => ! $widget->is_active]);
         return back()->with('success', "Widget \"" . $widget->name . "\" " . ($widget->is_active ? 'activated' : 'deactivated') . '.');
     }
 
     public function deleteWidget(Widget $widget)
     {
+        \App\Support\Audit::log('widget.deleted', $widget, ['name' => $widget->name]);
         $name = $widget->name;
         $widget->delete();
         return back()->with('success', "Widget \"{$name}\" deleted.");
@@ -988,7 +997,9 @@ class AdminController extends Controller
 
         $tableStats = $this->getTableRowCounts();
 
-        return view('admin.system', compact('health', 'extStatus', 'tableStats', 'recentFailed'));
+        $checks = \App\Support\SiteHealth::checks();
+
+        return view('admin.system', compact('health', 'extStatus', 'tableStats', 'recentFailed', 'checks'));
     }
 
     public function clearCache(Request $request)

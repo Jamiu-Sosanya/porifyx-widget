@@ -32,6 +32,17 @@ Route::prefix('widget')->middleware([WidgetRateLimit::class])->group(function ()
     // CSAT Feedback
     Route::post('/{widgetUuid}/conversations/{conversationUuid}/feedback', [WidgetApiController::class, 'submitFeedback']);
 
+    // Widget-side errors (Admin > Widget monitor)
+    Route::post('/{widgetUuid}/event', function (\Illuminate\Http\Request $request, string $widgetUuid) {
+        $w = \App\Models\Widget::where('uuid', $widgetUuid)->first();
+        $request->merge((array) json_decode($request->getContent(), true)); // sent as text/plain by sendBeacon
+        if ($w) \Illuminate\Support\Facades\DB::table('widget_events')->insert([
+            'widget_id' => $w->id, 'type' => mb_substr((string) $request->input('type', 'error'), 0, 40),
+            'message' => mb_substr((string) $request->input('message', ''), 0, 500), 'page_url' => mb_substr((string) $request->input('page_url', ''), 0, 500), 'created_at' => now(),
+        ]);
+        return response()->noContent();
+    });
+
     // Lead form
     Route::post('/{widgetUuid}/lead', [\App\Http\Controllers\Api\LeadCaptureController::class, 'store']);
 

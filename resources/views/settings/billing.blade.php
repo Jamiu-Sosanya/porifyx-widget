@@ -13,6 +13,20 @@
     @if(session('error'))
     <div class="mb-5 p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl text-sm text-rose-400">{{ session('error') }}</div>
     @endif
+    @php
+        $pfxStripe = \App\Http\Controllers\BillingController::stripeReady();
+        $pfxBank = \App\Http\Controllers\BillingController::bankReady();
+        $pfxPending = \App\Models\ManualPayment::where('user_id', auth()->id())->where('status', 'pending')->with('plan')->first();
+    @endphp
+    @if(request('paid'))
+    <div class="mb-5 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-sm text-emerald-400">Payment received. Your plan updates within a minute; refresh if it has not changed yet.</div>
+    @endif
+    @if($pfxPending)
+    <div class="mb-5 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-sm text-amber-300">Bank transfer for <strong>{{ $pfxPending->plan->name }}</strong> (reference {{ $pfxPending->reference }}) is waiting for confirmation. We activate it as soon as the money arrives.</div>
+    @endif
+    @if($pfxStripe && auth()->user()->subscription?->stripe_customer_id)
+    <div class="mb-5 flex justify-end"><a href="{{ route('billing.portal') }}" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-semibold text-white">Manage card &amp; invoices</a></div>
+    @endif
 
     {{-- Current Plan Card --}}
     @if($subscription && $plan)
@@ -139,6 +153,9 @@
                             {{ $isCurrent ? 'disabled' : '' }}>
                         {{ $isCurrent ? 'Current Plan' : ($plan ? 'Switch to ' . $p->name : 'Get Started') }}
                     </button>
+                    @if(! $isCurrent && $p->price_monthly > 0 && $pfxBank && $pfxStripe)
+                    <button type="submit" name="method" value="bank" class="mt-2 w-full text-xs text-gray-400 hover:text-white">or pay by bank transfer</button>
+                    @endif
                 </form>
             </div>
             @endforeach

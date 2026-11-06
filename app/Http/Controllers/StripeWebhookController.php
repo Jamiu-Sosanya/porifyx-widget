@@ -33,11 +33,13 @@ class StripeWebhookController extends Controller
                 return response()->json(['error' => 'Invalid signature'], 400);
             }
         } else {
-            $data  = json_decode($payload, true);
-            $event = Event::constructFrom($data);
+            // Without a signing secret anyone could post fake payment events.
+            Log::error('Stripe webhook rejected: set the Stripe webhook signing secret in Admin > Settings > Payment.');
+            return response()->json(['error' => 'Webhook signing secret not configured'], 400);
         }
 
         match ($event->type) {
+            'checkout.session.completed'      => $this->onCheckoutCompleted($event),
             'customer.subscription.created'   => $this->onSubscriptionCreated($event),
             'customer.subscription.updated'   => $this->onSubscriptionUpdated($event),
             'customer.subscription.deleted'   => $this->onSubscriptionDeleted($event),
@@ -178,6 +180,26 @@ class StripeWebhookController extends Controller
             nextRetry: $nextRetry,
             plan: $subscription?->plan,
         ));
+    }
+
+    /** Checkout finished: remember which Stripe customer and subscription belong to the user. */
+    private function onCheckoutCompleted(Event $event): void
+    {
+        $s = $event->data->object;
+        $user = User::find((int) ($s->client_reference_id ?? $s->metadata->user_id ?? 0));
+        if (! $user || ($s->mode ?? '') !== 'subscription' || ($s->payment_status ?? 'paid') === 'unpaid') return;
+
+        Subscription::updateOrCreate(['user_id' => $user->id], [
+            'plan_id'                => (int) ($s->metadata->plan_id ?? $user->subscription?->plan_id),
+            'billing_cycle'          => ($s->metadata->billing_cycle ?? 'monthly') === 'yearly' ? 'yearly' : 'monthly',
+            'stripe_customer_id'     => $s->customer,
+            'stripe_subscription_id' => $s->subscription,
+            'status'                 => 'active',
+            'current_period_start'   => now(),
+            'canceled_at'            => null,
+            'ends_at'                => null,
+            'trial_ends_at'          => null,
+        ]);
     }
 
     private function findUserByStripeCustomer(string $customerId): ?User

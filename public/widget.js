@@ -183,6 +183,15 @@
         return new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
+    // Errors that never reach the server show up in Admin > Widget monitor.
+    function report(type, message) {
+        try {
+            const id = (config && config.uuid) || (_cs && _cs.getAttribute('data-widget-id'));
+            if (!id || !apiBase) return;
+            navigator.sendBeacon && navigator.sendBeacon(apiBase + '/' + id + '/event', new Blob([JSON.stringify({ type: type, message: String(message || '').slice(0, 300), page_url: location.href })], { type: 'text/plain' })); // simple request: no CORS preflight
+        } catch (e) {}
+    }
+
     function hdrs(accept) {
         const h = { 'Content-Type': 'application/json', Accept: accept };
         if (pgToken) h['X-PFX-Playground'] = pgToken;
@@ -254,6 +263,7 @@
             render();
         } catch (err) {
             console.error('PFX: Failed to load widget config', err);
+            report('config_failed', err && err.message);
         }
     }
 
@@ -975,6 +985,7 @@ ${bubbleCSS()}
                 appendMessage('ai', 'You\'re sending messages too quickly. Please wait a moment.');
             } else {
                 appendMessage('ai', 'Sorry, something went wrong. Please try again.');
+                report('reply_failed', err && err.message);
             }
         }
 

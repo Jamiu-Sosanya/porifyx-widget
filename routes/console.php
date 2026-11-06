@@ -37,3 +37,4 @@ Artisan::command('appointments:remind', function (App\Services\AppointmentServic
 })->purpose('Email booking reminders');
 Schedule::command('appointments:remind')->everyFifteenMinutes();
 Schedule::command('tickets:escalate')->hourly();
+Schedule::call(fn () => \Illuminate\Support\Facades\Cache::put('pfx:scheduler_heartbeat', now()->toIso8601String(), 3600))->everyMinute()->name('scheduler-heartbeat');

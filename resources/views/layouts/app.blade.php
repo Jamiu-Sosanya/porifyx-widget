@@ -90,6 +90,24 @@
                 </div>
                 @endif
 
+                {{-- What's new: latest published changelog entry the user has not dismissed --}}
+                @php
+                    $pfxNews = auth()->check() && ! auth()->user()->isAdmin()
+                        ? \Illuminate\Support\Facades\DB::table('changelog_entries')->whereNotNull('published_at')->where('published_at', '>', auth()->user()->changelog_seen_at ?? now()->subDays(30))->latest('published_at')->first()
+                        : null;
+                @endphp
+                @if($pfxNews)
+                <div x-data="{ show: true }" x-show="show" class="max-w-[1400px] mx-auto px-4 sm:px-6 mt-4">
+                    <div class="p-3.5 rounded-xl border border-brand-500/20 bg-brand-500/10 text-sm text-gray-200 flex items-center gap-3">
+                        <span class="shrink-0 px-2 py-0.5 rounded-full bg-brand-500 text-white text-[10px] font-bold uppercase">New</span>
+                        <p class="flex-1 min-w-0 truncate"><strong>{{ $pfxNews->title }}</strong></p>
+                        <a href="{{ route('changelog') }}" target="_blank" class="shrink-0 text-xs font-semibold text-brand-400">See what's new</a>
+                        <button type="button" aria-label="Dismiss" class="shrink-0 text-gray-400 hover:text-white"
+                                @click="show = false; fetch(@js(route('changelog.seen')), { method: 'POST', headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content } })">✕</button>
+                    </div>
+                </div>
+                @endif
+
                 {{-- Plan status: tells owners what their visitors currently see. --}}
                 @php
                     $pfxU = auth()->user();
