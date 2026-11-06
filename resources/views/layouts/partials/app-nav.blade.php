@@ -66,6 +66,7 @@
                 ])],
             ],
             'Grow' => [
+                [route('integrations.index'), 'Integrations', $is('integrations.*'), 'M14 7h3a3 3 0 0 1 0 6h-3M10 17H7a3 3 0 0 1 0-6h3M8 12h8', []],
                 [route('analytics.index'), 'Analytics', $is('analytics.*'), 'M4 20V10m6 10V4m6 16v-7m4 7H2', []],
                 [route('automations.index'), 'Automations', $is('automations.*'), 'M13 2 4 14h7l-1 8 9-12h-7l1-8z', []],
                 [route('settings.profile'), 'Settings', $is('settings.*'), 'M10.3 4.3a1.7 1.7 0 0 1 3.4 0l.2.9a1.7 1.7 0 0 0 2.5 1l.8-.4a1.7 1.7 0 0 1 2.4 2.4l-.4.8a1.7 1.7 0 0 0 1 2.5l.9.2a1.7 1.7 0 0 1 0 3.4l-.9.2a1.7 1.7 0 0 0-1 2.5l.4.8a1.7 1.7 0 0 1-2.4 2.4l-.8-.4a1.7 1.7 0 0 0-2.5 1l-.2.9a1.7 1.7 0 0 1-3.4 0l-.2-.9a1.7 1.7 0 0 0-2.5-1l-.8.4a1.7 1.7 0 0 1-2.4-2.4l.4-.8a1.7 1.7 0 0 0-1-2.5l-.9-.2a1.7 1.7 0 0 1 0-3.4l.9-.2a1.7 1.7 0 0 0 1-2.5l-.4-.8a1.7 1.7 0 0 1 2.4-2.4l.8.4a1.7 1.7 0 0 0 2.5-1l.2-.9zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z', [

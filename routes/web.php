@@ -179,6 +179,7 @@ Route::middleware(['auth', \App\Http\Middleware\WorkspaceContext::class])->group
         Route::delete('/conversations/{conversation}/labels', [ConversationController::class, 'removeLabel'])->name('conversations.removeLabel');
 
         // Leads
+        Route::get('/integrations', [\App\Http\Controllers\IntegrationsController::class, 'index'])->name('integrations.index');
         Route::put('/analytics/reports', [\App\Http\Controllers\AnalyticsController::class, 'saveReports'])->name('analytics.reports');
         Route::get('/analytics/export', [\App\Http\Controllers\AnalyticsController::class, 'export'])->name('analytics.export');
         Route::get('/tickets', [\App\Http\Controllers\TicketController::class, 'index'])->name('tickets.index');
