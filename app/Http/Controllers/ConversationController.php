@@ -18,7 +18,8 @@ class ConversationController extends Controller
         $widgetIds = $user->widgets()->pluck('id');
 
         $query = Conversation::whereIn('widget_id', $widgetIds)
-            ->with(['widget', 'visitor', 'lastMessage', 'assignedAgent']);
+            ->with(['widget', 'visitor', 'lastMessage', 'assignedAgent'])
+            ->withCount('messages'); // real count; the stored message_count column is not always updated
 
         // Filters
         if ($status = $request->get('status')) {

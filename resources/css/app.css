@@ -263,3 +263,11 @@ html.light main .peer:checked + span.bg-white\/15 { background-color: var(--colo
 html.light main .peer + span.bg-white\/15::after { box-shadow: 0 1px 3px rgba(15,23,42,.25); }
 html.light .pfx-details { background-color: #f1f5f9; }
 @media (min-width: 1024px) { html.light .pfx-details { background-color: transparent; } }
+/* Light mode: pale text meant for dark tinted bubbles */
+html.light main .text-brand-100, html.light main .text-brand-200 { color: #1e3a8a !important; }
+html.light main .text-emerald-100, html.light main .text-emerald-200 { color: #065f46 !important; }
+html.light main .text-amber-100, html.light main .text-amber-200 { color: #78350f !important; }
+html.light main .bg-brand-600\/20 { background-color: #dbeafe !important; }
+/* iOS zooms into inputs under 16px: keep form text 16px on phones */
+@media (max-width: 640px) { main input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]), main textarea, main select { font-size: 16px !important; } }
+html.light main textarea.bg-transparent { background-color: transparent !important; border: 0 !important; box-shadow: none !important; }

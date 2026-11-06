@@ -13,23 +13,23 @@
 </div>
 
 {{-- Filters --}}
-<div class="flex flex-wrap items-center gap-3 mb-6">
-    <a href="{{ route('conversations.export', request()->query()) }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-medium text-gray-300 hover:text-white transition shrink-0">
+<div class="grid grid-cols-2 gap-2.5 sm:flex sm:flex-wrap sm:items-center sm:gap-3 mb-6">
+    <a href="{{ route('conversations.export', request()->query()) }}" class="col-span-2 sm:order-last justify-center inline-flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-medium text-gray-300 hover:text-white transition shrink-0">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
         Export CSV
     </a>
-    <form method="GET" class="flex flex-wrap items-center gap-3 flex-1 min-w-0">
-        <div class="relative flex-1 min-w-[200px]">
+    <form method="GET" class="contents sm:flex sm:flex-wrap sm:items-center sm:gap-3 sm:flex-1 sm:min-w-0">
+        <div class="relative col-span-2 sm:flex-1 sm:min-w-[200px]">
             <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
             <input name="search" value="{{ request('search') }}" placeholder="Search conversations..." class="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-500/50 transition">
         </div>
-        <select name="status" onchange="this.form.submit()" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500/50 transition">
+        <select name="status" onchange="this.form.submit()" class="w-full sm:w-auto min-w-0 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500/50 transition">
             <option value="">All Status</option>
             @foreach(['ai_active' => 'AI Active', 'human_active' => 'Human Active', 'open' => 'Open', 'resolved' => 'Resolved', 'spam' => 'Spam'] as $val => $label)
             <option value="{{ $val }}" {{ request('status') === $val ? 'selected' : '' }}>{{ $label }}</option>
             @endforeach
         </select>
-        <select name="widget_id" onchange="this.form.submit()" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500/50 transition">
+        <select name="widget_id" onchange="this.form.submit()" class="w-full sm:w-auto min-w-0 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500/50 transition">
             <option value="">All Widgets</option>
             @foreach($widgets as $w)
             <option value="{{ $w->id }}" {{ request('widget_id') == $w->id ? 'selected' : '' }}>{{ $w->name }}</option>
@@ -42,8 +42,8 @@
 <div class="bg-gray-900/50 border border-white/5 rounded-2xl overflow-hidden">
     <div class="divide-y divide-white/5">
         @forelse($conversations as $conv)
-        <a href="{{ route('conversations.show', $conv) }}" class="flex items-center gap-4 p-4 hover:bg-white/[0.02] transition {{ !$conv->is_read ? 'bg-brand-500/[0.02]' : '' }}">
-            <div class="w-10 h-10 rounded-xl bg-linear-to-br from-gray-700 to-gray-800 flex items-center justify-center text-xs font-bold text-white shrink-0">
+        <a href="{{ route('conversations.show', $conv) }}" class="flex items-start sm:items-center gap-3 sm:gap-4 p-3.5 sm:p-4 hover:bg-white/[0.02] transition {{ !$conv->is_read ? 'bg-brand-500/[0.02]' : '' }}">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center text-xs font-bold text-white shrink-0">
                 {{ strtoupper(substr($conv->visitor?->name ?? $conv->visitor?->email ?? 'V', 0, 2)) }}
             </div>
             <div class="flex-1 min-w-0">
@@ -55,6 +55,7 @@
                     @if(!$conv->is_read)<span class="w-2 h-2 bg-brand-500 rounded-full shrink-0"></span>@endif
                 </div>
                 <p class="text-xs text-gray-500 truncate">{{ $conv->lastMessage?->content ?? 'No messages' }}</p>
+                <p class="sm:hidden mt-1 text-[11px] text-gray-500 truncate">{{ $conv->widget?->name }} · {{ $conv->messages_count }} {{ \Illuminate\Support\Str::plural('message', $conv->messages_count) }}</p>
             </div>
             <div class="text-right shrink-0">
                 @php
@@ -64,7 +65,7 @@
                     {{ str_replace('_', ' ', ucfirst($conv->status)) }}
                 </span>
                 <p class="text-[10px] text-gray-600 mt-1">{{ $conv->last_message_at?->diffForHumans(short: true) ?? $conv->created_at->diffForHumans(short: true) }}</p>
-                <p class="text-[10px] text-gray-600">{{ $conv->message_count }} msgs · {{ $conv->widget?->name }}</p>
+                <p class="hidden sm:block text-[10px] text-gray-600">{{ $conv->messages_count }} {{ \Illuminate\Support\Str::plural('message', $conv->messages_count) }} · {{ $conv->widget?->name }}</p>
             </div>
         </a>
         @empty
