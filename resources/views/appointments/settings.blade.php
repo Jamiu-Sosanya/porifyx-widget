@@ -24,7 +24,7 @@
     @endforeach
 </div>
 
-<form method="POST" action="{{ route('widgets.booking.update', $widget) }}"
+<form method="POST" action="{{ route('widgets.booking.update', $widget) }}" enctype="multipart/form-data"
       x-data="{
           services: @js(old('services', $settings['services'])),
           staff: @js(old('staff', $settings['staff'])),
@@ -216,6 +216,19 @@
         <div class="{{ $card }} space-y-4">
             <p class="font-semibold text-white">Rules</p>
             <div><label class="{{ $label }}">Business name shown to visitors</label><input name="business_name" value="{{ old('business_name', $widget->booking['business_name'] ?? '') }}" placeholder="{{ $widget->name }}" class="{{ $field }}"></div>
+            <div>
+                <label class="{{ $label }}">Logo for visitor emails and pages</label>
+                <div class="flex items-center gap-3">
+                    @if(\App\Support\Booking::logoUrl($settings))
+                        <img src="{{ \App\Support\Booking::logoUrl($settings) }}" alt="" class="h-10 max-w-[120px] object-contain rounded-lg bg-white p-1">
+                    @endif
+                    <input type="file" name="logo" accept="image/png,image/jpeg,image/webp" class="block w-full text-xs text-gray-400 file:mr-3 file:px-3 file:py-2 file:rounded-lg file:border-0 file:bg-white/10 file:text-white file:text-xs file:font-semibold">
+                </div>
+                @if($settings['logo'])<label class="mt-1.5 flex items-center gap-2 text-xs text-gray-400"><input type="checkbox" name="remove_logo" value="1" class="accent-rose-500"> Remove logo</label>@endif
+                <p class="mt-1 text-xs text-gray-500">PNG, JPG or WebP, up to 1 MB. Without a logo, your business name is shown.</p>
+            </div>
+            <div><label class="{{ $label }}">Website</label><input name="website" type="url" value="{{ old('website', $settings['website']) }}" placeholder="https://yourbusiness.com" class="{{ $field }}"></div>
+            <div><label class="{{ $label }}">Replies from visitors go to</label><input name="reply_to" type="email" value="{{ old('reply_to', $settings['reply_to']) }}" placeholder="{{ $widget->notification_email ?: $widget->user?->email }}" class="{{ $field }}"></div>
             <div><label class="{{ $label }}">Button label</label><input name="button_label" value="{{ old('button_label', $settings['button_label']) }}" required maxlength="40" class="{{ $field }}"></div>
             <div>
                 <label class="{{ $label }}">Timezone</label>

@@ -125,7 +125,9 @@ hr { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 24px 0;
 
         {{-- Brand header --}}
         <div class="email-header">
-            @if(config('branding.logo_url'))
+            @hasSection('brand')
+            @yield('brand')
+            @elseif(config('branding.logo_url'))
             <a href="{{ config('app.url') }}"><img src="{{ config('branding.logo_url') }}" alt="{{ config('branding.name') }}" height="36" style="height:36px;"></a>
             @else
             <a href="{{ config('app.url') }}" class="brand-name" style="text-decoration:none;">
@@ -161,9 +163,13 @@ hr { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 24px 0;
 
         {{-- Copyright --}}
         <p class="footer-copyright">
+            @hasSection('copyright')
+            @yield('copyright')
+            @else
             {{ config('branding.copyright') ?: '© ' . date('Y') . ' ' . config('branding.name') . '. All rights reserved.' }}
             @if(config('mail.from.address'))
              · {{ config('mail.from.address') }}
+            @endif
             @endif
         </p>
     </div>

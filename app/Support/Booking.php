@@ -48,6 +48,10 @@ class Booking
             'payments'       => ['enabled' => false, 'currency' => 'gbp', 'secret' => null, 'refund_on_cancel' => true],
             'hours'          => ['mon' => $weekday, 'tue' => $weekday, 'wed' => $weekday, 'thu' => $weekday, 'fri' => $weekday, 'sat' => [], 'sun' => []],
             'blocked_dates'  => [],
+            // Branding for emails and pages visitors see
+            'logo'           => null, // path on the public disk
+            'website'        => '',
+            'reply_to'       => '',
         ];
     }
 
@@ -264,6 +268,17 @@ class Booking
         $pick = collect($slot['staff'])->sortBy(fn ($id) => $load[$id] ?? 0)->first();
 
         return collect($s['staff'])->first(fn ($m) => (string) $m['id'] === $pick) ?? false;
+    }
+
+    public static function logoUrl(array $s): ?string
+    {
+        return $s['logo'] ? asset('storage/' . $s['logo']) : null;
+    }
+
+    /** Where visitor replies go: the business, never the platform. */
+    public static function replyTo(Widget $widget, array $s): ?string
+    {
+        return $s['reply_to'] ?: ($widget->notification_email ?: $widget->user?->email);
     }
 
     /** Visitors may only move a booking to a time they could still change later. */

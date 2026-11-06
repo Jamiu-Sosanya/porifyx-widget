@@ -26,6 +26,20 @@
 @endphp
 @section('subject', $heading)
 @unless($owner)
+@section('brand')
+    @php $logo = \App\Support\Booking::logoUrl($s); $site = $s['website'] ?: null; @endphp
+    @if($site)<a href="{{ $site }}" style="text-decoration:none;">@endif
+    @if($logo)
+        <img src="{{ $logo }}" alt="{{ $s['business_name'] }}" height="44" style="height:44px;max-width:220px;object-fit:contain;">
+    @else
+        <span class="brand-name">{{ $s['business_name'] }}</span>
+    @endif
+    @if($site)</a>@endif
+@endsection
+@section('copyright')
+    © {{ date('Y') }} {{ $s['business_name'] }}@if($s['website']) · <a href="{{ $s['website'] }}" style="color:inherit;">{{ preg_replace('#^https?://(www\.)?|/$#', '', $s['website']) }}</a>@endif
+    <br><span style="opacity:0.7;">Bookings by {{ config('branding.name') }}</span>
+@endsection
 @section('footer', 'You are receiving this email because you booked an appointment with ' . $s['business_name'] . '. Keep your booking number ' . $a->reference . ' to change or cancel it.')
 @endunless
 @section('content')
@@ -63,7 +77,7 @@
         @if($owner)
             <a href="{{ route('appointments.index') }}" class="btn">Open bookings</a>
         @elseif($kind !== 'cancelled')
-            <a href="{{ $a->manageUrl() }}" class="btn">Manage or cancel</a>
+            <a href="{{ $a->manageUrl() }}" class="btn" style="background:{{ $a->widget->primary_color ?: '#2f5ee8' }};">Manage or cancel</a>
         @endif
     </div>
 </div>

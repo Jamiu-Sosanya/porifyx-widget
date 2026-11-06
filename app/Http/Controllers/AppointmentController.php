@@ -154,6 +154,9 @@ class AppointmentController extends Controller
             'hours.*.*.1'            => $time,
             'blocked_dates'          => 'nullable|string|max:4000',
             'payments_currency'      => 'required|string|size:3|alpha',
+            'website'                => 'nullable|url:http,https|max:255',
+            'reply_to'               => 'nullable|email|max:190',
+            'logo'                   => 'nullable|image|mimes:png,jpg,jpeg,webp|max:1024|dimensions:max_width=2000,max_height=2000',
             'payments_secret'        => ['nullable', 'string', 'max:255', 'regex:/^(sk|rk)_(test|live)_[A-Za-z0-9]+$/'],
         ], ['payments_secret.regex' => 'That does not look like a Stripe secret key (it starts with sk_live_ or sk_test_).']);
 
@@ -175,8 +178,19 @@ class AppointmentController extends Controller
             $secret = null;
         }
 
+        $logo = $old['logo'];
+        if ($request->hasFile('logo') || $request->boolean('remove_logo')) {
+            if ($logo) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($logo);
+            }
+            $logo = $request->hasFile('logo') ? $request->file('logo')->store('booking-logos', 'public') : null;
+        }
+
         $serviceIds = array_column($data['services'], 'id');
-        $booking = array_merge(collect($data)->except(['payments_currency', 'payments_secret'])->all(), [
+        $booking = array_merge(collect($data)->except(['payments_currency', 'payments_secret', 'logo'])->all(), [
+            'logo'             => $logo,
+            'website'          => $data['website'] ?? '',
+            'reply_to'         => $data['reply_to'] ?? '',
             'enabled'          => $request->boolean('enabled'),
             'auto_confirm'     => $request->boolean('auto_confirm'),
             'require_phone'    => $request->boolean('require_phone'),

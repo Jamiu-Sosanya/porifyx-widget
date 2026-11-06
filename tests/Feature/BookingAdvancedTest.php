@@ -255,6 +255,39 @@ class BookingAdvancedTest extends TestCase
         $this->postJson("/api/widget/{$w->uuid}/booking/manage/{$token}/reschedule", ['start' => '2026-11-11T10:00:00Z'])->assertOk();
     }
 
+    public function test_visitor_emails_carry_the_business_brand(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+        $w = $this->widget(['business_name' => 'Acme Clinic']);
+        $s = \App\Support\Booking::settings($w);
+
+        // Owner uploads a logo and sets website + reply-to through the settings form.
+        $this->actingAs($w->user)->put(route('widgets.booking.update', $w), [
+            'enabled' => 1, 'business_name' => 'Acme Clinic', 'button_label' => 'Book', 'timezone' => 'UTC',
+            'slot_step' => 60, 'buffer' => 0, 'min_notice' => 0, 'max_days_ahead' => 30, 'daily_limit' => 0,
+            'reminder_hours' => 24, 'cancel_notice' => 0, 'payments_currency' => 'GBP',
+            'services' => $s['services'], 'hours' => $s['hours'],
+            'website' => 'https://acme.example', 'reply_to' => 'desk@acme.example',
+            'logo' => \Illuminate\Http\UploadedFile::fake()->image('logo.png', 200, 60),
+        ])->assertSessionHasNoErrors();
+        $w->refresh();
+        \Illuminate\Support\Facades\Storage::disk('public')->assertExists($w->booking['logo']);
+
+        $this->book($w)->assertCreated();
+        $mail = new \App\Mail\AppointmentMail(Appointment::first(), 'booked');
+        $html = $mail->render();
+        $this->assertStringContainsString('storage/' . $w->booking['logo'], $html);
+        $this->assertStringContainsString('© ' . date('Y') . ' Acme Clinic', $html);
+        $this->assertStringNotContainsString('because you have an account', $html);
+        $this->assertSame('Acme Clinic', $mail->envelope()->from->name);
+        $this->assertSame('desk@acme.example', $mail->envelope()->replyTo[0]->address);
+
+        // The business's own notification keeps the platform look.
+        $owner = new \App\Mail\AppointmentMail(Appointment::first(), 'owner_new');
+        $this->assertStringContainsString(config('branding.name'), $owner->render());
+        $this->assertNull($owner->envelope()->from);
+    }
+
     public function test_assistant_is_told_to_offer_booking(): void
     {
         $w = $this->widget();

@@ -37,7 +37,14 @@ class AppointmentMail extends Mailable
             'owner_rescheduled' => "{$a->name} moved their booking to {$when}",
         };
 
-        return new Envelope(subject: $subject . ' · ' . $a->reference, replyTo: $this->forOwner() ? [$a->email] : []);
+        $s = \App\Support\Booking::settings($a->widget);
+        $replyTo = $this->forOwner() ? $a->email : \App\Support\Booking::replyTo($a->widget, $s);
+
+        return new Envelope(
+            from: $this->forOwner() ? null : new \Illuminate\Mail\Mailables\Address(config('mail.from.address'), $s['business_name']),
+            subject: $subject . ' · ' . $a->reference,
+            replyTo: $replyTo ? [$replyTo] : [],
+        );
     }
 
     public function content(): Content
