@@ -56,7 +56,7 @@ class Widget extends Model
         'lead_qualification_flow', 'lead_qualification_enabled',
 
         // Security
-        'allowed_domains', 'domain_restriction', 'rate_limit', 'is_active', 'booking',
+        'allowed_domains', 'domain_restriction', 'rate_limit', 'is_active', 'booking', 'launcher_icon', 'launcher_icon_path',
 
         // Timestamps & stats
         'last_deployed_at', 'total_conversations', 'total_messages', 'total_leads',

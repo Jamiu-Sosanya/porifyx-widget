@@ -127,6 +127,8 @@ class WidgetController extends Controller
             'bg_color'                  => 'nullable|string|max:20',
             'position'                  => 'nullable|in:bottom-right,bottom-left,top-right,top-left',
             'launcher_shape'            => 'nullable|in:circle,rounded,square',
+            'launcher_icon'             => ['nullable', \Illuminate\Validation\Rule::in([...array_keys(\App\Support\LauncherIcons::PRESETS), 'custom'])],
+            'launcher_icon_file'        => 'nullable|' . \App\Support\LauncherIcons::UPLOAD_RULE,
             'font_family'               => 'nullable|string|max:100',
             'welcome_message'           => 'nullable|string|max:500',
             'suggested_replies_input'   => 'nullable|string|max:2000',
@@ -220,6 +222,21 @@ class WidgetController extends Controller
                     ));
                 }
             }
+        }
+
+        // Launcher icon: a new upload switches to "custom"; choosing a preset or removing drops the old file.
+        unset($validated['launcher_icon_file']);
+        if ($request->hasFile('launcher_icon_file')) {
+            if ($widget->launcher_icon_path) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($widget->launcher_icon_path);
+            }
+            $validated['launcher_icon_path'] = $request->file('launcher_icon_file')->store('launcher-icons', 'public');
+            $validated['launcher_icon'] = 'custom';
+        } elseif (($validated['launcher_icon'] ?? null) === 'custom' && ! $widget->launcher_icon_path) {
+            $validated['launcher_icon'] = 'default';
+        } elseif (isset($validated['launcher_icon']) && $validated['launcher_icon'] !== 'custom' && $widget->launcher_icon_path) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($widget->launcher_icon_path);
+            $validated['launcher_icon_path'] = null;
         }
 
         if (trim((string) ($validated['webhook_secret'] ?? '')) === '') {

@@ -125,6 +125,47 @@
                         @endforeach
                     </select>
                 </div>
+                {{-- Launcher icon: presets or upload --}}
+                <div class="md:col-span-2" x-data="{ icon: @js(old('launcher_icon', $widget->launcher_icon ?: 'default')), upload: null }">
+                    <label class="block text-sm font-medium text-gray-300 mb-1.5">Launcher Icon</label>
+                    <div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        @foreach(\App\Support\LauncherIcons::PRESETS as $key => [$label])
+                        <label class="cursor-pointer" title="{{ $label }}">
+                            <input type="radio" name="launcher_icon" value="{{ $key }}" x-model="icon" class="peer sr-only">
+                            <span class="flex flex-col items-center gap-1.5 p-2 rounded-xl border border-white/10 peer-checked:border-brand-500 peer-checked:ring-2 peer-checked:ring-brand-500/30 transition">
+                                <span class="grid place-items-center w-11 h-11 rounded-full" style="background: {{ $widget->primary_color }}; color: {{ $widget->primary_color }}">{!! \App\Support\LauncherIcons::svg($key, 24) !!}</span>
+                                <span class="text-[10px] text-gray-400 text-center leading-tight">{{ $label }}</span>
+                            </span>
+                        </label>
+                        @endforeach
+                        <label class="cursor-pointer" title="Your own image">
+                            <input type="radio" name="launcher_icon" value="custom" x-model="icon" class="peer sr-only">
+                            <span class="flex flex-col items-center gap-1.5 p-2 rounded-xl border border-dashed border-white/20 peer-checked:border-brand-500 peer-checked:ring-2 peer-checked:ring-brand-500/30 transition">
+                                <span class="grid place-items-center w-11 h-11 rounded-full overflow-hidden bg-white/5">
+                                    <template x-if="upload"><img :src="upload" alt="" class="w-full h-full object-cover"></template>
+                                    <template x-if="!upload">
+                                        @if($widget->launcher_icon_path)
+                                        <img src="{{ asset('storage/' . $widget->launcher_icon_path) }}" alt="" class="w-full h-full object-cover">
+                                        @else
+                                        <svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+                                        @endif
+                                    </template>
+                                </span>
+                                <span class="text-[10px] text-gray-400 text-center leading-tight">Upload</span>
+                            </span>
+                        </label>
+                    </div>
+                    <div x-show="icon === 'custom'" x-cloak class="mt-3 p-3 rounded-xl bg-white/[0.03] border border-white/5">
+                        <input type="file" name="launcher_icon_file" accept="image/png,image/jpeg"
+                               @change="const f = $event.target.files[0]; if (!f) return;
+                                        if (!['image/png','image/jpeg'].includes(f.type)) { alert('Please choose a JPG or PNG image.'); $event.target.value=''; return; }
+                                        if (f.size > 512 * 1024) { alert('The image must be 512 KB or smaller.'); $event.target.value=''; return; }
+                                        const img = new Image(); img.onload = () => { const ok = img.width === img.height && img.width >= 64 && img.width <= 512; if (!ok) { alert('The image must be square, between 64×64 and 512×512 pixels. This one is ' + img.width + '×' + img.height + '.'); $event.target.value=''; upload = null; } else { upload = img.src; } }; img.src = URL.createObjectURL(f);"
+                               class="block w-full text-sm text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:bg-white/10 file:text-white">
+                        <p class="mt-2 text-xs text-gray-500">{{ \App\Support\LauncherIcons::UPLOAD_HINT }}</p>
+                        @error('launcher_icon_file')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
+                    </div>
+                </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-1.5">Tone</label>
                     <select name="tone" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-500/50 transition">

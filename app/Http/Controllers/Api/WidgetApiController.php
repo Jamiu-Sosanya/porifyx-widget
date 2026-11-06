@@ -77,6 +77,7 @@ class WidgetApiController extends Controller
                 'bg_color'         => $widget->bg_color,
                 'position'         => $widget->position,
                 'launcher_shape'   => $widget->launcher_shape,
+                'launcher_icon'    => \App\Support\LauncherIcons::forWidget($widget),
                 'font_family'      => $widget->font_family,
                 'theme'            => $widget->theme ?? 'dark',
 
@@ -114,7 +115,7 @@ class WidgetApiController extends Controller
                 'proactive' => $this->proactiveService->buildWidgetConfig($widget, $pageUrl),
 
                 // A/B Testing
-                'ab_test' => $this->getActiveAbTest($widget, request()->get('fingerprint')),
+                'ab_test' => $this->getActiveAbTest($widget, (string) request()->get('fingerprint', '')),
 
                 // Bookings
                 'booking' => ($b = \App\Support\Booking::settings($widget))['enabled'] ? ['label' => $b['button_label']] : null,

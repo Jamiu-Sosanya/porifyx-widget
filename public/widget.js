@@ -253,6 +253,15 @@
         setupProactiveMessaging();
     }
 
+    // Launcher icon: preset SVG from the server, or the business's uploaded image.
+    function launcherIconHTML() {
+        const ic = config.launcher_icon || {};
+        if (ic.type === 'image' && ic.url) {
+            return '<img src="' + escapeAttr(ic.url) + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">';
+        }
+        return '<span style="display:flex;color:' + escapeAttr(config.primary_color || '#2f5ee8') + ';">' + (ic.svg || '') + '</span>';
+    }
+
     function buildLauncherHTML() {
         const t       = getTheme();
         const pos     = config.position || 'bottom-right';
@@ -262,8 +271,8 @@
         const mHide   = config.show_on_mobile === false ? 'pfx-hide-mobile' : '';
 
         return '<div id="pfx-launcher" class="' + mHide + '" style="position:fixed;' + hPos + vPos + 'width:60px;height:60px;border-radius:' + shape + ';background:' + config.primary_color + ';display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 10px 28px -6px ' + config.primary_color + 'aa,0 2px 6px rgba(0,0,0,0.2);z-index:99998;transition:transform 0.3s,box-shadow 0.3s;" onmouseover="this.style.transform=\'scale(1.1)\';this.style.boxShadow=\'0 12px 40px rgba(0,0,0,0.45)\'" onmouseout="this.style.transform=\'scale(1)\';this.style.boxShadow=\'0 8px 30px rgba(0,0,0,0.35)\'">' +
-            '<svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M5 3h14a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-8l-5 4v-4H5a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3z" fill="white" fill-opacity=".95"/><path d="M12 6.5l1.2 2.8 2.8 1.2-2.8 1.2L12 14.5l-1.2-2.8L8 10.5l2.8-1.2z" fill="' + config.primary_color + '"/></svg>' +
-            '<div id="pfx-badge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;border-radius:10px;background:#ef4444;color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 2px 8px rgba(239,68,68,0.5);">0</div>' +
+            launcherIconHTML() +
+            '<div id="pfx-badge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;border-radius:10px;background:#ef4444;color:white;font-size:11px;font-weight:700;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 2px 8px rgba(239,68,68,0.5);">0</div>' +
             '</div>';
     }
 
