@@ -44,7 +44,7 @@
         <h3 class="text-base font-semibold text-white mb-4">Plan Distribution</h3>
         @if($planDistribution->isNotEmpty())
         @php
-            $pieColors = ['rgba(47, 94, 232,0.8)','rgba(16,185,129,0.8)','rgba(245,158,11,0.8)','rgba(239,68,68,0.8)','rgba(6,182,212,0.8)','rgba(8, 145, 178,0.8)'];
+            $pieColors = ['rgba(255, 106, 43,0.8)','rgba(16,185,129,0.8)','rgba(245,158,11,0.8)','rgba(239,68,68,0.8)','rgba(6,182,212,0.8)','rgba(8, 145, 178,0.8)'];
             $totalPaying = $planDistribution->sum('count');
         @endphp
         <div class="flex justify-center mb-5" style="height: 160px">
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // User growth bar chart
     new Chart(document.getElementById('adminChart'), {
         type: 'bar',
-        data: { labels: @json($userChart['labels']), datasets: [{ label: 'New Users', data: @json($userChart['data']), backgroundColor: 'rgba(47, 94, 232,0.25)', borderColor: '#2f5ee8', borderWidth: 1.5, borderRadius: 4 }] },
+        data: { labels: @json($userChart['labels']), datasets: [{ label: 'New Users', data: @json($userChart['data']), backgroundColor: 'rgba(255, 106, 43,0.25)', borderColor: '#ff6a2b', borderWidth: 1.5, borderRadius: 4 }] },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#6b7280', font: { size: 9 }, maxTicksLimit: 8 } }, y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#6b7280', font: { size: 10 } }, beginAtZero: true } } }
     });
 
@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const planLabels = @json($planDistribution->pluck('label'));
         new Chart(planPieEl, {
             type: 'doughnut',
-            data: { labels: planLabels, datasets: [{ data: planData, backgroundColor: ['rgba(47, 94, 232,0.8)','rgba(16,185,129,0.8)','rgba(245,158,11,0.8)','rgba(239,68,68,0.8)','rgba(6,182,212,0.8)','rgba(8, 145, 178,0.8)'], borderColor: 'transparent', hoverOffset: 6 }] },
+            data: { labels: planLabels, datasets: [{ data: planData, backgroundColor: ['rgba(255, 106, 43,0.8)','rgba(16,185,129,0.8)','rgba(245,158,11,0.8)','rgba(239,68,68,0.8)','rgba(6,182,212,0.8)','rgba(8, 145, 178,0.8)'], borderColor: 'transparent', hoverOffset: 6 }] },
             options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { display: false } } }
         });
     }

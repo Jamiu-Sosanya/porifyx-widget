@@ -6,14 +6,14 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
     <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#2f5ee8">
+    <meta name="theme-color" content="#ff6a2b">
     <meta name="application-name" content="{{ config('app.name', 'PoriFyx Widget') }}">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Chat Widget">
     <meta name="description" content="AI-powered chat widget for lead generation and customer engagement">
     <meta name="push-public-key" content="{{ config('services.vapid.public_key') }}">
-    <meta name="msapplication-TileColor" content="#2f5ee8">
+    <meta name="msapplication-TileColor" content="#ff6a2b">
     <meta name="msapplication-TileImage" content="/images/icon-192x192.png">
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/images/icon-192x192.png">

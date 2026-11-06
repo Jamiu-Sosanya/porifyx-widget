@@ -197,8 +197,8 @@ new Chart(document.getElementById('widgetConvChart'), {
         labels: @json($convChart['labels']),
         datasets: [{
             data: @json($convChart['data']),
-            backgroundColor: 'rgba(47, 94, 232,0.45)',
-            hoverBackgroundColor: 'rgba(47, 94, 232,0.7)',
+            backgroundColor: 'rgba(255, 106, 43,0.45)',
+            hoverBackgroundColor: 'rgba(255, 106, 43,0.7)',
             borderRadius: 4,
             borderSkipped: false,
         }]

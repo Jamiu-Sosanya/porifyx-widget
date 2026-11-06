@@ -24,7 +24,7 @@
         dark: document.documentElement.classList.contains('dark'),
         toggleTheme() { this.dark = !this.dark; document.documentElement.classList.toggle('dark', this.dark); localStorage.setItem('theme', this.dark ? 'dark' : 'light'); }
     }">
-<div class="min-h-screen bg-[#f6f7fb] text-[#0b1324] dark:bg-[#070d1a] dark:text-slate-100 transition-colors">
+<div class="min-h-screen bg-[#f6f7fb] text-[#0d1a33] dark:bg-[#08122a] dark:text-slate-100 transition-colors">
 @include('layouts.partials.site-nav')
 
 {{-- Page header --}}
@@ -44,7 +44,7 @@
 {{-- Closing call to action, shared by every page --}}
 @unless(View::hasSection('no-cta'))
 <section class="px-5 py-16">
-    <div class="max-w-4xl mx-auto rounded-3xl bg-[#0b1324] text-white px-7 py-10 md:px-12 md:py-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div class="max-w-4xl mx-auto rounded-3xl bg-[#0d1a33] text-white px-7 py-10 md:px-12 md:py-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
             <p class="text-2xl font-extrabold tracking-tight">Still have questions?</p>
             <p class="mt-2 text-slate-300">A real person on our team reads every message and replies within one business day.</p>

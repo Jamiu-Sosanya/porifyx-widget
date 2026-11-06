@@ -151,7 +151,7 @@ class SystemSettingsSeeder extends Seeder
                 'description'=> 'Used as the accent color on the landing page and emails.',
                 'type'       => 'string',
                 'group'      => 'branding',
-                'value'      => config('branding.primary_color', '#2f5ee8'),
+                'value'      => config('branding.primary_color', '#ff6a2b'),
                 'is_public'  => true,
             ],
             [

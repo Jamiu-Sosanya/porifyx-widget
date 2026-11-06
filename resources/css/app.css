@@ -7,25 +7,29 @@
 /* PoriFyx Widget design tokens */
 @theme {
     --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
-    --color-brand-50: #eef3ff; --color-brand-100: #dce6fd; --color-brand-200: #bfd0fb;
-    --color-brand-300: #93b0f7; --color-brand-400: #6b8ff2; --color-brand-500: #2f5ee8;
-    --color-brand-600: #2449c4; --color-brand-700: #1e3b9c; --color-brand-800: #1d347d;
-    --color-brand-900: #1c2f66; --color-brand-950: #131d3f;
-    --color-accent-50: #ecfeff; --color-accent-100: #cffafe; --color-accent-200: #a5f3fc;
-    --color-accent-300: #67e8f9; --color-accent-400: #22d3ee; --color-accent-500: #06b6d4;
-    --color-accent-600: #0891b2; --color-accent-700: #0e7490; --color-accent-800: #155e75;
-    --color-accent-900: #164e63; --color-accent-950: #083344;
+    /* Sunset Orange */
+    --color-brand-50: #fff4ed; --color-brand-100: #ffe6d5; --color-brand-200: #ffc9aa;
+    --color-brand-300: #ffa474; --color-brand-400: #ff8450; --color-brand-500: #ff6a2b;
+    --color-brand-600: #ec5112; --color-brand-700: #c43d0c; --color-brand-800: #9b3212;
+    --color-brand-900: #7d2b12; --color-brand-950: #441307;
+    /* Dusk Blue */
+    --color-accent-50: #f8fbfe; --color-accent-100: #f2f7fd; --color-accent-200: #e4eefa;
+    --color-accent-300: #cadcf4; --color-accent-400: #aec9ec; --color-accent-500: #8fb4e3;
+    --color-accent-600: #6c97d6; --color-accent-700: #4f7cc8; --color-accent-800: #385592;
+    --color-accent-900: #314874; --color-accent-950: #212e48;
+    /* Midnight Navy dark surfaces */
+    --color-gray-950: #08122a; --color-gray-900: #0d1a33; --color-gray-800: #1a2a4a; --color-gray-700: #2b3d60;
 }
 
 /* Long-form content on public pages (docs, legal, blog). */
 .pfx-prose { color: #334155; font-size: 1.0625rem; line-height: 1.8; }
 .dark .pfx-prose { color: #cbd5e1; }
 .pfx-prose > * + * { margin-top: 1.1em; }
-.pfx-prose h2 { margin-top: 2.6em; font-size: 1.6rem; line-height: 1.3; font-weight: 800; letter-spacing: -0.02em; color: #0b1324; scroll-margin-top: 6rem; }
-.pfx-prose h3 { margin-top: 2em; font-size: 1.2rem; font-weight: 700; color: #0b1324; scroll-margin-top: 6rem; }
+.pfx-prose h2 { margin-top: 2.6em; font-size: 1.6rem; line-height: 1.3; font-weight: 800; letter-spacing: -0.02em; color: #0d1a33; scroll-margin-top: 6rem; }
+.pfx-prose h3 { margin-top: 2em; font-size: 1.2rem; font-weight: 700; color: #0d1a33; scroll-margin-top: 6rem; }
 .dark .pfx-prose h2, .dark .pfx-prose h3, .dark .pfx-prose strong { color: #fff; }
 .pfx-prose h2:first-child { margin-top: 0; }
-.pfx-prose strong { color: #0b1324; font-weight: 700; }
+.pfx-prose strong { color: #0d1a33; font-weight: 700; }
 .pfx-prose a { color: var(--color-brand-600); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 .dark .pfx-prose a { color: var(--color-brand-300); }
 .pfx-prose ul, .pfx-prose ol { padding-left: 1.3em; }
@@ -34,12 +38,12 @@
 .pfx-prose li::marker { color: var(--color-brand-500); }
 .pfx-prose code { font-size: .875em; padding: .15em .4em; border-radius: .4rem; background: #eef2f7; color: #1e3b9c; overflow-wrap: anywhere; }
 .dark .pfx-prose code { background: rgba(255,255,255,.08); color: #93b0f7; }
-.pfx-prose pre { font-size: .85rem; line-height: 1.7; padding: 1.1rem 1.25rem; border-radius: 1rem; background: #0b1324; color: #e2e8f0; overflow-x: auto; }
+.pfx-prose pre { font-size: .85rem; line-height: 1.7; padding: 1.1rem 1.25rem; border-radius: 1rem; background: #0d1a33; color: #e2e8f0; overflow-x: auto; }
 .pfx-prose pre code { background: none; padding: 0; color: inherit; overflow-wrap: normal; }
 .pfx-prose table { width: 100%; font-size: .95rem; border-collapse: collapse; display: block; overflow-x: auto; }
 .pfx-prose th, .pfx-prose td { text-align: left; padding: .65rem .8rem; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
 .dark .pfx-prose th, .dark .pfx-prose td { border-color: rgba(255,255,255,.1); }
-.pfx-prose th { font-weight: 700; color: #0b1324; } .dark .pfx-prose th { color: #fff; }
+.pfx-prose th { font-weight: 700; color: #0d1a33; } .dark .pfx-prose th { color: #fff; }
 .pfx-prose blockquote { border-left: 3px solid var(--color-brand-500); padding-left: 1.1em; font-style: italic; }
 
 /* Custom scrollbar */
@@ -49,12 +53,12 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
 
 /* Selection */
-::selection { background: rgba(47, 94, 232, 0.3); color: white; }
+::selection { background: rgba(255, 106, 43, 0.3); color: white; }
 
 /* Animations */
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
-@keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(47, 94, 232, 0.4); } 50% { box-shadow: 0 0 0 8px rgba(47, 94, 232, 0); } }
+@keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 106, 43, 0.4); } 50% { box-shadow: 0 0 0 8px rgba(255, 106, 43, 0); } }
 
 .animate-fade-in { animation: fadeIn 0.5s ease-out; }
 .animate-slide-in { animation: slideIn 0.3s ease-out; }
@@ -90,9 +94,9 @@ html.dark nav[role="navigation"] span:not([aria-current]) {
     border: 1px solid rgba(255,255,255,0.05) !important;
 }
 html.dark nav[role="navigation"] span[aria-current="page"] span {
-    background: rgba(47, 94, 232, 0.2) !important;
-    color: #6b8ff2 !important;
-    border-color: rgba(47, 94, 232, 0.3) !important;
+    background: rgba(255, 106, 43, 0.2) !important;
+    color: #ff8450 !important;
+    border-color: rgba(255, 106, 43, 0.3) !important;
 }
 
 /* ===== LIGHT MODE OVERRIDES ===== */
@@ -184,9 +188,9 @@ html.light nav[role="navigation"] span:not([aria-current]) {
     border: 1px solid rgba(0,0,0,0.08) !important;
 }
 html.light nav[role="navigation"] span[aria-current="page"] span {
-    background: rgba(47, 94, 232, 0.15) !important;
-    color: #2449c4 !important;
-    border-color: rgba(47, 94, 232, 0.3) !important;
+    background: rgba(255, 106, 43, 0.15) !important;
+    color: #ec5112 !important;
+    border-color: rgba(255, 106, 43, 0.3) !important;
 }
 
 /* Flash messages */
@@ -206,15 +210,15 @@ html.light .bg-amber-500\/10 { background-color: rgba(245,158,11,0.08) !importan
     border: 1px solid rgba(255,255,255,0.05) !important;
 }
 :not(html.light) nav[role="navigation"] span[aria-current="page"] span {
-    background: rgba(47, 94, 232, 0.2) !important;
-    color: #6b8ff2 !important;
-    border-color: rgba(47, 94, 232, 0.3) !important;
+    background: rgba(255, 106, 43, 0.2) !important;
+    color: #ff8450 !important;
+    border-color: rgba(255, 106, 43, 0.3) !important;
 }
 
 /* ── Customer app shell (top navigation) ─────────────────────────────── */
 html.dark body.pfx-shell {
     background:
-        radial-gradient(1200px 500px at 85% -10%, rgba(47, 94, 232, 0.16), transparent 60%),
+        radial-gradient(1200px 500px at 85% -10%, rgba(255, 106, 43, 0.16), transparent 60%),
         radial-gradient(900px 420px at -10% 10%, rgba(14, 165, 233, 0.08), transparent 60%),
         #050812;
     background-attachment: fixed;
@@ -229,7 +233,7 @@ html.light .pfx-appbar { background-color: rgba(255, 255, 255, 0.92) !important;
 html.light .pfx-appbar .text-white:not(.pfx-pill-active):not(.from-brand-600) { color: #0f172a !important; }
 html.light .pfx-appbar .text-gray-400 { color: #64748b !important; }
 html.light .pfx-appbar nav.rounded-full { background-color: #f1f5f9 !important; border-color: #e2e8f0 !important; }
-html.light .pfx-appbar .pfx-pill-active { background-color: #0b1324 !important; color: #fff !important; }
+html.light .pfx-appbar .pfx-pill-active { background-color: #0d1a33 !important; color: #fff !important; }
 html.light .pfx-appbar .bg-gray-900 { background-color: #fff !important; }
 html.light .pfx-appbar .text-gray-300 { color: #334155 !important; }
 html.light .pfx-canvas .bg-gray-900\/50 { box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 32px -20px rgba(15, 23, 42, 0.18); }
@@ -254,12 +258,12 @@ html.light main :is([class*=" from-brand"], [class^="from-brand"]), html.light m
 .pfx-seg:hover { color: #e2e8f0; }
 html.light .pfx-seg { color: #475569 !important; }
 html.light .pfx-seg:hover { color: #0f172a !important; }
-.peer:checked + .pfx-seg, html.light .peer:checked + .pfx-seg { background: var(--color-brand-500, #2f5ee8); color: #fff !important; box-shadow: 0 4px 12px -4px rgba(47,94,232,.6); }
-.peer:focus-visible + .pfx-seg { outline: 2px solid var(--color-brand-400, #6b8cff); outline-offset: 2px; }
+.peer:checked + .pfx-seg, html.light .peer:checked + .pfx-seg { background: var(--color-brand-500, #ff6a2b); color: #fff !important; box-shadow: 0 4px 12px -4px rgba(255, 106, 43,.6); }
+.peer:focus-visible + .pfx-seg { outline: 2px solid var(--color-brand-400, #ff8450); outline-offset: 2px; }
 html.light main input[type=color] { box-shadow: inset 0 0 0 1px #cbd5e1; border-radius: .5rem; }
 /* Toggle switches: visible track in light mode */
 html.light main .peer + span.bg-white\/15 { background-color: #cbd5e1 !important; }
-html.light main .peer:checked + span.bg-white\/15 { background-color: var(--color-brand-500, #2f5ee8) !important; }
+html.light main .peer:checked + span.bg-white\/15 { background-color: var(--color-brand-500, #ff6a2b) !important; }
 html.light main .peer + span.bg-white\/15::after { box-shadow: 0 1px 3px rgba(15,23,42,.25); }
 html.light .pfx-details { background-color: #f1f5f9; }
 @media (min-width: 1024px) { html.light .pfx-details { background-color: transparent; } }
@@ -312,8 +316,8 @@ html.light .pfx-shell main .rounded-2xl.border.bg-gray-900\/50 { border-color: #
 }
 .pfx-shell main :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]), select, textarea):not(.bg-transparent):focus {
     outline: none;
-    border-color: rgb(47 94 232 / .65) !important;
-    box-shadow: 0 0 0 4px rgb(47 94 232 / .14) !important;
+    border-color: rgb(255 106 43 / .65) !important;
+    box-shadow: 0 0 0 4px rgb(255 106 43 / .14) !important;
 }
 html.light .pfx-shell main :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]), select, textarea):not(.bg-transparent) {
     background-color: #fff !important;
@@ -332,18 +336,18 @@ html.light .pfx-shell main :is(input, textarea)::placeholder { color: #94a3b8 !i
 }
 .pfx-shell main select option { background: #0f172a; color: #e2e8f0; }
 html.light .pfx-shell main select option { background: #fff; color: #0f172a; }
-.pfx-shell main input[type=checkbox], .pfx-shell main input[type=radio] { accent-color: #2f5ee8; }
-.pfx-shell main input[type=range] { accent-color: #2f5ee8; }
+.pfx-shell main input[type=checkbox], .pfx-shell main input[type=radio] { accent-color: #ff6a2b; }
+.pfx-shell main input[type=range] { accent-color: #ff6a2b; }
 
 /* Buttons */
 .pfx-shell main :is(button, a):is([class*=" bg-brand-5"], [class*=" bg-brand-6"], [class^="bg-brand-5"], [class^="bg-brand-6"]):not([class*="/"]) {
     font-weight: 600;
-    box-shadow: 0 1px 0 rgba(255, 255, 255, .12) inset, 0 6px 16px -8px rgb(47 94 232 / .65);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .12) inset, 0 6px 16px -8px rgb(255 106 43 / .65);
     transition: transform .12s, box-shadow .15s, background-color .15s, filter .15s;
 }
 .pfx-shell main :is(button, a):is([class*=" bg-brand-5"], [class*=" bg-brand-6"], [class^="bg-brand-5"], [class^="bg-brand-6"]):not([class*="/"]):hover { filter: brightness(1.06); }
 .pfx-shell main :is(button, a, [role=button]):active { transform: translateY(1px); }
-.pfx-shell :is(button, a, input, select, textarea, [tabindex]):focus-visible { outline: 2px solid #6b8cff; outline-offset: 2px; }
+.pfx-shell :is(button, a, input, select, textarea, [tabindex]):focus-visible { outline: 2px solid #ff8450; outline-offset: 2px; }
 
 /* Tables */
 .pfx-shell main table { border-collapse: separate; border-spacing: 0; }
@@ -364,7 +368,7 @@ html.dark .pfx-shell main tbody tr:hover { background: rgba(255, 255, 255, .025)
 .pfx-shell main .rounded-full:is(.text-\[10px\], .text-\[11px\], .text-xs):is([class*="bg-"]) { font-weight: 600; letter-spacing: .01em; }
 
 /* Links inside text */
-.pfx-shell main p a:not([class]) { color: #4f7bff; text-decoration: underline; text-underline-offset: 3px; }
+.pfx-shell main p a:not([class]) { color: #ff6a2b; text-decoration: underline; text-underline-offset: 3px; }
 
 /* Scrollbars */
 .pfx-shell * { scrollbar-width: thin; scrollbar-color: rgba(148, 163, 184, .35) transparent; }
@@ -373,7 +377,7 @@ html.dark .pfx-shell main tbody tr:hover { background: rgba(255, 255, 255, .025)
 .pfx-shell ::-webkit-scrollbar-track { background: transparent; }
 
 /* Light mode page and text */
-html.light body.pfx-shell { background: radial-gradient(1000px 420px at 90% -10%, rgba(47, 94, 232, .07), transparent 60%), #f4f6fb; background-attachment: fixed; }
+html.light body.pfx-shell { background: radial-gradient(1000px 420px at 90% -10%, rgba(255, 106, 43, .07), transparent 60%), #f4f6fb; background-attachment: fixed; }
 html.light .pfx-shell main .text-gray-500 { color: #6b7a90 !important; }
 
 /* Phones: tighter page padding, headings scale down, tap targets */

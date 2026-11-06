@@ -71,7 +71,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('name', 80);
-            $table->string('color', 20)->default('#2f5ee8');
+            $table->string('color', 20)->default('#ff6a2b');
             $table->string('icon', 10)->nullable();
             $table->timestamps();
 

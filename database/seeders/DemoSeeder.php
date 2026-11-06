@@ -71,7 +71,7 @@ class DemoSeeder extends Seeder
                 'uuid'             => Str::uuid(),
                 'ai_name'          => 'Aria',
                 'tone'             => 'friendly',
-                'primary_color'    => '#2f5ee8',
+                'primary_color'    => '#ff6a2b',
                 'welcome_message'  => 'Hi there! How can I help you today?',
                 'is_active'        => true,
                 'lead_qualification_enabled' => true,

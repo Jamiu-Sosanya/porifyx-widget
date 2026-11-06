@@ -24,6 +24,6 @@
     <hr>
     <p class="text-muted">For security, this request was received from IP address <strong>{{ $ipAddress ?? 'unknown' }}</strong>. If this wasn't you, please contact <a href="mailto:{{ config('branding.support_email') }}" class="link">{{ config('branding.support_email') }}</a> immediately.</p>
     <p class="text-muted">If the button doesn't work, copy and paste this URL into your browser:</p>
-    <p style="word-break:break-all;font-size:12px;color:#2f5ee8;">{{ $resetUrl }}</p>
+    <p style="word-break:break-all;font-size:12px;color:#ff6a2b;">{{ $resetUrl }}</p>
 </div>
 @endsection

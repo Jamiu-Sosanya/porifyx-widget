@@ -159,7 +159,7 @@
     <div class="bg-gray-900/50 border border-white/5 rounded-2xl p-6">
         <h3 class="text-base font-semibold text-white mb-4">Languages</h3>
         @if(!empty($languages))
-        @php $langTotal = array_sum($languages); $langColors = ['#2f5ee8','#10b981','#f59e0b','#ef4444','#0891b2','#06b6d4','#84cc16','#f97316','#ec4899','#14b8a6']; $li = 0; @endphp
+        @php $langTotal = array_sum($languages); $langColors = ['#ff6a2b','#10b981','#f59e0b','#ef4444','#6c97d6','#8fb4e3','#84cc16','#f97316','#ec4899','#14b8a6']; $li = 0; @endphp
         <div class="flex justify-center mb-4" style="height: 160px">
             <canvas id="langChart"></canvas>
         </div>
@@ -394,9 +394,9 @@ document.addEventListener('DOMContentLoaded', function () {
         data: {
             labels: @json($labels),
             datasets: [
-                { label: 'Conversations', data: @json($conversations), borderColor: '#2f5ee8', backgroundColor: 'rgba(47, 94, 232,0.08)',  fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4 },
+                { label: 'Conversations', data: @json($conversations), borderColor: '#ff6a2b', backgroundColor: 'rgba(255, 106, 43,0.08)',  fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4 },
                 { label: 'Messages',      data: @json($messages),      borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.04)',   fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4 },
-                { label: 'Leads',         data: @json($leads),         borderColor: '#0891b2', backgroundColor: 'rgba(8, 145, 178,0.04)',   fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4 },
+                { label: 'Leads',         data: @json($leads),         borderColor: '#6c97d6', backgroundColor: 'rgba(8, 145, 178,0.04)',   fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4 },
                 { label: 'Visitors',      data: @json($visitors),      borderColor: '#0ea5e9', backgroundColor: 'rgba(14,165,233,0.04)',   fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4 },
             ]
         },
@@ -463,7 +463,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const dLabels = @json($deviceChartLabels);
         new Chart(deviceEl, {
             type: 'doughnut',
-            data: { labels: dLabels.map(l => l||'Unknown'), datasets: [{ data: dData, backgroundColor: ['rgba(47, 94, 232,0.8)','rgba(16,185,129,0.8)','rgba(245,158,11,0.8)','rgba(239,68,68,0.8)','rgba(8, 145, 178,0.8)'], borderColor: 'transparent', hoverOffset: 4 }] },
+            data: { labels: dLabels.map(l => l||'Unknown'), datasets: [{ data: dData, backgroundColor: ['rgba(255, 106, 43,0.8)','rgba(16,185,129,0.8)','rgba(245,158,11,0.8)','rgba(239,68,68,0.8)','rgba(8, 145, 178,0.8)'], borderColor: 'transparent', hoverOffset: 4 }] },
             options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { display: false } } }
         });
     }
@@ -479,7 +479,7 @@ document.addEventListener('DOMContentLoaded', function () {
             data: {
                 labels: chLabels,
                 datasets: [
-                    { label: 'Sent',     data: chSent, backgroundColor: 'rgba(47, 94, 232,0.7)',  borderColor: '#2f5ee8', borderWidth: 1, borderRadius: 4 },
+                    { label: 'Sent',     data: chSent, backgroundColor: 'rgba(255, 106, 43,0.7)',  borderColor: '#ff6a2b', borderWidth: 1, borderRadius: 4 },
                     { label: 'Received', data: chRecv, backgroundColor: 'rgba(16,185,129,0.7)', borderColor: '#10b981', borderWidth: 1, borderRadius: 4 },
                 ]
             },
@@ -501,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const lLabels = @json($langChartLabels);
         new Chart(langEl, {
             type: 'doughnut',
-            data: { labels: lLabels.map(l => (l||'??').toUpperCase()), datasets: [{ data: lData, backgroundColor: ['rgba(47, 94, 232,0.8)','rgba(16,185,129,0.8)','rgba(245,158,11,0.8)','rgba(239,68,68,0.8)','rgba(8, 145, 178,0.8)','rgba(6,182,212,0.8)','rgba(132,204,22,0.8)','rgba(249,115,22,0.8)'], borderColor: 'transparent', hoverOffset: 4 }] },
+            data: { labels: lLabels.map(l => (l||'??').toUpperCase()), datasets: [{ data: lData, backgroundColor: ['rgba(255, 106, 43,0.8)','rgba(16,185,129,0.8)','rgba(245,158,11,0.8)','rgba(239,68,68,0.8)','rgba(8, 145, 178,0.8)','rgba(6,182,212,0.8)','rgba(132,204,22,0.8)','rgba(249,115,22,0.8)'], borderColor: 'transparent', hoverOffset: 4 }] },
             options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { display: false } } }
         });
     }

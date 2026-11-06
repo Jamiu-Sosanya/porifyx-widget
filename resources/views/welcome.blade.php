@@ -22,9 +22,9 @@
     <style>
         [x-cloak] { display: none !important; }
         html, body { overflow-x: hidden; }
-        .pfx-hero { background: radial-gradient(55rem 35rem at 90% -10%, #2f5ee826, transparent 60%), radial-gradient(40rem 28rem at -10% 100%, #06b6d41f, transparent 60%); }
-        .dark .pfx-hero { background: radial-gradient(55rem 35rem at 90% -10%, #2f5ee855, transparent 60%), radial-gradient(40rem 28rem at -10% 100%, #06b6d433, transparent 60%); }
-        .pfx-grid { background-image: linear-gradient(#0b13240a 1px, transparent 1px), linear-gradient(90deg, #0b13240a 1px, transparent 1px); background-size: 48px 48px; mask-image: linear-gradient(to bottom, #000 30%, transparent 85%); }
+        .pfx-hero { background: radial-gradient(55rem 35rem at 90% -10%, #ff6a2b26, transparent 60%), radial-gradient(40rem 28rem at -10% 100%, #8fb4e31f, transparent 60%); }
+        .dark .pfx-hero { background: radial-gradient(55rem 35rem at 90% -10%, #ff6a2b55, transparent 60%), radial-gradient(40rem 28rem at -10% 100%, #8fb4e333, transparent 60%); }
+        .pfx-grid { background-image: linear-gradient(#0d1a330a 1px, transparent 1px), linear-gradient(90deg, #0d1a330a 1px, transparent 1px); background-size: 48px 48px; mask-image: linear-gradient(to bottom, #000 30%, transparent 85%); }
         .dark .pfx-grid { background-image: linear-gradient(#ffffff0a 1px, transparent 1px), linear-gradient(90deg, #ffffff0a 1px, transparent 1px); }
         .pfx-rise { animation: pfxRise .7s cubic-bezier(.2,.8,.2,1) both; }
         @keyframes pfxRise { from { opacity: 0; transform: translateY(16px); } }
@@ -51,7 +51,7 @@
         dark: document.documentElement.classList.contains('dark'),
         toggleTheme() { this.dark = !this.dark; document.documentElement.classList.toggle('dark', this.dark); localStorage.setItem('theme', this.dark ? 'dark' : 'light'); }
     }">
-<div class="min-h-screen bg-[#f6f7fb] text-[#0b1324] dark:bg-[#070d1a] dark:text-slate-100 transition-colors">
+<div class="min-h-screen bg-[#f6f7fb] text-[#0d1a33] dark:bg-[#08122a] dark:text-slate-100 transition-colors">
 
 {{-- ================= NAV ================= --}}
 @include('layouts.partials.site-nav')
@@ -80,7 +80,7 @@
 
         {{-- Live demo assistant. Fixed-height column; only the message log scrolls (min-h-0 stops it growing). --}}
         <div id="demo" class="min-w-0 pfx-rise scroll-mt-24" style="animation-delay:.1s" x-data="pfxChat()">
-            <div class="mx-auto w-full max-w-md h-[min(520px,75svh)] min-h-[380px] flex flex-col rounded-3xl overflow-hidden bg-white text-slate-800 shadow-2xl shadow-slate-900/15 ring-1 ring-slate-200 dark:bg-[#0f1a30] dark:text-slate-100 dark:ring-white/10 dark:shadow-black/50">
+            <div class="mx-auto w-full max-w-md h-[min(520px,75svh)] min-h-[380px] flex flex-col rounded-3xl overflow-hidden bg-white text-slate-800 shadow-2xl shadow-slate-900/15 ring-1 ring-slate-200 dark:bg-[#13223f] dark:text-slate-100 dark:ring-white/10 dark:shadow-black/50">
                 <div class="shrink-0 flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-brand-500 to-brand-600 text-white">
                     <span class="grid place-items-center w-10 h-10 rounded-full bg-white text-brand-600 font-extrabold">P</span>
                     <div class="min-w-0 flex-1">
@@ -201,7 +201,7 @@
                 ['Looks like your brand', 'Colours, avatar, launcher, tone and greeting, previewed live. A/B test variants to find what converts best.', 'M7 21a4 4 0 0 1-4-4V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v12a4 4 0 0 1-4 4zm0 0h12a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2.34M11 7.34l1.66-1.66a2 2 0 0 1 2.83 0l2.83 2.83a2 2 0 0 1 0 2.83L9.83 19.83', true],
                 ['Bookings in the chat', 'Services, team diaries, reminders and calendar sync. Every booking gets a number visitors can use to change or cancel.', 'M8 2v3m8-3v3M3.5 9h17M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm4 10 2 2 4-4', false],
             ] as [$title, $body, $icon, $wide])
-            <article class="rounded-3xl p-7 {{ $wide ? 'lg:col-span-2 bg-[#0b1324] text-white dark:bg-brand-500/10 dark:ring-1 dark:ring-brand-400/20' : 'bg-slate-50 border border-slate-200 dark:bg-white/[0.03] dark:border-white/10' }}">
+            <article class="rounded-3xl p-7 {{ $wide ? 'lg:col-span-2 bg-[#0d1a33] text-white dark:bg-brand-500/10 dark:ring-1 dark:ring-brand-400/20' : 'bg-slate-50 border border-slate-200 dark:bg-white/[0.03] dark:border-white/10' }}">
                 <span class="grid place-items-center w-11 h-11 rounded-xl {{ $wide ? 'bg-white/10 text-accent-300' : 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300' }}">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="{{ $icon }}"/></svg>
                 </span>
@@ -243,7 +243,7 @@
 
         <div class="mt-8 relative">
             <div class="absolute -inset-4 sm:-inset-8 -z-10 rounded-[2.5rem] bg-gradient-to-tr from-brand-500/25 via-accent-400/15 to-fuchsia-400/15 blur-2xl" aria-hidden="true"></div>
-            <div class="rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 bg-white shadow-2xl shadow-slate-900/20 dark:border-white/10 dark:bg-[#0b1324]">
+            <div class="rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 bg-white shadow-2xl shadow-slate-900/20 dark:border-white/10 dark:bg-[#0d1a33]">
                 <div class="flex items-center gap-1.5 px-4 py-3 border-b border-slate-200 bg-slate-50 dark:border-white/10 dark:bg-white/[0.03]">
                     <span class="w-3 h-3 rounded-full bg-rose-400"></span><span class="w-3 h-3 rounded-full bg-amber-400"></span><span class="w-3 h-3 rounded-full bg-emerald-400"></span>
                     <span class="ml-4 hidden sm:block flex-1 max-w-md h-6 rounded-md bg-white dark:bg-white/5 text-[11px] leading-6 px-3 {{ $muted }} truncate">app.porifyx.com/<span x-text="tab"></span></span>
@@ -332,7 +332,7 @@
         </li>
         @endforeach
     </ol>
-    <div class="mt-4 rounded-2xl bg-[#0b1324] ring-1 ring-white/10 p-5 sm:p-6 min-w-0">
+    <div class="mt-4 rounded-2xl bg-[#0d1a33] ring-1 ring-white/10 p-5 sm:p-6 min-w-0">
         <p class="text-xs font-semibold text-slate-400 mb-3">Your entire installation:</p>
         <code class="block text-[13px] sm:text-sm text-accent-300 break-all leading-6">&lt;script src="{{ url('widget.js') }}" data-widget-id="YOUR-WIDGET-ID" async&gt;&lt;/script&gt;</code>
     </div>
@@ -376,7 +376,7 @@
     </div>
     <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-{{ min($plans->count(), 4) }}">
         @foreach($plans as $plan)
-        <div class="rounded-3xl p-7 flex flex-col {{ $plan->is_popular ? 'bg-[#0b1324] text-white ring-2 ring-brand-500 shadow-2xl shadow-brand-500/20' : $card }}">
+        <div class="rounded-3xl p-7 flex flex-col {{ $plan->is_popular ? 'bg-[#0d1a33] text-white ring-2 ring-brand-500 shadow-2xl shadow-brand-500/20' : $card }}">
             <div class="flex items-center justify-between gap-2">
                 <h3 class="font-bold text-lg">{{ $plan->name }}</h3>
                 @if($plan->is_popular)<span class="text-[11px] font-bold uppercase tracking-wider bg-brand-500 rounded-full px-2.5 py-1">Popular</span>@endif
@@ -431,7 +431,7 @@
 
 {{-- ================= CTA ================= --}}
 <section class="px-5 py-20">
-    <div class="relative overflow-hidden max-w-6xl mx-auto rounded-[2rem] bg-[#0b1324] text-white px-7 py-14 md:px-14 md:py-16 text-center">
+    <div class="relative overflow-hidden max-w-6xl mx-auto rounded-[2rem] bg-[#0d1a33] text-white px-7 py-14 md:px-14 md:py-16 text-center">
         <div class="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-brand-500/40 blur-3xl"></div>
         <div class="absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-accent-500/25 blur-3xl"></div>
         <div class="relative">
@@ -451,7 +451,7 @@
 {{-- Floating launcher: jumps to the live assistant --}}
 <a href="#demo" @click="setTimeout(() => document.getElementById('pfx-demo-input').focus({ preventScroll: true }), 500)" aria-label="Chat with us"
    class="fixed z-30 right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] w-14 h-14 rounded-[18px] bg-brand-500 text-white grid place-items-center shadow-xl shadow-brand-500/40 hover:bg-brand-600">
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 3h14a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-8l-5 4v-4H5a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3z" fill="white"/><path d="M12 6.5l1.2 2.8 2.8 1.2-2.8 1.2L12 14.5l-1.2-2.8L8 10.5l2.8-1.2z" fill="#2f5ee8"/></svg>
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 3h14a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-8l-5 4v-4H5a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3z" fill="white"/><path d="M12 6.5l1.2 2.8 2.8 1.2-2.8 1.2L12 14.5l-1.2-2.8L8 10.5l2.8-1.2z" fill="#ff6a2b"/></svg>
 </a>
 </div>
 

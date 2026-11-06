@@ -50,7 +50,7 @@ class WidgetController extends Controller
             'name'            => $validated['name'],
             'ai_name'         => $validated['ai_name'] ?? 'AI Assistant',
             'tone'            => $validated['tone'] ?? 'friendly',
-            'primary_color'   => $validated['primary_color'] ?? '#2f5ee8',
+            'primary_color'   => $validated['primary_color'] ?? '#ff6a2b',
             'welcome_message' => $validated['welcome_message'] ?? 'Hi! How can I help you today?',
         ]);
 

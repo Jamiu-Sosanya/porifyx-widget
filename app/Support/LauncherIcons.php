@@ -38,8 +38,8 @@ class LauncherIcons
     public static function defaults(Widget $widget): array
     {
         return [
-            'size' => 60, 'radius' => 18, 'bg_type' => 'solid', 'bg' => $widget->primary_color ?: '#2f5ee8',
-            'bg2' => $widget->secondary_color && $widget->secondary_color !== '#ffffff' ? $widget->secondary_color : '#06b6d4',
+            'size' => 60, 'radius' => 18, 'bg_type' => 'solid', 'bg' => $widget->primary_color ?: '#ff6a2b',
+            'bg2' => $widget->secondary_color && $widget->secondary_color !== '#ffffff' ? $widget->secondary_color : '#8fb4e3',
             'angle' => 135, 'icon_color' => '#ffffff', 'border_width' => 0, 'border_color' => '#ffffff',
             'shadow' => 'medium', 'offset_x' => 20, 'offset_y' => 20, 'label' => '', 'animation' => 'none',
         ] + self::RECOMMENDED + self::BUBBLES;

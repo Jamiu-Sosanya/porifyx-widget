@@ -22,7 +22,7 @@ a { color: inherit; }
 .email-wrapper { max-width: 600px; margin: 0 auto; }
 .email-header  { text-align: center; padding-bottom: 24px; }
 .brand-name    { font-size: 22px; font-weight: 800; color: #ffffff; text-decoration: none; letter-spacing: -0.5px; }
-.brand-dot     { color: #2f5ee8; }
+.brand-dot     { color: #ff6a2b; }
 
 /* Card */
 .card          { background-color: #161920; border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; overflow: hidden; }
@@ -43,7 +43,7 @@ strong { color: #e5e7eb; font-weight: 600; }
 .text-center  { text-align: center; }
 
 /* Links */
-a.link { color: #6b8ff2; text-decoration: none; }
+a.link { color: #ff8450; text-decoration: none; }
 a.link:hover { text-decoration: underline; }
 
 /* Buttons */
@@ -51,7 +51,7 @@ a.link:hover { text-decoration: underline; }
 .btn {
     display: inline-block;
     padding: 14px 36px;
-    background: linear-gradient(135deg, #2f5ee8, #0891b2);
+    background: linear-gradient(135deg, #ff6a2b, #6c97d6);
     color: #ffffff !important;
     font-size: 15px;
     font-weight: 600;
@@ -63,7 +63,7 @@ a.link:hover { text-decoration: underline; }
 .btn-success  { background: linear-gradient(135deg, #059669, #047857); }
 .btn-danger   { background: linear-gradient(135deg, #dc2626, #b91c1c); }
 .btn-warning  { background: linear-gradient(135deg, #d97706, #b45309); }
-.btn-outline  { background: transparent; color: #6b8ff2 !important; border: 1px solid rgba(47, 94, 232,0.4); }
+.btn-outline  { background: transparent; color: #ff8450 !important; border: 1px solid rgba(255, 106, 43,0.4); }
 
 /* Divider */
 hr { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 24px 0; }
@@ -86,14 +86,14 @@ hr { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 24px 0;
 
 /* Alert / info boxes */
 .alert         { padding: 14px 16px; border-radius: 10px; margin: 20px 0; font-size: 13px; line-height: 1.6; }
-.alert-info    { background: rgba(47, 94, 232,0.1);  border-left: 3px solid #2f5ee8; color: #a5b4fc; }
+.alert-info    { background: rgba(255, 106, 43,0.1);  border-left: 3px solid #ff6a2b; color: #a5b4fc; }
 .alert-warning { background: rgba(245,158,11,0.1); border-left: 3px solid #f59e0b; color: #fcd34d; }
 .alert-success { background: rgba(16,185,129,0.1); border-left: 3px solid #10b981; color: #6ee7b7; }
 .alert-danger  { background: rgba(239,68,68,0.1);  border-left: 3px solid #ef4444; color: #fca5a5; }
 
 /* Icon rows */
 .feature-item  { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
-.feature-icon  { width: 36px; height: 36px; border-radius: 9px; background: rgba(47, 94, 232,0.15); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.feature-icon  { width: 36px; height: 36px; border-radius: 9px; background: rgba(255, 106, 43,0.15); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
 .feature-text  { font-size: 14px; color: #9ca3af; padding-top: 6px; line-height: 1.5; }
 .feature-text strong { color: #e5e7eb; }
 

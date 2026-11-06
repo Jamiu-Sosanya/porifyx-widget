@@ -22,7 +22,7 @@ class PwaController extends Controller
             'scope'            => '/',
             'display'          => 'standalone',
             'orientation'      => 'portrait-primary',
-            'theme_color'      => '#2f5ee8',
+            'theme_color'      => '#ff6a2b',
             'background_color' => '#ffffff',
             'icons'            => [
                 ['src' => '/images/icon-192x192.png',          'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any'],

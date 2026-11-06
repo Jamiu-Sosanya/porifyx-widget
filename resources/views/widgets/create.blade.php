@@ -32,8 +32,8 @@
             <div>
                 <label class="block text-sm font-medium text-gray-300 mb-1.5">Brand Color</label>
                 <div class="flex items-center gap-3">
-                    <input name="primary_color" type="color" value="{{ old('primary_color', '#2f5ee8') }}" class="w-12 h-12 rounded-xl border border-white/10 bg-transparent cursor-pointer">
-                    <input type="text" value="{{ old('primary_color', '#2f5ee8') }}" readonly class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-mono">
+                    <input name="primary_color" type="color" value="{{ old('primary_color', '#ff6a2b') }}" class="w-12 h-12 rounded-xl border border-white/10 bg-transparent cursor-pointer">
+                    <input type="text" value="{{ old('primary_color', '#ff6a2b') }}" readonly class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-mono">
                 </div>
             </div>
             <div>

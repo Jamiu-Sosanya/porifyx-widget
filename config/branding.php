@@ -18,7 +18,7 @@ return [
     'trial_days'       => env('TRIAL_DAYS', 14),
     'logo_url'         => env('BRAND_LOGO_URL', null),
     'favicon_url'      => env('BRAND_FAVICON_URL', null),
-    'primary_color'    => env('BRAND_PRIMARY_COLOR', '#2f5ee8'),
+    'primary_color'    => env('BRAND_PRIMARY_COLOR', '#ff6a2b'),
     'twitter_url'      => env('BRAND_TWITTER_URL', null),
     'facebook_url'     => env('BRAND_FACEBOOK_URL', null),
     'linkedin_url'     => env('BRAND_LINKEDIN_URL', null),

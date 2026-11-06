@@ -189,7 +189,7 @@
     {{-- Sidebar --}}
     <div x-show="details" x-transition.opacity x-cloak @click="details = false" class="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"></div>
     <div :class="details ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'"
-         class="fixed lg:static inset-y-0 right-0 z-50 w-[88vw] max-w-sm lg:w-80 lg:max-w-none flex flex-col shrink-0 gap-4 overflow-y-auto custom-scrollbar p-4 lg:p-0 lg:pb-1 bg-[#0b1120] lg:bg-transparent transition-transform duration-300 pfx-details">
+         class="fixed lg:static inset-y-0 right-0 z-50 w-[88vw] max-w-sm lg:w-80 lg:max-w-none flex flex-col shrink-0 gap-4 overflow-y-auto custom-scrollbar p-4 lg:p-0 lg:pb-1 bg-[#0d1a33] lg:bg-transparent transition-transform duration-300 pfx-details">
         <div class="lg:hidden flex items-center justify-between">
             <p class="text-sm font-semibold text-white">Visitor details</p>
             <button type="button" @click="details = false" class="p-1.5 rounded-lg text-gray-400 hover:text-white" aria-label="Close">✕</button>

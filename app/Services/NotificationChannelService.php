@@ -96,7 +96,7 @@ class NotificationChannelService
                  "• From: {$name} <{$email}>\n" .
                  "• Message: " . substr($message, 0, 200);
 
-        $this->sendSlack($widget, $title, $text, '#2f5ee8');
+        $this->sendSlack($widget, $title, $text, '#ff6a2b');
         $this->sendDiscord($widget, $title, $text, 0x6366f1);
 
         $to = $widget->notification_email ?? $widget->user?->email;
@@ -111,7 +111,7 @@ class NotificationChannelService
 
     // ── Slack ─────────────────────────────────────────────────────────────────
 
-    protected function sendSlack(Widget $widget, string $title, string $text, string $color = '#2f5ee8'): void
+    protected function sendSlack(Widget $widget, string $title, string $text, string $color = '#ff6a2b'): void
     {
         $url = $widget->slack_webhook_url;
         if (!$url) return;

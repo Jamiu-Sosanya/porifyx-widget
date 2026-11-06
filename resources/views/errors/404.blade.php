@@ -9,10 +9,10 @@
     <style>
         body { font-family: "Plus Jakarta Sans", system-ui, sans-serif; background: #030712; color: #e5e7eb; min-height: 100vh; margin: 0; display: flex; align-items: center; justify-content: center; padding: 24px; }
         .card { text-align: center; max-width: 420px; }
-        h1 { font-size: 4rem; font-weight: 700; margin: 0; background: linear-gradient(135deg, #2f5ee8, #0891b2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        h1 { font-size: 4rem; font-weight: 700; margin: 0; background: linear-gradient(135deg, #ff6a2b, #6c97d6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         p { color: #9ca3af; margin: 16px 0 24px; line-height: 1.5; }
-        a { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: #2449c4; color: white; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 14px; }
-        a:hover { background: #2f5ee8; }
+        a { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: #ec5112; color: white; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 14px; }
+        a:hover { background: #ff6a2b; }
     </style>
 </head>
 <body>

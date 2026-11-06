@@ -40,7 +40,7 @@
     <hr>
 
     <p><strong>Most popular plan:</strong></p>
-    <div style="background:rgba(47, 94, 232,0.08);border:1px solid rgba(47, 94, 232,0.2);border-radius:12px;padding:16px 18px;">
+    <div style="background:rgba(255, 106, 43,0.08);border:1px solid rgba(255, 106, 43,0.2);border-radius:12px;padding:16px 18px;">
         <p style="margin:0 0 4px;font-size:16px;font-weight:700;color:#ffffff;">Pro Plan — $79/month</p>
         <p style="margin:0;font-size:13px;color:#9ca3af;">5 widgets · 5,000 messages/mo · 500 leads/mo · Live chat + AI insights</p>
     </div>

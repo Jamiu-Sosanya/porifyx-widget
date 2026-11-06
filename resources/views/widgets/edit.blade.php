@@ -5,7 +5,7 @@
 <div x-data="{
     tab: location.hash.slice(1) || 'appearance',
     init() { window.addEventListener('hashchange', () => { this.tab = location.hash.slice(1) || 'appearance'; window.scrollTo({ top: 0 }); }); },
-    pColor: @js($widget->primary_color ?? '#2f5ee8'),
+    pColor: @js($widget->primary_color ?? '#ff6a2b'),
     pBg: @js($widget->bg_color ?? '#0f0f13'),
     pText: @js($widget->text_color ?? '#ffffff'),
     pName: @js($widget->ai_name ?? 'AI Assistant'),
@@ -130,7 +130,7 @@
                     <h3 class="text-base font-semibold text-white">Chat window</h3>
                     <p class="text-xs text-gray-500 mt-0.5">Theme and colours of the conversation panel.</p>
                     <div class="mt-5 grid grid-cols-3 sm:grid-cols-6 gap-2.5">
-                        @foreach(['dark' => ['Dark', '#0f0f13', '#2f5ee8'], 'light' => ['Light', '#ffffff', '#2f5ee8'], 'minimal' => ['Minimal', '#fafafa', '#111827'], 'bold' => ['Bold', '#1a0533', '#0891b2'], 'ocean' => ['Ocean', '#0c1e35', '#38bdf8'], 'nature' => ['Nature', '#0f1f0f', '#86efac']] as $val => [$t, $bgc, $acc])
+                        @foreach(['dark' => ['Dark', '#0f0f13', '#ff6a2b'], 'light' => ['Light', '#ffffff', '#ff6a2b'], 'minimal' => ['Minimal', '#fafafa', '#111827'], 'bold' => ['Bold', '#1a0533', '#6c97d6'], 'ocean' => ['Ocean', '#0c1e35', '#38bdf8'], 'nature' => ['Nature', '#0f1f0f', '#86efac']] as $val => [$t, $bgc, $acc])
                         <label class="cursor-pointer">
                             <input type="radio" name="theme" value="{{ $val }}" @checked(($widget->theme ?? 'dark') === $val) @change="pTheme = '{{ $val }}'; pBg = '{{ $bgc }}'; pText = '{{ in_array($val, ['light', 'minimal']) ? '#111827' : '#ffffff' }}'" class="peer sr-only">
                             <span class="block rounded-xl overflow-hidden ring-1 ring-slate-400/30 peer-checked:ring-2 peer-checked:ring-brand-500 transition">
@@ -230,7 +230,7 @@
                         @foreach([['Assistant bubble', 'ai_bg', 'ai_text', 'Theme colours'], ['Visitor bubble', 'user_bg', 'user_text', 'Primary colour']] as [$t, $bgKey, $txKey, $auto])
                         <div class="p-3 rounded-xl bg-white/[0.03] border border-white/5">
                             <p class="text-xs font-semibold text-gray-300">{{ $t }}</p>
-                            <label class="mt-2 flex items-center gap-2 text-[11px] text-gray-400"><input type="checkbox" name="launcher[{{ $bgKey }}_auto]" value="1" :checked="!L.{{ $bgKey }}" @change="L.{{ $bgKey }} = $event.target.checked ? '' : '{{ $bgKey === 'ai_bg' ? '#eef2f7' : '#2f5ee8' }}'" class="accent-brand-500"> Use {{ strtolower($auto) }}</label>
+                            <label class="mt-2 flex items-center gap-2 text-[11px] text-gray-400"><input type="checkbox" name="launcher[{{ $bgKey }}_auto]" value="1" :checked="!L.{{ $bgKey }}" @change="L.{{ $bgKey }} = $event.target.checked ? '' : '{{ $bgKey === 'ai_bg' ? '#eef2f7' : '#ff6a2b' }}'" class="accent-brand-500"> Use {{ strtolower($auto) }}</label>
                             <div class="mt-2 flex items-center gap-4" x-show="L.{{ $bgKey }}">
                                 <label class="flex items-center gap-2 text-[11px] text-gray-400"><input type="color" name="launcher[{{ $bgKey }}]" x-model="L.{{ $bgKey }}" :disabled="!L.{{ $bgKey }}" class="w-8 h-8 rounded-lg bg-transparent cursor-pointer"> Bubble</label>
                                 <label class="flex items-center gap-2 text-[11px] text-gray-400"><input type="color" name="launcher[{{ $txKey }}]" :value="L.{{ $txKey }} || '#111827'" @input="L.{{ $txKey }} = $event.target.value" class="w-8 h-8 rounded-lg bg-transparent cursor-pointer"> Text</label>
@@ -1569,7 +1569,7 @@ function channelsManager(widgetId, initialChannels, channelLimit) {
             discord:   { name: 'Discord',          emoji: '🎮', color: '#5865F2', webhookPath: '/api/webhooks/discord',   fields: [{key:'bot_token',label:'Bot Token',type:'password',placeholder:'MTxxxxxxxx...'},{key:'guild_id',label:'Server ID',type:'text',placeholder:'1234567890'},{key:'channel_id',label:'Channel ID',type:'text',placeholder:'9876543210'}], webhookNote: 'Configure in Discord Developer Portal → Bot → Interactions Endpoint URL' },
             sms:       { name: 'SMS (Twilio)',     emoji: '📱', color: '#F22F46', webhookPath: '/api/webhooks/sms',       fields: [{key:'account_sid',label:'Account SID',type:'text',placeholder:'ACxxxxxxxx...'},{key:'auth_token',label:'Auth Token',type:'password',placeholder:'xxxxxxxx...'},{key:'from_number',label:'From Number',type:'text',placeholder:'+15551234567'}], webhookNote: 'Set URL in Twilio Console → Phone Numbers → Messaging → Webhook' },
             twitter:   { name: 'Twitter / X',     emoji: '🐦', color: '#000000', webhookPath: '/api/webhooks/twitter',   fields: [{key:'api_key',label:'API Key',type:'text',placeholder:'xxxxx...'},{key:'api_secret',label:'API Secret',type:'password',placeholder:'xxxxx...'},{key:'access_token',label:'Access Token',type:'text',placeholder:'xxxxx...'},{key:'access_token_secret',label:'Access Token Secret',type:'password',placeholder:'xxxxx...'}], webhookNote: 'Set URL in Twitter Developer Portal → Account Activity API → Webhooks' },
-            email:     { name: 'Email',            emoji: '📧', color: '#2f5ee8', webhookPath: null,                      fields: [{key:'sender_email',label:'Sender Email',type:'email',placeholder:'support@yoursite.com'},{key:'sender_name',label:'Sender Name',type:'text',placeholder:'Your Company'}], webhookNote: 'No webhook needed — email is sent via your configured mail server.' },
+            email:     { name: 'Email',            emoji: '📧', color: '#ff6a2b', webhookPath: null,                      fields: [{key:'sender_email',label:'Sender Email',type:'email',placeholder:'support@yoursite.com'},{key:'sender_name',label:'Sender Name',type:'text',placeholder:'Your Company'}], webhookNote: 'No webhook needed — email is sent via your configured mail server.' },
         },
 
         openAddModal() {

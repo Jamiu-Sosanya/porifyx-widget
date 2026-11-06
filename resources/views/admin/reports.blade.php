@@ -185,11 +185,11 @@ new Chart(document.getElementById('userChart'), {
         datasets: [
             {
                 label: 'New', data: @json($userGrowth['new']),
-                backgroundColor: 'rgba(47, 94, 232,0.5)', borderRadius: 4, yAxisID: 'y',
+                backgroundColor: 'rgba(255, 106, 43,0.5)', borderRadius: 4, yAxisID: 'y',
             },
             {
                 label: 'Total', data: @json($userGrowth['cumulative']),
-                type: 'line', borderColor: '#0891b2', borderWidth: 2,
+                type: 'line', borderColor: '#6c97d6', borderWidth: 2,
                 fill: false, tension: 0.4, pointRadius: 0, yAxisID: 'y2',
             }
         ]
@@ -200,7 +200,7 @@ new Chart(document.getElementById('userChart'), {
         scales: {
             x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6b7280', font: { size: 10 } } },
             y:  { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6b7280', font: { size: 10 } }, position: 'left' },
-            y2: { ticks: { color: '#0891b2', font: { size: 10 } }, position: 'right', grid: { drawOnChartArea: false } },
+            y2: { ticks: { color: '#6c97d6', font: { size: 10 } }, position: 'right', grid: { drawOnChartArea: false } },
         }
     }
 });

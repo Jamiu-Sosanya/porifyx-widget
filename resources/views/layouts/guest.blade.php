@@ -9,11 +9,11 @@
     <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:300,400,500,600,700,800&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-[#070d1a] text-white antialiased" x-data>
+<body class="bg-[#08122a] text-white antialiased" x-data>
     <div class="min-h-screen flex">
         {{-- Left: PoriFyx panel --}}
-        <div class="hidden lg:flex lg:w-[44%] relative overflow-hidden bg-[#0b1324] border-r border-white/5">
-            <div class="absolute inset-0" style="background-image: radial-gradient(#2f5ee833 1px, transparent 1px); background-size: 22px 22px;"></div>
+        <div class="hidden lg:flex lg:w-[44%] relative overflow-hidden bg-[#0d1a33] border-r border-white/5">
+            <div class="absolute inset-0" style="background-image: radial-gradient(#ff6a2b33 1px, transparent 1px); background-size: 22px 22px;"></div>
             <div class="absolute -bottom-40 -left-40 w-[28rem] h-[28rem] rounded-full bg-brand-500/25 blur-3xl"></div>
             <div class="relative z-10 flex flex-col justify-between p-12 w-full">
                 <a href="{{ route('home') }}" class="flex items-center gap-3">

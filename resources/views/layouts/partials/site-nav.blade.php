@@ -1,5 +1,5 @@
 @php $home = request()->routeIs('home') ? '' : route('home'); @endphp
-<header class="sticky top-0 z-40 border-b border-slate-200/70 bg-[#f6f7fb]/80 backdrop-blur-lg dark:border-white/10 dark:bg-[#070d1a]/80">
+<header class="sticky top-0 z-40 border-b border-slate-200/70 bg-[#f6f7fb]/80 backdrop-blur-lg dark:border-white/10 dark:bg-[#08122a]/80">
     <nav class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between gap-4">
         <a href="{{ url('/') }}" class="flex items-center gap-2.5 font-extrabold tracking-tight text-lg shrink-0">
             @include('layouts.partials.logo', ['size' => 32]) <span>{{ $name }}</span>
@@ -32,7 +32,7 @@
         </div>
     </nav>
     <div x-show="menu" x-cloak x-transition.opacity @click="menu = false"
-         class="lg:hidden absolute inset-x-0 top-16 border-b border-slate-200 bg-white px-5 py-5 flex flex-col gap-4 font-medium dark:bg-[#0b1324] dark:border-white/10">
+         class="lg:hidden absolute inset-x-0 top-16 border-b border-slate-200 bg-white px-5 py-5 flex flex-col gap-4 font-medium dark:bg-[#0d1a33] dark:border-white/10">
         <a href="{{ $home }}#features">Features</a><a href="{{ $home }}#bookings">Bookings</a><a href="{{ $home }}#use-cases">Use cases</a><a href="{{ $home }}#how">How it works</a><a href="{{ $home }}#pricing">Pricing</a><a href="{{ $home }}#faq">FAQ</a>
         <div class="grid grid-cols-2 gap-3 pt-2 md:hidden">
             <a href="{{ route('login') }}" class="py-3 rounded-xl border border-slate-300 dark:border-white/20 text-center">Sign in</a>

@@ -28,7 +28,7 @@
     </div>
     <div class="feature-item">
         <div class="feature-icon">③</div>
-        <div class="feature-text"><strong>Embed on your website</strong><br>Copy a single script tag and paste it before <code style="color:#6b8ff2;">&lt;/body&gt;</code>. Done!</div>
+        <div class="feature-text"><strong>Embed on your website</strong><br>Copy a single script tag and paste it before <code style="color:#ff8450;">&lt;/body&gt;</code>. Done!</div>
     </div>
 
     <hr>

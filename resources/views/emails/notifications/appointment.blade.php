@@ -50,7 +50,7 @@
 </div>
 
 <div class="card-body">
-    <div style="text-align:center;margin:0 0 22px;padding:18px;border-radius:14px;background:rgba(47,94,232,0.10);border:1px solid rgba(47,94,232,0.30);">
+    <div style="text-align:center;margin:0 0 22px;padding:18px;border-radius:14px;background:rgba(255, 106, 43,0.10);border:1px solid rgba(255, 106, 43,0.30);">
         <p style="margin:0;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#93a4c8;">Booking number</p>
         <p style="margin:6px 0 0;font-size:28px;font-weight:800;letter-spacing:0.08em;color:#ffffff;font-family:'SFMono-Regular',Consolas,monospace;">{{ $a->reference }}</p>
         @unless($owner || $kind === 'cancelled')
@@ -76,7 +76,7 @@
         @if($owner)
             <a href="{{ route('appointments.index') }}" class="btn">Open bookings</a>
         @elseif($kind !== 'cancelled')
-            <a href="{{ $a->manageUrl() }}" class="btn" style="background:{{ $a->widget->primary_color ?: '#2f5ee8' }};">Manage or cancel</a>
+            <a href="{{ $a->manageUrl() }}" class="btn" style="background:{{ $a->widget->primary_color ?: '#ff6a2b' }};">Manage or cancel</a>
         @endif
     </div>
 </div>

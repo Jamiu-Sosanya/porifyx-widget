@@ -23,6 +23,6 @@
 
     <hr>
     <p class="text-muted">If the button doesn't work, copy and paste this URL into your browser:</p>
-    <p style="word-break:break-all;font-size:12px;color:#2f5ee8;">{{ $verificationUrl }}</p>
+    <p style="word-break:break-all;font-size:12px;color:#ff6a2b;">{{ $verificationUrl }}</p>
 </div>
 @endsection

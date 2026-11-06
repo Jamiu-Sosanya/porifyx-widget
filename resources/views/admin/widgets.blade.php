@@ -68,8 +68,8 @@
                     <td class="px-5 py-4">
                         <div class="flex items-center gap-3">
                             <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                                 style="background: {{ $widget->primary_color ?? '#2f5ee8' }}22; border: 1px solid {{ $widget->primary_color ?? '#2f5ee8' }}44;">
-                                <div class="w-3.5 h-3.5 rounded-full" style="background: {{ $widget->primary_color ?? '#2f5ee8' }};"></div>
+                                 style="background: {{ $widget->primary_color ?? '#ff6a2b' }}22; border: 1px solid {{ $widget->primary_color ?? '#ff6a2b' }}44;">
+                                <div class="w-3.5 h-3.5 rounded-full" style="background: {{ $widget->primary_color ?? '#ff6a2b' }};"></div>
                             </div>
                             <div>
                                 <p class="font-medium text-white">{{ $widget->name }}</p>

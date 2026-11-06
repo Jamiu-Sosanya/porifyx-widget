@@ -126,8 +126,8 @@
                         </span>
                     </div>
                     @php
-                    $barColors = ['brand' => '#2f5ee8', 'accent' => '#0891b2', 'emerald' => '#10b981'];
-                    $barBg = $isWarning ? '#f59e0b' : ($barColors[$usage['color']] ?? '#2f5ee8');
+                    $barColors = ['brand' => '#ff6a2b', 'accent' => '#6c97d6', 'emerald' => '#10b981'];
+                    $barBg = $isWarning ? '#f59e0b' : ($barColors[$usage['color']] ?? '#ff6a2b');
                     @endphp
                     <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
                         <div class="h-full rounded-full transition-all duration-700" style="width:{{ $isUnlimited ? 10 : $pct }}%; background:{{ $barBg }}"></div>
@@ -177,8 +177,8 @@
                 <tr class="hover:bg-white/2 transition">
                     <td class="px-5 py-3">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-xl flex items-center justify-center text-sm shrink-0" style="background: {{ $w->primary_color ?? '#2f5ee8' }}22">
-                                <span style="color: {{ $w->primary_color ?? '#2f5ee8' }}">●</span>
+                            <div class="w-8 h-8 rounded-xl flex items-center justify-center text-sm shrink-0" style="background: {{ $w->primary_color ?? '#ff6a2b' }}22">
+                                <span style="color: {{ $w->primary_color ?? '#ff6a2b' }}">●</span>
                             </div>
                             <div>
                                 <p class="text-sm font-medium text-white">{{ $w->name }}</p>
@@ -433,9 +433,9 @@ document.addEventListener('DOMContentLoaded', function() {
         data: {
             labels: @json($chartLabels),
             datasets: [
-                { label: 'Conversations', data: @json($chartConversations), borderColor: '#2f5ee8', backgroundColor: 'rgba(47, 94, 232,0.08)', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0, pointHoverRadius: 5 },
+                { label: 'Conversations', data: @json($chartConversations), borderColor: '#ff6a2b', backgroundColor: 'rgba(255, 106, 43,0.08)', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0, pointHoverRadius: 5 },
                 { label: 'Messages',      data: @json($chartMessages),      borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.04)',  fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0, pointHoverRadius: 5 },
-                { label: 'Leads',         data: @json($chartLeads),         borderColor: '#0891b2', backgroundColor: 'rgba(8, 145, 178,0.04)',  fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0, pointHoverRadius: 5 },
+                { label: 'Leads',         data: @json($chartLeads),         borderColor: '#6c97d6', backgroundColor: 'rgba(8, 145, 178,0.04)',  fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0, pointHoverRadius: 5 },
             ]
         },
         options: {

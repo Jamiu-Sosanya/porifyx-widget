@@ -43,7 +43,7 @@
     <ol class="relative border-l border-slate-200 dark:border-white/10 ml-2 space-y-16">
         @foreach($releases as [$version, $date, $title, $summary, $items])
         <li class="pl-8 md:pl-10 relative">
-            <span class="absolute -left-[7px] top-2 w-3.5 h-3.5 rounded-full bg-brand-500 ring-4 ring-[#f6f7fb] dark:ring-[#070d1a]"></span>
+            <span class="absolute -left-[7px] top-2 w-3.5 h-3.5 rounded-full bg-brand-500 ring-4 ring-[#f6f7fb] dark:ring-[#08122a]"></span>
             <div class="flex flex-wrap items-center gap-3 text-sm">
                 <span class="px-2.5 py-1 rounded-lg font-bold bg-slate-900 text-white dark:bg-white dark:text-slate-900">v{{ $version }}</span>
                 <time class="{{ $muted }}">{{ $date }}</time>

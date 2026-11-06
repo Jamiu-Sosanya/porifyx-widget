@@ -259,7 +259,7 @@
         if (ic.type === 'image' && ic.url) {
             return '<img src="' + escapeAttr(ic.url) + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">';
         }
-        return '<span style="display:flex;color:' + escapeAttr(config.primary_color || '#2f5ee8') + ';">' + (ic.svg || '') + '</span>';
+        return '<span style="display:flex;color:' + escapeAttr(config.primary_color || '#ff6a2b') + ';">' + (ic.svg || '') + '</span>';
     }
 
     // Phone layout: full screen (recommended) or a custom share of the screen; launcher size on phones.
@@ -461,7 +461,7 @@
     // ── Styles injection ──────────────────────────────────────────────────────
     function injectStyles() {
         const t    = getTheme();
-        const pri  = config.primary_color || '#2f5ee8';
+        const pri  = config.primary_color || '#ff6a2b';
 
         const css = `
 #pfx-chat.pfx-open { opacity:1 !important; transform:translateY(0) scale(1) !important; }
@@ -1212,7 +1212,7 @@ ${bubbleCSS()}
 
     function bkRefBox(ref) {
         if (!ref) return '';
-        return '<div style="margin:10px 0 6px;padding:10px 14px;border-radius:12px;border:1px dashed ' + (config.primary_color || '#2f5ee8') + ';">' +
+        return '<div style="margin:10px 0 6px;padding:10px 14px;border-radius:12px;border:1px dashed ' + (config.primary_color || '#ff6a2b') + ';">' +
             '<div class="pfx-bk-muted" style="text-transform:uppercase;letter-spacing:0.12em;font-size:10px;">Booking number</div>' +
             '<div style="font-size:20px;font-weight:800;letter-spacing:0.08em;font-family:ui-monospace,Consolas,monospace;">' + escapeHtml(ref) + '</div></div>';
     }

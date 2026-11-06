@@ -21,7 +21,7 @@ return new class extends Migration
             $table->enum('tone', ['friendly', 'professional', 'sales', 'support'])->default('friendly');
 
             // Appearance
-            $table->string('primary_color', 20)->default('#2f5ee8');
+            $table->string('primary_color', 20)->default('#ff6a2b');
             $table->string('secondary_color', 20)->default('#ffffff');
             $table->string('text_color', 20)->default('#1f2937');
             $table->string('bg_color', 20)->default('#ffffff');
