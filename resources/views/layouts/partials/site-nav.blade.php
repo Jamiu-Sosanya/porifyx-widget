@@ -6,6 +6,7 @@
         </a>
         <div class="hidden lg:flex items-center gap-7 text-sm font-medium {{ $muted }}">
             <a href="{{ $home }}#features" class="hover:text-slate-900 dark:hover:text-white">Features</a>
+            <a href="{{ $home }}#bookings" class="hover:text-slate-900 dark:hover:text-white">Bookings</a>
             <a href="{{ $home }}#use-cases" class="hover:text-slate-900 dark:hover:text-white">Use cases</a>
             <a href="{{ $home }}#how" class="hover:text-slate-900 dark:hover:text-white">How it works</a>
             <a href="{{ $home }}#pricing" class="hover:text-slate-900 dark:hover:text-white">Pricing</a>
@@ -32,7 +33,7 @@
     </nav>
     <div x-show="menu" x-cloak x-transition.opacity @click="menu = false"
          class="lg:hidden absolute inset-x-0 top-16 border-b border-slate-200 bg-white px-5 py-5 flex flex-col gap-4 font-medium dark:bg-[#0b1324] dark:border-white/10">
-        <a href="{{ $home }}#features">Features</a><a href="{{ $home }}#use-cases">Use cases</a><a href="{{ $home }}#how">How it works</a><a href="{{ $home }}#pricing">Pricing</a><a href="{{ $home }}#faq">FAQ</a>
+        <a href="{{ $home }}#features">Features</a><a href="{{ $home }}#bookings">Bookings</a><a href="{{ $home }}#use-cases">Use cases</a><a href="{{ $home }}#how">How it works</a><a href="{{ $home }}#pricing">Pricing</a><a href="{{ $home }}#faq">FAQ</a>
         <div class="grid grid-cols-2 gap-3 pt-2 md:hidden">
             <a href="{{ route('login') }}" class="py-3 rounded-xl border border-slate-300 dark:border-white/20 text-center">Sign in</a>
             <a href="{{ route('register') }}" class="py-3 rounded-xl bg-brand-500 text-white text-center">Start free</a>

@@ -199,6 +199,7 @@
                 ['Proactive messages', 'Greet visitors on key pages, after a delay or on exit intent, in their own language.', 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.42-4.03 8-9 8a9.86 9.86 0 0 1-4.26-.95L3 20l1.4-3.72A7.56 7.56 0 0 1 3 12c0-4.42 4.03-8 9-8s9 3.58 9 8z', false],
                 ['Analytics that matter', 'Conversations, conversion, CSAT, sentiment and the questions your AI could not answer yet.', 'M9 19v-6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2zm0 0V9a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v10m-6 0a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2m0 0V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z', false],
                 ['Looks like your brand', 'Colours, avatar, launcher, tone and greeting, previewed live. A/B test variants to find what converts best.', 'M7 21a4 4 0 0 1-4-4V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v12a4 4 0 0 1-4 4zm0 0h12a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2.34M11 7.34l1.66-1.66a2 2 0 0 1 2.83 0l2.83 2.83a2 2 0 0 1 0 2.83L9.83 19.83', true],
+                ['Bookings in the chat', 'Services, team diaries, payments and calendar sync. Every booking gets a number visitors can use to change or cancel.', 'M8 2v3m8-3v3M3.5 9h17M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm4 10 2 2 4-4', false],
             ] as [$title, $body, $icon, $wide])
             <article class="rounded-3xl p-7 {{ $wide ? 'lg:col-span-2 bg-[#0b1324] text-white dark:bg-brand-500/10 dark:ring-1 dark:ring-brand-400/20' : 'bg-slate-50 border border-slate-200 dark:bg-white/[0.03] dark:border-white/10' }}">
                 <span class="grid place-items-center w-11 h-11 rounded-xl {{ $wide ? 'bg-white/10 text-accent-300' : 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300' }}">
@@ -212,33 +213,79 @@
     </div>
 </section>
 
-{{-- ================= DASHBOARD PREVIEW ================= --}}
-<section class="max-w-6xl mx-auto px-5 py-20 md:py-28 grid lg:grid-cols-2 gap-12 items-center">
-    <div class="min-w-0">
-        <p class="{{ $eyebrow }}">Your command centre</p>
-        <h2 class="{{ $h2 }}">See every conversation. Act on every lead.</h2>
-        <p class="mt-5 text-lg {{ $muted }}">One dashboard for conversations, leads, training and analytics. Jump into any chat, see why a lead is hot, and find the questions your assistant should learn next.</p>
-        <ul class="mt-8 grid sm:grid-cols-2 gap-3 text-sm font-medium">
-            @foreach(['Real-time inbox with takeover', 'Lead CRM with export', 'Knowledge gaps report', 'Team roles and permissions', 'Browser push notifications', 'Installable mobile app (PWA)'] as $x)
-            <li class="flex gap-2"><span class="text-brand-500">✓</span>{{ $x }}</li>
+{{-- ================= PRODUCT TOUR (real screenshots) ================= --}}
+<section class="relative overflow-hidden py-20 md:py-28" x-data="{ tab: 'dashboard' }">
+    <div class="absolute inset-x-0 top-0 h-[520px] -z-10 bg-gradient-to-b from-brand-500/10 via-accent-500/5 to-transparent dark:from-brand-500/20" aria-hidden="true"></div>
+    <div class="max-w-6xl mx-auto px-5">
+        <div class="max-w-2xl mx-auto text-center">
+            <p class="{{ $eyebrow }}">Your command centre</p>
+            <h2 class="{{ $h2 }}">See every conversation. Act on every lead.</h2>
+            <p class="mt-5 text-lg {{ $muted }}">One place for chats, leads, bookings and analytics. These are real screens from the product, not mock-ups.</p>
+        </div>
+
+        @php
+            $tour = [
+                'dashboard'    => ['Overview', 'Live totals, trends and plan usage at a glance.'],
+                'bookings'     => ['Bookings', 'A week view of every appointment, by team member.'],
+                'conversation' => ['Conversations', 'Read any chat, see who the visitor is, and take over.'],
+                'leads'        => ['Leads', 'Every lead scored hot, warm or cold, ready to export.'],
+                'analytics'    => ['Analytics', 'What visitors ask, when they ask it, and what converts.'],
+                'admin'        => ['Admin', 'Revenue, plans and system health for the whole platform.'],
+            ];
+        @endphp
+        <div class="mt-10 flex flex-wrap justify-center gap-2" role="tablist">
+            @foreach($tour as $key => [$label, $about])
+                <button type="button" role="tab" @click="tab = '{{ $key }}'" :aria-selected="tab === '{{ $key }}'"
+                        class="px-4 py-2 rounded-full text-sm font-semibold transition"
+                        :class="tab === '{{ $key }}' ? 'bg-slate-900 text-white shadow-lg dark:bg-white dark:text-slate-900' : 'bg-white text-slate-600 border border-slate-200 hover:border-slate-400 dark:bg-white/5 dark:text-slate-300 dark:border-white/10'">{{ $label }}</button>
             @endforeach
-        </ul>
-    </div>
-    <div class="min-w-0 rounded-3xl p-3 sm:p-4 {{ $card }} shadow-xl shadow-slate-900/5" aria-hidden="true">
-        <div class="rounded-2xl bg-slate-50 dark:bg-[#0b1324] p-4 space-y-3">
-            <div class="flex items-center justify-between text-xs font-semibold {{ $muted }}"><span>Example dashboard</span><span class="text-emerald-500">● 12 live chats</span></div>
-            <div class="grid grid-cols-3 gap-2">
-                @foreach([['Chats', '184'], ['Leads', '37'], ['CSAT', '4.8']] as [$k, $v])
-                <div class="rounded-xl bg-white dark:bg-white/5 p-3"><p class="text-[11px] {{ $muted }}">{{ $k }}</p><p class="text-lg font-extrabold">{{ $v }}</p></div>
+        </div>
+
+        <div class="mt-8 relative">
+            <div class="absolute -inset-4 sm:-inset-8 -z-10 rounded-[2.5rem] bg-gradient-to-tr from-brand-500/25 via-accent-400/15 to-fuchsia-400/15 blur-2xl" aria-hidden="true"></div>
+            <div class="rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 bg-white shadow-2xl shadow-slate-900/20 dark:border-white/10 dark:bg-[#0b1324]">
+                <div class="flex items-center gap-1.5 px-4 py-3 border-b border-slate-200 bg-slate-50 dark:border-white/10 dark:bg-white/[0.03]">
+                    <span class="w-3 h-3 rounded-full bg-rose-400"></span><span class="w-3 h-3 rounded-full bg-amber-400"></span><span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+                    <span class="ml-4 hidden sm:block flex-1 max-w-md h-6 rounded-md bg-white dark:bg-white/5 text-[11px] leading-6 px-3 {{ $muted }} truncate">app.porifyx.com/<span x-text="tab"></span></span>
+                </div>
+                @foreach($tour as $key => [$label, $about])
+                    <img x-show="tab === '{{ $key }}'" @if(! $loop->first) x-cloak @endif src="{{ asset('images/landing/' . $key . '.webp') }}"
+                         alt="{{ $label }} screen in the {{ $name }} dashboard" width="1440" height="836" loading="lazy" decoding="async" class="w-full h-auto block">
                 @endforeach
             </div>
-            @foreach([['Sarah K.', 'Can you integrate with HubSpot?', 'Hot', 'bg-rose-500'], ['Daniel O.', 'What does the Team plan include?', 'Warm', 'bg-amber-500'], ['Mei L.', 'Do you offer an annual discount?', 'Warm', 'bg-amber-500'], ['Visitor 2841', 'How do I reset my password?', 'Support', 'bg-slate-400']] as [$who, $msg, $tag, $dot])
-            <div class="flex items-center gap-3 rounded-xl bg-white dark:bg-white/5 p-3">
-                <span class="grid place-items-center w-9 h-9 shrink-0 rounded-full bg-brand-100 text-brand-700 dark:bg-brand-500/20 dark:text-brand-200 text-xs font-bold">{{ mb_substr($who, 0, 1) }}</span>
-                <div class="min-w-0 flex-1"><p class="text-sm font-semibold truncate">{{ $who }}</p><p class="text-xs truncate {{ $muted }}">{{ $msg }}</p></div>
-                <span class="shrink-0 inline-flex items-center gap-1.5 text-[11px] font-semibold"><span class="w-1.5 h-1.5 rounded-full {{ $dot }}"></span>{{ $tag }}</span>
+        </div>
+        @foreach($tour as $key => [$label, $about])
+            <p x-show="tab === '{{ $key }}'" @if(! $loop->first) x-cloak @endif class="mt-5 text-center text-sm {{ $muted }}">{{ $about }}</p>
+        @endforeach
+    </div>
+</section>
+
+{{-- ================= BOOKINGS ================= --}}
+<section id="bookings" class="bg-white border-y border-slate-200 dark:bg-white/[0.02] dark:border-white/10 scroll-mt-16">
+    <div class="max-w-6xl mx-auto px-5 py-20 md:py-28 grid lg:grid-cols-[1fr_1.35fr] gap-12 items-center">
+        <div class="min-w-0">
+            <p class="{{ $eyebrow }}">New · Appointments</p>
+            <h2 class="{{ $h2 }}">Questions become bookings, right inside the chat.</h2>
+            <p class="mt-5 text-lg {{ $muted }}">Visitors pick a service, a person and a free time without leaving the conversation. They get a booking number by email and can come back to the chat to change or cancel.</p>
+            <ul class="mt-8 grid sm:grid-cols-2 gap-3 text-sm font-medium">
+                @foreach(['Google & Outlook calendar sync', 'Team diaries and opening hours', 'Take payment with your own Stripe', 'Sync to HubSpot, Pipedrive & more', 'Reminders and calendar invites', 'Change or cancel by booking number'] as $x)
+                <li class="flex gap-2"><span class="text-brand-500">✓</span>{{ $x }}</li>
+                @endforeach
+            </ul>
+        </div>
+        <div class="min-w-0 relative">
+            <div class="absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-to-br from-accent-400/20 via-brand-500/15 to-transparent blur-2xl" aria-hidden="true"></div>
+            <div class="grid grid-cols-2 gap-4 sm:gap-5">
+                @foreach([['chat-services', '1', 'Choose a service'], ['chat-times', '2', 'Pick a free time'], ['chat-details', '3', 'Add details'], ['chat-done', '4', 'Booked, with a number']] as [$img, $step, $label])
+                <figure class="{{ $loop->even ? 'sm:translate-y-8' : '' }}">
+                    <img src="{{ asset('images/landing/' . $img . '.webp') }}" alt="Chat booking step {{ $step }}: {{ $label }}" width="393" height="503" loading="lazy" decoding="async"
+                         class="w-full h-auto rounded-2xl shadow-2xl shadow-slate-900/25 ring-1 ring-slate-900/10 dark:ring-white/10">
+                    <figcaption class="mt-3 flex items-center gap-2 text-sm font-semibold">
+                        <span class="grid place-items-center w-6 h-6 rounded-full bg-brand-500 text-white text-xs">{{ $step }}</span>{{ $label }}
+                    </figcaption>
+                </figure>
+                @endforeach
             </div>
-            @endforeach
         </div>
     </div>
 </section>
