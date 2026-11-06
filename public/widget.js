@@ -529,6 +529,10 @@ ${bubbleCSS()}
 
 .pfx-offline-input { width:100%; padding:8px 12px; border-radius:10px; border:1px solid ${t.inputBorder}; background:${t.inputBg}; color:${t.text}; font-size:13px; outline:none; box-sizing:border-box; margin-bottom:8px; font-family:inherit; }
 .pfx-offline-input:focus { border-color:${pri}; }
+.pfx-stage { font-size:11px; color:${t.textDim}; padding:4px 2px 0; }
+.pfx-sources { display:flex; flex-wrap:wrap; gap:4px 8px; align-items:center; font-size:11px; color:${t.textDim}; padding:6px 2px 0; }
+.pfx-sources a { color:${pri}; text-decoration:none; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; border:1px solid ${t.border}; border-radius:999px; padding:2px 8px; }
+.pfx-sources a:hover { text-decoration:underline; }
 .pfx-btn-primary { background:${pri}; color:white; border:none; border-radius:10px; padding:10px 16px; font-size:13px; font-weight:600; cursor:pointer; width:100%; transition:opacity 0.2s; }
 .pfx-btn-primary:hover { opacity:0.85; }
 .pfx-bk { position:absolute; left:0; right:0; bottom:0; top:70px; z-index:5; display:flex; flex-direction:column; background:${t.bg}; color:${t.text}; }
@@ -742,12 +746,26 @@ ${bubbleCSS()}
         const inner = style === 'text'
             ? '<span class="pfx-typing-text">' + escapeHtml(config.ai_name || 'Assistant') + ' is typing<i>…</i></span>'
             : style === 'pulse' ? '<span></span>' : '<span></span><span></span><span></span>';
-        div.innerHTML = '<div class="pfx-bubble-wrap"><div class="pfx-bubble pfx-bubble-ai ' + (style === 'text' ? '' : 'pfx-typing pfx-typing-' + style) + '">' + inner + '</div></div>';
+        div.innerHTML = '<div class="pfx-bubble-wrap"><div class="pfx-bubble pfx-bubble-ai ' + (style === 'text' ? '' : 'pfx-typing pfx-typing-' + style) + '">' + inner + '</div><div class="pfx-stage">Searching our knowledge…</div></div>';
         c.appendChild(div);
+        clearTimeout(window.__pfxStage);
+        window.__pfxStage = setTimeout(function () { const s = div.querySelector('.pfx-stage'); if (s) s.textContent = 'Thinking…'; }, 1400);
         c.scrollTop = c.scrollHeight;
     }
 
+    function appendSources(wrap, sources) {
+        if (!wrap || !sources || !sources.length) return;
+        const d = document.createElement('div');
+        d.className = 'pfx-sources';
+        d.innerHTML = '<span>Sources:</span>' + sources.map(function (x) {
+            return '<a href="' + escapeAttr(x.url) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(x.title || x.url) + '</a>';
+        }).join('');
+        const ts = wrap.querySelector('.pfx-ts');
+        wrap.insertBefore(d, ts || null);
+    }
+
     function hideTyping() {
+        clearTimeout(window.__pfxStage);
         const el = document.getElementById('pfx-typing');
         if (el) el.remove();
     }
@@ -778,6 +796,8 @@ ${bubbleCSS()}
                 hideTyping();
                 if (data.ai_response) {
                     appendMessage('ai', data.ai_response.content, null, data.ai_response.created_at, data.ai_response.smart_suggestions || []);
+                    const lastAi = document.querySelectorAll('#pfx-messages .pfx-msg-ai');
+                    if (lastAi.length) appendSources(lastAi[lastAi.length - 1].querySelector('.pfx-bubble-wrap'), data.ai_response.sources);
                     if (data.ai_response.uuid) lastMessageUuid = data.ai_response.uuid;
                     registerAiReply();
                     playNotificationSound();
@@ -879,6 +899,7 @@ ${bubbleCSS()}
                         wrap2.appendChild(tsDiv);
                     }
 
+                    appendSources(div.querySelector('.pfx-bubble-wrap'), payload.sources);
                     div.removeAttribute('id');
                     if (payload.message_uuid) lastMessageUuid = payload.message_uuid;
                     registerAiReply();

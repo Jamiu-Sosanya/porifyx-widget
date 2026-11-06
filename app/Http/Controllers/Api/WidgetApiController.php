@@ -353,6 +353,7 @@ class WidgetApiController extends Controller
                 'metadata'        => [
                     'provider'   => $result['provider'] ?? null,
                     'model_used' => $result['model_used'] ?? null,
+                    'sources'    => $result['sources'] ?? [],
                 ],
             ]);
 
@@ -363,6 +364,7 @@ class WidgetApiController extends Controller
                 'confidence_score'  => $result['confidence_score'],
                 'is_fallback'       => $result['is_fallback'],
                 'smart_suggestions' => $result['smart_suggestions'] ?? [],
+                'sources'           => $result['sources'] ?? [],
                 'created_at'        => $aiMessage->created_at->toISOString(),
             ];
 
@@ -469,6 +471,7 @@ class WidgetApiController extends Controller
                 'role'             => 'ai',
                 'content'          => $fullContent,
                 'smart_suggestions'=> $suggestions,
+                'metadata'         => ['sources' => $chatService->lastSources],
             ]);
 
             $conversation->refresh();
@@ -501,6 +504,7 @@ class WidgetApiController extends Controller
                 'done'              => true,
                 'message_uuid'      => $aiMessage->uuid,
                 'smart_suggestions' => $suggestions,
+                'sources'           => $chatService->lastSources,
             ]) . "\n\n";
 
             if (ob_get_level() > 0) ob_flush();

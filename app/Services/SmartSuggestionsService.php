@@ -35,7 +35,7 @@ class SmartSuggestionsService
             : '';
 
         try {
-            $response = OpenAI::chat()->create([
+            $response = AppSupportAi::create([
                 'model'       => 'gpt-4o-mini',
                 'max_tokens'  => 120,
                 'temperature' => 0.8,
@@ -81,7 +81,7 @@ class SmartSuggestionsService
         $aiName       = $widget->ai_name ?? 'AI Assistant';
 
         try {
-            $response = OpenAI::chat()->create([
+            $response = AppSupportAi::create([
                 'model'       => 'gpt-4o-mini',
                 'max_tokens'  => 150,
                 'temperature' => 0.7,

@@ -14,6 +14,7 @@
             $widgetMenu[] = [($onEdit ? '' : route('widgets.edit', $openWidget)) . '#' . $hash, $label, null];
         }
         $widgetMenu[] = [route('widgets.knowledge.index', $openWidget), 'Knowledge base', $is('widgets.knowledge.*')];
+        $widgetMenu[] = [route('widgets.answers', $openWidget), 'Answers & gaps', $is('widgets.answers')];
         $widgetMenu[] = [route('widgets.playground', $openWidget), 'Playground', $is('widgets.playground')];
         $widgetMenu[] = [route('widgets.embed', $openWidget), 'Embed code', $is('widgets.embed')];
     }

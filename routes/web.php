@@ -104,6 +104,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/calendar/callback/{provider}', [\App\Http\Controllers\BookingIntegrationController::class, 'calendarCallback'])->name('calendar.callback');
         Route::post('/widgets/{widget}/duplicate', [WidgetController::class, 'duplicate'])->name('widgets.duplicate');
         Route::get('/widgets/{widget}/playground', [WidgetController::class, 'playground'])->name('widgets.playground');
+        Route::get('/widgets/{widget}/answers', [\App\Http\Controllers\AnswerController::class, 'index'])->name('widgets.answers');
+        Route::post('/widgets/{widget}/answers', [\App\Http\Controllers\AnswerController::class, 'store'])->name('widgets.answers.store');
+        Route::put('/widgets/{widget}/answers/{answer}', [\App\Http\Controllers\AnswerController::class, 'update'])->name('widgets.answers.update');
+        Route::delete('/widgets/{widget}/answers/{answer}', [\App\Http\Controllers\AnswerController::class, 'destroy'])->name('widgets.answers.destroy');
+        Route::post('/widgets/{widget}/gaps/{gap}/dismiss', [\App\Http\Controllers\AnswerController::class, 'dismissGap'])->name('widgets.gaps.dismiss');
         Route::post('/widgets/{widget}/toggle', [WidgetController::class, 'toggleActive'])->name('widgets.toggle');
         Route::post('/widgets/{widget}/regenerate-token', [WidgetController::class, 'regenerateToken'])->name('widgets.regenerateToken');
         Route::get('/widgets/{widget}/embed', [WidgetController::class, 'embedCode'])->name('widgets.embed');

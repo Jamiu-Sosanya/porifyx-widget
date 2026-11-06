@@ -51,15 +51,9 @@ class TrainingService
             $totalTokens = 0;
 
             foreach ($chunkBatches as $batch) {
-                $embeddings = $this->retrievalService->generateBatchEmbeddings($batch);
-
-                if (empty($embeddings)) {
-                    throw new \Exception(
-                        'Embedding generation failed — check that your OpenAI API key is set in ' .
-                        '.env (OPENAI_API_KEY). Embeddings always use OpenAI regardless of which ' .
-                        'AI provider you chose for chat.'
-                    );
-                }
+                // Embeddings are optional: without an OpenAI key (or if the call fails) chunks are
+                // stored without vectors and answered by keyword search instead.
+                $embeddings = blank(config('ai.openai.key')) ? [] : $this->retrievalService->generateBatchEmbeddings($batch);
 
                 foreach ($batch as $index => $chunkText) {
                     $tokenCount = (int) ceil(Str::length($chunkText) / 4);
@@ -72,7 +66,7 @@ class TrainingService
                         'chunk_index'        => $totalChunks,
                         'token_count'        => $tokenCount,
                         'embedding'          => $embeddings[$index] ?? null,
-                        'embedding_model'    => config('ai.openai.embedding_model'),
+                        'embedding_model'    => isset($embeddings[$index]) ? config('ai.openai.embedding_model') : null,
                         'metadata'           => [
                             'source_name' => $source->name,
                             'source_type' => $source->type,

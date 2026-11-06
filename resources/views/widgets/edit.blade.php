@@ -541,6 +541,14 @@
                 </div>
             </label>
 
+            <label class="flex items-center gap-3 p-3 bg-white/[0.02] border border-white/5 rounded-xl cursor-pointer">
+                <input type="checkbox" name="show_sources" value="1" {{ ($widget->show_sources ?? true) ? 'checked' : '' }} class="w-4 h-4 rounded">
+                <div>
+                    <span class="text-sm font-medium text-gray-300">🔗 Show sources</span>
+                    <p class="text-xs text-gray-500 mt-0.5">Link the pages an answer came from under each reply, so visitors can read more.</p>
+                </div>
+            </label>
+
             <label class="flex items-center gap-3 p-3 bg-accent-500/5 border border-accent-500/10 rounded-xl cursor-pointer">
                 <input type="checkbox" name="auto_language_detection" value="1" {{ $widget->auto_language_detection ? 'checked' : '' }} class="w-4 h-4 rounded text-accent-500 focus:ring-accent-500/30">
                 <div>

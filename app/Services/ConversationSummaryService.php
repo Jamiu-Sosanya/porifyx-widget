@@ -25,7 +25,7 @@ class ConversationSummaryService
         $transcript = $messages->map(fn ($m) => "{$m->role}: {$m->content}")->implode("\n");
 
         try {
-            $response = OpenAI::chat()->create([
+            $response = AppSupportAi::create([
                 'model'    => 'gpt-4o-mini',
                 'messages' => [
                     [

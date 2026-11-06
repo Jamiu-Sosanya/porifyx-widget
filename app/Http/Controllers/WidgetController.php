@@ -175,6 +175,7 @@ class WidgetController extends Controller
             'temperature'               => 'nullable|numeric|min:0|max:2',
             'response_length'           => 'nullable|in:short,medium,long',
             'strict_mode'               => 'nullable|boolean',
+            'show_sources'              => 'nullable|boolean',
             'system_prompt'             => 'nullable|string|max:5000',
             'lead_qualification_enabled'=> 'nullable|boolean',
             'domain_restriction'        => 'nullable|boolean',
@@ -204,7 +205,7 @@ class WidgetController extends Controller
             'emoji_enabled', 'typing_animation', 'message_streaming',
             'show_handoff_button',
             'webhook_enabled', 'webhook_lead_always', 'csat_prompt_enabled',
-            'strict_mode', 'lead_qualification_enabled', 'domain_restriction', 'is_active',
+            'strict_mode', 'show_sources', 'lead_qualification_enabled', 'domain_restriction', 'is_active',
         ];
 
         foreach ($boolFields as $field) {

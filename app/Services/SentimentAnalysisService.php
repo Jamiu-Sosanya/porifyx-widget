@@ -18,34 +18,18 @@ class SentimentAnalysisService
      */
     public function analyzeMessage(string $text): array
     {
-        try {
-            $response = OpenAI::chat()->create([
-                'model'       => 'gpt-4o-mini',
-                'max_tokens'  => 60,
-                'temperature' => 0,
-                'messages'    => [
-                    [
-                        'role'    => 'system',
-                        'content' => 'Analyze the sentiment of the following message. Respond with JSON only: {"score": <float between -1.0 and 1.0>, "label": "positive"|"neutral"|"negative"}. Score: -1.0=very negative, 0=neutral, 1.0=very positive.',
-                    ],
-                    ['role' => 'user', 'content' => substr($text, 0, 500)],
-                ],
-            ]);
+        // Instant word-list scoring: runs on every visitor message, so no AI round-trip here.
+        // ponytail: English-centric lexicon; swap for an AI call in a queued job if multilingual accuracy matters.
+        static $pos = ['great', 'good', 'love', 'thanks', 'thank', 'awesome', 'excellent', 'perfect', 'happy', 'amazing', 'helpful', 'nice', 'cool', 'brilliant', 'fantastic', 'glad', 'appreciate', 'wonderful', 'best', 'yes', 'interested', 'easy'];
+        static $neg = ['bad', 'terrible', 'awful', 'hate', 'angry', 'worst', 'useless', 'broken', 'problem', 'issue', 'refund', 'cancel', 'disappointed', 'annoyed', 'slow', 'wrong', 'error', 'fail', 'failed', 'complaint', 'poor', 'frustrated', 'scam', 'never', 'not working', "doesn't work", 'unhappy', 'rude'];
+        $t = ' ' . mb_strtolower($text) . ' ';
+        $p = 0; $n = 0;
+        foreach ($pos as $w) $p += substr_count($t, " $w");
+        foreach ($neg as $w) $n += substr_count($t, " $w");
+        if ($p + $n === 0) return ['score' => 0.0, 'label' => 'neutral'];
+        $score = round(($p - $n) / ($p + $n), 2);
 
-            $raw  = $response->choices[0]->message->content;
-            $data = json_decode(trim($raw), true);
-
-            if (isset($data['score'], $data['label'])) {
-                return [
-                    'score' => max(-1.0, min(1.0, (float) $data['score'])),
-                    'label' => in_array($data['label'], ['positive', 'neutral', 'negative']) ? $data['label'] : 'neutral',
-                ];
-            }
-        } catch (\Exception $e) {
-            Log::debug('Sentiment analysis failed: ' . $e->getMessage());
-        }
-
-        return ['score' => 0.0, 'label' => 'neutral'];
+        return ['score' => $score, 'label' => $score > 0.2 ? 'positive' : ($score < -0.2 ? 'negative' : 'neutral')];
     }
 
     /**
@@ -63,7 +47,7 @@ class SentimentAnalysisService
         );
 
         try {
-            $response = OpenAI::chat()->create([
+            $response = AppSupportAi::create([
                 'model'       => 'gpt-4o-mini',
                 'max_tokens'  => 200,
                 'temperature' => 0,
@@ -125,7 +109,7 @@ class SentimentAnalysisService
         }
 
         try {
-            $response = OpenAI::chat()->create([
+            $response = AppSupportAi::create([
                 'model'       => 'gpt-4o-mini',
                 'max_tokens'  => 10,
                 'temperature' => 0,
@@ -161,7 +145,7 @@ class SentimentAnalysisService
         }
 
         try {
-            $response = OpenAI::chat()->create([
+            $response = AppSupportAi::create([
                 'model'       => 'gpt-4o-mini',
                 'max_tokens'  => 1000,
                 'temperature' => 0.3,
