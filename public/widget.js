@@ -275,6 +275,20 @@
         return launcher + '#pfx-chat{width:100vw !important;height:100svh !important;left:0 !important;right:0 !important;top:0 !important;bottom:0 !important;border-radius:0 !important;}';
     }
 
+    // Message bubbles and typing indicator from the widget's settings.
+    function bubbleCSS() {
+        const L = config.launcher_style || {};
+        const r = { rounded: 18, soft: 12, square: 6, pill: 24 }[L.bubble_shape] || 18;
+        const tail = L.bubble_tail === false ? r : 4;
+        return '.pfx-bubble{border-radius:' + r + 'px;font-size:' + (+L.bubble_size || 13) + 'px}' +
+            '.pfx-bubble-visitor{border-bottom-right-radius:' + tail + 'px;' + (L.user_bg ? 'background:' + L.user_bg + ';' : '') + 'color:' + (L.user_text || '#fff') + '}' +
+            '.pfx-bubble-ai,.pfx-bubble-agent{border-bottom-left-radius:' + tail + 'px;' + (L.ai_bg ? 'background:' + L.ai_bg + ';border-color:transparent;' : '') + (L.ai_text ? 'color:' + L.ai_text : '') + '}' +
+            '@keyframes pfx-wave{0%,60%,100%{transform:scaleY(.4)}30%{transform:scaleY(1)}}@keyframes pfx-fade{0%,100%{opacity:.25}50%{opacity:1}}' +
+            '.pfx-typing-wave span{width:3px;height:14px;border-radius:2px;animation:pfx-wave 1s infinite ease-in-out}' +
+            '.pfx-typing-pulse span{width:9px;height:9px;animation:pfx-fade 1.2s infinite}' +
+            '.pfx-typing-text{font-size:12px;opacity:.8;font-style:italic}.pfx-typing-text i{animation:pfx-fade 1.2s infinite}';
+    }
+
     function buildLauncherHTML() {
         const L      = config.launcher_style || {};
         const pos    = config.position || 'bottom-right';
@@ -485,6 +499,7 @@
 .pfx-typing span:nth-child(1) { animation-delay:0s; }
 .pfx-typing span:nth-child(2) { animation-delay:0.2s; }
 .pfx-typing span:nth-child(3) { animation-delay:0.4s; }
+${bubbleCSS()}
 @keyframes pfx-bounce { 0%,80%,100%{transform:scale(0)} 40%{transform:scale(1)} }
 
 .pfx-pre { background:rgba(0,0,0,0.2); border-radius:8px; padding:10px 12px; overflow-x:auto; font-size:12px; margin:6px 0; }
@@ -698,11 +713,16 @@
     }
 
     function showTyping() {
+        if (config.typing_animation === false) return; // turned off by the business
         const c   = document.getElementById('pfx-messages');
         const div = document.createElement('div');
         div.id    = 'pfx-typing';
         div.className = 'pfx-msg pfx-msg-ai';
-        div.innerHTML = '<div class="pfx-bubble-wrap"><div class="pfx-bubble pfx-bubble-ai pfx-typing"><span></span><span></span><span></span></div></div>';
+        const style = (config.launcher_style || {}).typing_style || 'dots';
+        const inner = style === 'text'
+            ? '<span class="pfx-typing-text">' + escapeHtml(config.ai_name || 'Assistant') + ' is typing<i>…</i></span>'
+            : style === 'pulse' ? '<span></span>' : '<span></span><span></span><span></span>';
+        div.innerHTML = '<div class="pfx-bubble-wrap"><div class="pfx-bubble pfx-bubble-ai ' + (style === 'text' ? '' : 'pfx-typing pfx-typing-' + style) + '">' + inner + '</div></div>';
         c.appendChild(div);
         c.scrollTop = c.scrollHeight;
     }

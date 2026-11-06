@@ -56,6 +56,13 @@
         <div x-show="tab === 'appearance'" x-cloak
              x-data="{
                  L: @js($ls),
+                 typingOn: @js((bool) ($widget->typing_animation ?? true)),
+                 bubbleCss(who) {
+                     const r = { rounded: 18, soft: 12, square: 6, pill: 24 }[this.L.bubble_shape] || 18, t = this.L.bubble_tail ? 4 : r;
+                     const bg = who === 'ai' ? (this.L.ai_bg || pText + '14') : (this.L.user_bg || pColor);
+                     const fg = who === 'ai' ? (this.L.ai_text || pText) : (this.L.user_text || '#fff');
+                     return `border-radius:${r}px;border-${who === 'ai' ? 'top-left' : 'top-right'}-radius:${t}px;background:${bg};color:${fg};font-size:${this.L.bubble_size * .78}px`;
+                 },
                  shape: @js(old('launcher_shape', $widget->launcher_shape ?: 'circle')),
                  icon: @js(old('launcher_icon', $widget->launcher_icon ?: 'default')),
                  svgs: @js($iconSvgs),
@@ -198,6 +205,53 @@
                         </div>
                         <div class="relative w-16 h-32 rounded-xl border-2 border-slate-500/40 bg-slate-500/10 overflow-hidden">
                             <div class="absolute rounded-sm transition-all" :style="L.m_mode === 'full' ? `inset:0;background:${pColor}55` : `width:${L.m_w}%;height:${L.m_h}%;left:${(100 - L.m_w) / 2}%;bottom:2px;background:${pColor}55;border:1px solid ${pColor}`"></div>
+                        </div>
+                    </div>
+                </section>
+
+                {{-- Messages --}}
+                <section class="{{ $card }}">
+                    <h3 class="text-base font-semibold text-white">Messages</h3>
+                    <p class="text-xs text-gray-500 mt-0.5">How chat bubbles look for the assistant and the visitor.</p>
+                    <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
+                        <div>
+                            <p class="{{ $lbl }}">Bubble shape</p>
+                            <div class="grid grid-cols-4 gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
+                                @foreach(['rounded' => 'Rounded', 'soft' => 'Soft', 'square' => 'Square', 'pill' => 'Pill'] as $val => $t)
+                                <label><input type="radio" name="launcher[bubble_shape]" value="{{ $val }}" x-model="L.bubble_shape" class="peer sr-only"><span class="{{ $seg }} block">{{ $t }}</span></label>
+                                @endforeach
+                            </div>
+                            <label class="mt-3 flex items-center gap-2 text-xs text-gray-300"><input type="checkbox" name="launcher[bubble_tail]" value="1" x-model="L.bubble_tail" class="accent-brand-500"> Pointed corner towards the speaker</label>
+                        </div>
+                        <div>
+                            <div class="flex justify-between"><p class="{{ $lbl }}">Text size</p><span class="text-[11px] text-gray-500" x-text="L.bubble_size + 'px'"></span></div>
+                            <input type="range" name="launcher[bubble_size]" min="12" max="16" x-model="L.bubble_size" class="w-full accent-brand-500 mt-2">
+                        </div>
+                        @foreach([['Assistant bubble', 'ai_bg', 'ai_text', 'Theme colours'], ['Visitor bubble', 'user_bg', 'user_text', 'Primary colour']] as [$t, $bgKey, $txKey, $auto])
+                        <div class="p-3 rounded-xl bg-white/[0.03] border border-white/5">
+                            <p class="text-xs font-semibold text-gray-300">{{ $t }}</p>
+                            <label class="mt-2 flex items-center gap-2 text-[11px] text-gray-400"><input type="checkbox" name="launcher[{{ $bgKey }}_auto]" value="1" :checked="!L.{{ $bgKey }}" @change="L.{{ $bgKey }} = $event.target.checked ? '' : '{{ $bgKey === 'ai_bg' ? '#eef2f7' : '#2f5ee8' }}'" class="accent-brand-500"> Use {{ strtolower($auto) }}</label>
+                            <div class="mt-2 flex items-center gap-4" x-show="L.{{ $bgKey }}">
+                                <label class="flex items-center gap-2 text-[11px] text-gray-400"><input type="color" name="launcher[{{ $bgKey }}]" x-model="L.{{ $bgKey }}" :disabled="!L.{{ $bgKey }}" class="w-8 h-8 rounded-lg bg-transparent cursor-pointer"> Bubble</label>
+                                <label class="flex items-center gap-2 text-[11px] text-gray-400"><input type="color" name="launcher[{{ $txKey }}]" :value="L.{{ $txKey }} || '#111827'" @input="L.{{ $txKey }} = $event.target.value" class="w-8 h-8 rounded-lg bg-transparent cursor-pointer"> Text</label>
+                            </div>
+                        </div>
+                        @endforeach
+                        <div class="sm:col-span-2">
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+                                <p class="{{ $lbl }} !mb-0">“Typing…” indicator</p>
+                                <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer">
+                                    <input type="hidden" name="typing_animation" value="0">
+                                    <input type="checkbox" name="typing_animation" value="1" x-model="typingOn" class="peer sr-only">
+                                    <span class="relative block w-10 h-6 rounded-full bg-white/15 peer-checked:bg-brand-500 transition after:absolute after:top-1 after:left-1 after:w-4 after:h-4 after:rounded-full after:bg-white after:transition peer-checked:after:translate-x-4"></span>
+                                    Show while the assistant writes a reply
+                                </label>
+                            </div>
+                            <div x-show="typingOn" class="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
+                                @foreach(['dots' => 'Bouncing dots', 'wave' => 'Wave', 'pulse' => 'Pulse', 'text' => 'Name is typing…'] as $val => $t)
+                                <label><input type="radio" name="launcher[typing_style]" value="{{ $val }}" x-model="L.typing_style" class="peer sr-only"><span class="{{ $seg }} block">{{ $t }}</span></label>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -350,8 +404,12 @@
                             <span class="text-xs font-semibold text-white truncate" x-text="pName || 'Assistant'"></span>
                         </div>
                         <div class="p-2.5 space-y-1.5">
-                            <p class="max-w-[85%] px-2.5 py-1.5 rounded-lg rounded-tl-sm text-[10px] leading-snug" :style="`background:${pText}14;color:${pText}`">Hi! How can I help today?</p>
-                            <p class="ml-auto max-w-[75%] px-2.5 py-1.5 rounded-lg rounded-tr-sm text-[10px] text-white" :style="`background:${pColor}`">Do you have openings?</p>
+                            <p class="max-w-[85%] px-2.5 py-1.5 leading-snug" :style="bubbleCss('ai')">Hi! How can I help today?</p>
+                            <p class="ml-auto w-fit max-w-[75%] px-2.5 py-1.5 leading-snug" :style="bubbleCss('user')">Do you have openings?</p>
+                            <p x-show="typingOn" class="w-fit px-2.5 py-1.5 flex items-center gap-1" :style="bubbleCss('ai')">
+                                <template x-if="L.typing_style === 'text'"><span class="italic opacity-80" x-text="(pName || 'Assistant') + ' is typing…'"></span></template>
+                                <template x-if="L.typing_style !== 'text'"><span class="flex items-center gap-1"><template x-for="i in (L.typing_style === 'pulse' ? 1 : 3)"><span class="inline-block rounded-full bg-current animate-pulse" :class="L.typing_style === 'wave' ? 'w-[3px] h-2.5' : 'w-1.5 h-1.5'" :style="`animation-delay:${i * .2}s`"></span></template></span></template>
+                            </p>
                         </div>
                     </div>
                     <div class="absolute flex items-center justify-center transition-[width,height,border-radius,background,left,right,top,bottom] duration-200" :class="L.animation !== 'none' && 'pfx-anim-' + L.animation" :style="corner() + launcherStyle() + `;--pfx-ring:${L.bg}99`">
@@ -409,7 +467,6 @@
                         'collect_email'         => ['Collect Email', '📧'],
                         'collect_phone'         => ['Collect Phone', '📞'],
                         'emoji_enabled'         => ['Enable Emojis', '😊'],
-                        'typing_animation'      => ['Typing Animation', '⌨️'],
                         'message_streaming'     => ['Stream Responses', '⚡'],
                         'show_handoff_button'   => ['Human Handoff Button', '🙋'],
                         'csat_prompt_enabled'   => ['CSAT Rating Prompt', '⭐'],

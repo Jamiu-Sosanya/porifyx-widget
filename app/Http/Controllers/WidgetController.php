@@ -147,6 +147,14 @@ class WidgetController extends Controller
             'launcher.m_w'              => 'nullable|integer|between:70,100',
             'launcher.m_h'              => 'nullable|integer|between:50,100',
             'launcher.m_size'           => 'nullable|integer|between:40,72',
+            'launcher.bubble_shape'     => 'nullable|in:rounded,soft,square,pill',
+            'launcher.bubble_tail'      => 'nullable|boolean',
+            'launcher.ai_bg'            => 'nullable|regex:/^#[0-9a-fA-F]{6}$/',
+            'launcher.ai_text'          => 'nullable|regex:/^#[0-9a-fA-F]{6}$/',
+            'launcher.user_bg'          => 'nullable|regex:/^#[0-9a-fA-F]{6}$/',
+            'launcher.user_text'        => 'nullable|regex:/^#[0-9a-fA-F]{6}$/',
+            'launcher.bubble_size'      => 'nullable|integer|between:12,16',
+            'launcher.typing_style'     => 'nullable|in:dots,wave,pulse,text',
             'launcher.animation'        => ['nullable', \Illuminate\Validation\Rule::in(array_keys(\App\Support\LauncherIcons::ANIMATIONS))],
             'launcher_icon'             => ['nullable', \Illuminate\Validation\Rule::in([...array_keys(\App\Support\LauncherIcons::PRESETS), 'custom'])],
             'launcher_icon_file'        => 'nullable|' . \App\Support\LauncherIcons::UPLOAD_RULE,
@@ -248,7 +256,13 @@ class WidgetController extends Controller
         // Launcher icon: a new upload switches to "custom"; choosing a preset or removing drops the old file.
         unset($validated['launcher_icon_file']);
         if (isset($validated['launcher'])) {
-            $validated['launcher'] = array_replace(\App\Support\LauncherIcons::style($widget), array_filter($validated['launcher'], fn ($v) => $v !== null), ['label' => (string) ($validated['launcher']['label'] ?? '')]);
+            $validated['launcher']['bubble_tail'] = $request->boolean('launcher.bubble_tail');
+            foreach (['ai_bg', 'ai_text', 'user_bg'] as $k) {
+                if ($request->boolean('launcher.' . $k . '_auto')) {
+                    $validated['launcher'][$k] = '';
+                }
+            }
+            $validated['launcher'] = array_replace(\App\Support\LauncherIcons::style($widget), array_filter($validated['launcher'], fn ($v, $k) => $v !== null || in_array($k, ['ai_bg', 'ai_text', 'user_bg'], true), ARRAY_FILTER_USE_BOTH), ['label' => (string) ($validated['launcher']['label'] ?? '')]);
         }
         if ($request->hasFile('launcher_icon_file')) {
             if ($widget->launcher_icon_path) {

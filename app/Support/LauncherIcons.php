@@ -14,6 +14,9 @@ class LauncherIcons
     /** Chat window and launcher sizes that work on most sites and phones. */
     public const RECOMMENDED = ['chat_w' => 380, 'chat_h' => 600, 'm_mode' => 'full', 'm_w' => 94, 'm_h' => 85, 'm_size' => 56];
 
+    /** Message bubbles and typing indicator. Empty colours follow the chat theme. */
+    public const BUBBLES = ['bubble_shape' => 'rounded', 'bubble_tail' => true, 'ai_bg' => '', 'ai_text' => '', 'user_bg' => '', 'user_text' => '#ffffff', 'bubble_size' => 13, 'typing_style' => 'dots'];
+
     public const ANIMATIONS = ['none' => 'None', 'pulse' => 'Pulse', 'ping' => 'Ping', 'glow' => 'Glow', 'bounce' => 'Bounce', 'float' => 'Float', 'wiggle' => 'Wiggle', 'shake' => 'Shake', 'heartbeat' => 'Heartbeat'];
 
     public const KEYFRAMES = '@keyframes pfxPulse{0%{box-shadow:0 0 0 0 var(--pfx-ring)}70%{box-shadow:0 0 0 16px transparent}100%{box-shadow:0 0 0 0 transparent}}@keyframes pfxPing{0%{box-shadow:0 0 0 0 var(--pfx-ring)}30%{box-shadow:0 0 0 14px transparent}100%{box-shadow:0 0 0 0 transparent}}@keyframes pfxGlow{from{box-shadow:0 0 6px 0 var(--pfx-ring)}to{box-shadow:0 0 26px 6px var(--pfx-ring)}}@keyframes pfxBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes pfxFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}@keyframes pfxWiggle{0%,30%,100%{transform:rotate(0)}6%,18%{transform:rotate(-10deg)}12%,24%{transform:rotate(10deg)}}@keyframes pfxShake{0%,25%,100%{transform:translateX(0)}5%,15%{transform:translateX(-4px)}10%,20%{transform:translateX(4px)}}@keyframes pfxHeart{0%,40%,100%{transform:scale(1)}10%,30%{transform:scale(1.12)}20%{transform:scale(.97)}}.pfx-anim-pulse{animation:pfxPulse 2.2s infinite}.pfx-anim-ping{animation:pfxPing 3s infinite}.pfx-anim-glow{animation:pfxGlow 1.6s ease-in-out infinite alternate}.pfx-anim-bounce{animation:pfxBounce 2s ease-in-out infinite}.pfx-anim-float{animation:pfxFloat 3s ease-in-out infinite}.pfx-anim-wiggle{animation:pfxWiggle 2.6s ease-in-out infinite}.pfx-anim-shake{animation:pfxShake 3s ease-in-out infinite}.pfx-anim-heartbeat{animation:pfxHeart 1.8s ease-in-out infinite}@media(prefers-reduced-motion:reduce){[class*=pfx-anim-]{animation:none!important}}';
@@ -39,7 +42,7 @@ class LauncherIcons
             'bg2' => $widget->secondary_color && $widget->secondary_color !== '#ffffff' ? $widget->secondary_color : '#06b6d4',
             'angle' => 135, 'icon_color' => '#ffffff', 'border_width' => 0, 'border_color' => '#ffffff',
             'shadow' => 'medium', 'offset_x' => 20, 'offset_y' => 20, 'label' => '', 'animation' => 'none',
-        ] + self::RECOMMENDED;
+        ] + self::RECOMMENDED + self::BUBBLES;
     }
 
     public static function style(Widget $widget): array
