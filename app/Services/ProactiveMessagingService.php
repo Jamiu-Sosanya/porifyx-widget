@@ -26,10 +26,7 @@ class ProactiveMessagingService
             ->where('is_active', true)
             ->get()
             ->filter(function (ProactiveMessage $pm) use ($pageUrl) {
-                if ($pm->target_url_pattern && $pageUrl) {
-                    return (bool) preg_match('/' . $pm->target_url_pattern . '/i', $pageUrl);
-                }
-                return true;
+                return \App\Support\Engagement::pageMatches($pm->target_url_pattern, $pageUrl);
             })
             ->values()
             ->map(fn ($pm) => [

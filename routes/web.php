@@ -104,6 +104,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/calendar/callback/{provider}', [\App\Http\Controllers\BookingIntegrationController::class, 'calendarCallback'])->name('calendar.callback');
         Route::post('/widgets/{widget}/duplicate', [WidgetController::class, 'duplicate'])->name('widgets.duplicate');
         Route::get('/widgets/{widget}/playground', [WidgetController::class, 'playground'])->name('widgets.playground');
+        Route::get('/widgets/{widget}/engagement', [\App\Http\Controllers\EngagementController::class, 'show'])->name('widgets.engagement');
+        Route::put('/widgets/{widget}/engagement', [\App\Http\Controllers\EngagementController::class, 'save'])->name('widgets.engagement.save');
+        Route::post('/widgets/{widget}/triggers', [\App\Http\Controllers\EngagementController::class, 'storeTrigger'])->name('widgets.triggers.store');
+        Route::put('/widgets/{widget}/triggers/{trigger}', [\App\Http\Controllers\EngagementController::class, 'updateTrigger'])->name('widgets.triggers.update');
+        Route::delete('/widgets/{widget}/triggers/{trigger}', [\App\Http\Controllers\EngagementController::class, 'destroyTrigger'])->name('widgets.triggers.destroy');
         Route::get('/widgets/{widget}/answers', [\App\Http\Controllers\AnswerController::class, 'index'])->name('widgets.answers');
         Route::post('/widgets/{widget}/answers', [\App\Http\Controllers\AnswerController::class, 'store'])->name('widgets.answers.store');
         Route::put('/widgets/{widget}/answers/{answer}', [\App\Http\Controllers\AnswerController::class, 'update'])->name('widgets.answers.update');

@@ -10,7 +10,7 @@
         . '<div class="s"><div class="b" style="width:40%;height:22px;background:#cfd8e6"></div><div class="b"></div><div class="b" style="width:85%"></div><div class="b" style="width:65%"></div>'
         . '<p style="font-size:13px;margin-top:28px">Your website. The assistant opens in the corner, exactly as visitors will see it.</p></div>'
         . '<script src="' . asset('widget.js') . '?v=' . filemtime(public_path('widget.js')) . '" data-widget-id="' . $widget->uuid . '" data-api-base="' . url('/api/widget') . '" data-playground="' . $widget->playgroundToken() . '"></script>'
-        . '<script>setTimeout(function(){window.pfx&&window.pfx("open")},900)</script></body></html>';
+        . '<script>var pgT=setInterval(function(){if(document.getElementById("pfx-launcher")){clearInterval(pgT);window.pfx("open")}},200)</script></body></html>';
     $checks = [
         ['AI replies', $plan['chat'], 'Monthly AI messages left on your plan', 'Visitors see a "leave a message" form instead of AI replies'],
         ['Lead capture', $plan['leads'], 'New leads are saved', 'New leads are not saved until next month or an upgrade'],

@@ -157,6 +157,21 @@ class WidgetController extends Controller
             'font_family'               => 'nullable|string|max:100',
             'welcome_message'           => 'nullable|string|max:500',
             'suggested_replies_input'   => 'nullable|string|max:2000',
+            // Editor fields that previously were never saved
+            'theme'                     => 'nullable|in:dark,light,minimal,bold,ocean,nature',
+            'ai_avatar'                 => 'nullable|image|mimes:jpg,jpeg,png|max:1024',
+            'conversation_starters_input' => 'nullable|string|max:1000',
+            'auto_language_detection'   => 'nullable|boolean',
+            'smart_suggestions_enabled' => 'nullable|boolean',
+            'smart_suggestions_count'   => 'nullable|integer|min:2|max:5',
+            'proactive_enabled'         => 'nullable|boolean',
+            'proactive_message'         => 'nullable|string|max:500',
+            'proactive_trigger_seconds' => 'nullable|integer|min:5|max:300',
+            'proactive_trigger_pages'   => 'nullable|integer|min:1|max:20',
+            'offline_form_message'      => 'nullable|string|max:500',
+            'notification_email'        => 'nullable|email|max:255',
+            'slack_webhook_url'         => 'nullable|url:https|max:500',
+            'discord_webhook_url'       => 'nullable|url:https|max:500',
             'placeholder_text'          => 'nullable|string|max:200',
             'show_branding'             => 'nullable|boolean',
             'auto_open'                 => 'nullable|boolean',
@@ -186,6 +201,8 @@ class WidgetController extends Controller
             'webhook_url'               => 'nullable|url|max:2048',
             'webhook_secret'            => 'nullable|string|max:128',
             'webhook_lead_always'       => 'nullable|boolean',
+            'sound_enabled'             => 'nullable|boolean',
+            'offline_form_enabled'      => 'nullable|boolean',
             'csat_prompt_enabled'       => 'nullable|boolean',
             'welcome_messages'          => 'nullable|array',
             'welcome_messages.*'        => 'nullable|string|max:500',
@@ -200,12 +217,15 @@ class WidgetController extends Controller
 
         // Handle boolean fields
         $boolFields = [
+            // Only fields with a checkbox in the editor: an unchecked box is absent from the request,
+            // so listing a field without a checkbox would switch it off on every save.
+            // (is_active has its own toggle; voice input lives on the Engagement page.)
             'show_branding', 'auto_open', 'show_on_mobile', 'collect_email',
-            'collect_phone', 'file_upload_enabled', 'voice_input_enabled',
-            'emoji_enabled', 'typing_animation', 'message_streaming',
-            'show_handoff_button',
-            'webhook_enabled', 'webhook_lead_always', 'csat_prompt_enabled',
-            'strict_mode', 'show_sources', 'lead_qualification_enabled', 'domain_restriction', 'is_active',
+            'collect_phone', 'emoji_enabled', 'typing_animation', 'message_streaming',
+            'show_handoff_button', 'sound_enabled', 'offline_form_enabled',
+            'auto_language_detection', 'smart_suggestions_enabled', 'proactive_enabled',
+            'webhook_enabled', 'csat_prompt_enabled',
+            'strict_mode', 'show_sources', 'lead_qualification_enabled', 'domain_restriction',
         ];
 
         foreach ($boolFields as $field) {
@@ -226,6 +246,17 @@ class WidgetController extends Controller
                     return rtrim(strtolower($d), '/');
                 }, explode("\n", $validated['allowed_domains']))
             ));
+        }
+
+        // Conversation starters: one per line, max 4.
+        if (array_key_exists('conversation_starters_input', $validated)) {
+            $validated['conversation_starters'] = array_values(array_slice(array_filter(array_map('trim', preg_split('/\R/', (string) $validated['conversation_starters_input']))), 0, 4));
+            unset($validated['conversation_starters_input']);
+        }
+        // Assistant avatar upload (removed from $validated: stored path saved instead).
+        unset($validated['ai_avatar']);
+        if ($request->hasFile('ai_avatar')) {
+            $validated['ai_avatar'] = $request->file('ai_avatar')->store('avatars', 'public');
         }
 
         $lines = preg_split('/\r\n|\r|\n/', (string) ($validated['suggested_replies_input'] ?? ''));

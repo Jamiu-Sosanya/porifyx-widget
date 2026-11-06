@@ -115,6 +115,10 @@ class WidgetApiController extends Controller
                 // Plan limit reached or subscription inactive: the widget shows a friendly notice and the message form.
                 'service_available'    => $plan['chat'],
                 'playground'           => $widget->isPlaygroundRequest(),
+                // Engagement: hidden pages, AI notice, voice input
+                'hidden'               => ! $widget->isPlaygroundRequest() && \App\Support\Engagement::hiddenOn($widget, (string) request('page_url', '')),
+                'ai_notice'            => ($n = \App\Support\Engagement::settings($widget)['ai_notice'])['enabled'] ? $n + ['version' => substr(md5($n['title'] . $n['text']), 0, 8)] : null,
+                'voice_input_enabled'  => (bool) $widget->voice_input_enabled,
                 'offline_form_message' => $this->getLocalizedText($widget->offline_form_messages, $userLanguage, $widget->offline_form_message),
 
                 // Proactive
@@ -365,6 +369,7 @@ class WidgetApiController extends Controller
                 'is_fallback'       => $result['is_fallback'],
                 'smart_suggestions' => $result['smart_suggestions'] ?? [],
                 'sources'           => $result['sources'] ?? [],
+                'cards'             => \App\Support\Engagement::cardsFor($widget, $validated['content'] . ' ' . $result['content']),
                 'created_at'        => $aiMessage->created_at->toISOString(),
             ];
 
@@ -505,6 +510,7 @@ class WidgetApiController extends Controller
                 'message_uuid'      => $aiMessage->uuid,
                 'smart_suggestions' => $suggestions,
                 'sources'           => $chatService->lastSources,
+                'cards'             => \App\Support\Engagement::cardsFor($widget, $validated['content'] . ' ' . $fullContent),
             ]) . "\n\n";
 
             if (ob_get_level() > 0) ob_flush();

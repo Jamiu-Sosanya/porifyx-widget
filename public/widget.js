@@ -245,6 +245,8 @@
                 config = { ...config, ...variantConfig };
             }
 
+            if (config.hidden) return;
+
             currentTheme = config.theme || 'dark';
             handoffDone = false;
             aiTurnCount = 0;
@@ -393,6 +395,9 @@
             '<div id="pfx-collect-form" style="display:none;margin-bottom:8px;"></div>' +
             '<div style="display:flex;gap:8px;align-items:flex-end;">' +
             '<textarea id="pfx-input" rows="1" placeholder="' + escapeAttr(config.placeholder_text || 'Type a message...') + '" style="flex:1;resize:none;border:1px solid ' + t.inputBorder + ';border-radius:12px;padding:10px 14px;font-size:13px;background:' + t.inputBg + ';color:' + t.text + ';outline:none;font-family:inherit;transition:border-color 0.2s,max-height 0.2s;max-height:120px;line-height:1.5;overflow-y:auto;"></textarea>' +
+            (config.voice_input_enabled && (window.SpeechRecognition || window.webkitSpeechRecognition)
+                ? '<button id="pfx-mic" type="button" aria-label="Speak your question" title="Speak your question" style="width:42px;height:42px;border-radius:12px;border:1px solid ' + t.inputBorder + ';background:' + t.inputBg + ';color:' + t.text + ';cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>'
+                : '') +
             '<button id="pfx-send" type="button" style="width:42px;height:42px;border-radius:12px;border:none;background:' + config.primary_color + ';color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity 0.2s,transform 0.15s;box-shadow:0 4px 12px rgba(0,0,0,0.2);">' +
             '<svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>' +
             '</div></div>' +
@@ -405,6 +410,9 @@
         document.getElementById('pfx-launcher').addEventListener('click', toggleChat);
         document.getElementById('pfx-close').addEventListener('click', toggleChat);
         document.getElementById('pfx-send').addEventListener('click', sendMessage);
+        const mic = document.getElementById('pfx-mic');
+        if (mic) mic.addEventListener('click', toggleVoice);
+        if (config.ai_notice) document.getElementById('pfx-input').addEventListener('focus', function () { if (!noticeAccepted()) showNotice(); });
 
         const input = document.getElementById('pfx-input');
         input.addEventListener('keydown', function (e) {
@@ -529,6 +537,16 @@ ${bubbleCSS()}
 
 .pfx-offline-input { width:100%; padding:8px 12px; border-radius:10px; border:1px solid ${t.inputBorder}; background:${t.inputBg}; color:${t.text}; font-size:13px; outline:none; box-sizing:border-box; margin-bottom:8px; font-family:inherit; }
 .pfx-offline-input:focus { border-color:${pri}; }
+.pfx-notice { margin:8px 0; padding:12px 14px; border-radius:14px; border:1px solid ${t.border}; background:${t.surface}; color:${t.text}; font-size:12.5px; line-height:1.5; }
+.pfx-notice p { margin:6px 0 8px; color:${t.textDim}; }
+.pfx-notice a { color:${pri}; font-size:12px; }
+.pfx-notice-btns { display:flex; gap:8px; margin-top:10px; }
+.pfx-notice-btns .pfx-btn-primary { flex:1; }
+.pfx-notice-decline { flex:1; border:1px solid ${t.border}; background:transparent; color:${t.text}; border-radius:10px; padding:8px; cursor:pointer; font-family:inherit; }
+.pfx-cards { display:flex; flex-direction:column; gap:6px; padding-top:8px; }
+.pfx-card { display:flex; flex-direction:column; gap:3px; padding:10px 12px; border-radius:12px; border:1px solid ${t.border}; background:${t.surface}; font-size:12.5px; color:${t.text}; }
+.pfx-card span { color:${t.textDim}; font-size:12px; }
+.pfx-card a { color:${pri}; font-weight:600; text-decoration:none; margin-top:2px; }
 .pfx-stage { font-size:11px; color:${t.textDim}; padding:4px 2px 0; }
 .pfx-sources { display:flex; flex-wrap:wrap; gap:4px 8px; align-items:center; font-size:11px; color:${t.textDim}; padding:6px 2px 0; }
 .pfx-sources a { color:${pri}; text-decoration:none; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; border:1px solid ${t.border}; border-radius:999px; padding:2px 8px; }
@@ -764,6 +782,75 @@ ${bubbleCSS()}
         wrap.insertBefore(d, ts || null);
     }
 
+    // ── Voice input ───────────────────────────────────────────────────────────
+    let recog = null;
+    function toggleVoice() {
+        const mic = document.getElementById('pfx-mic');
+        if (config.ai_notice && !noticeAccepted()) { showNotice(); return; }
+        if (recog) { recog.stop(); return; }
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recog = new SR();
+        recog.lang = config.detected_language && config.detected_language !== 'en' ? config.detected_language : (navigator.language || 'en-US');
+        recog.interimResults = true;
+        mic.style.background = config.primary_color; mic.style.color = '#fff';
+        recog.onresult = function (e) {
+            document.getElementById('pfx-input').value = Array.from(e.results).map(function (r) { return r[0].transcript; }).join('');
+        };
+        recog.onend = function () {
+            recog = null;
+            const t = getTheme();
+            mic.style.background = t.inputBg; mic.style.color = t.text;
+            if (document.getElementById('pfx-input').value.trim()) sendMessage();
+        };
+        recog.onerror = function () { if (recog) recog.stop(); };
+        recog.start();
+    }
+
+    // ── AI notice (EU AI Act): shown before the first message, remembered per wording ──
+    function noticeAccepted() {
+        return !config.ai_notice || localStorage.getItem('pfx_notice_' + config.uuid) === config.ai_notice.version;
+    }
+    function showNotice(declined) {
+        if (document.getElementById('pfx-notice')) return;
+        const n = config.ai_notice, t = getTheme();
+        const el = document.createElement('div');
+        el.id = 'pfx-notice';
+        el.className = 'pfx-notice';
+        el.innerHTML = '<strong>' + escapeHtml(n.title) + '</strong><p>' + escapeHtml(declined ? n.decline_text : n.text) + '</p>' +
+            (n.privacy_url && /^https?:/i.test(n.privacy_url) ? '<a href="' + escapeAttr(n.privacy_url) + '" target="_blank" rel="noopener noreferrer">Privacy policy</a>' : '') +
+            '<div class="pfx-notice-btns"><button type="button" class="pfx-btn-primary" data-a="1">Accept</button>' +
+            (declined ? '' : '<button type="button" class="pfx-notice-decline" data-a="0">Decline</button>') + '</div>';
+        const c = document.getElementById('pfx-messages');
+        c.appendChild(el);
+        c.scrollTop = c.scrollHeight;
+        el.querySelectorAll('button').forEach(function (b) {
+            b.addEventListener('click', function () {
+                el.remove();
+                if (b.getAttribute('data-a') === '1') {
+                    localStorage.setItem('pfx_notice_' + config.uuid, n.version);
+                    if (document.getElementById('pfx-input').value.trim()) sendMessage();
+                    else document.getElementById('pfx-input').focus();
+                } else {
+                    showNotice(true);
+                }
+            });
+        });
+    }
+
+    // ── Action cards under an answer ─────────────────────────────────────────
+    function appendCards(wrap, cards) {
+        if (!wrap || !cards || !cards.length) return;
+        const d = document.createElement('div');
+        d.className = 'pfx-cards';
+        d.innerHTML = cards.map(function (c) {
+            const safe = /^https?:/i.test(c.url || '');
+            return '<div class="pfx-card"><strong>' + escapeHtml(c.title) + '</strong>' + (c.text ? '<span>' + escapeHtml(c.text) + '</span>' : '') +
+                (safe ? '<a href="' + escapeAttr(c.url) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(c.button || 'Open') + ' →</a>' : '') + '</div>';
+        }).join('');
+        const ts = wrap.querySelector('.pfx-ts');
+        wrap.insertBefore(d, ts || null);
+    }
+
     function hideTyping() {
         clearTimeout(window.__pfxStage);
         const el = document.getElementById('pfx-typing');
@@ -775,6 +862,7 @@ ${bubbleCSS()}
         const input   = document.getElementById('pfx-input');
         const content = input.value.trim();
         if (!content || isLoading) return;
+        if (!noticeAccepted()) { showNotice(); return; }
 
         // Hide starters after first message
         const starters = document.getElementById('pfx-starters');
@@ -797,7 +885,10 @@ ${bubbleCSS()}
                 if (data.ai_response) {
                     appendMessage('ai', data.ai_response.content, null, data.ai_response.created_at, data.ai_response.smart_suggestions || []);
                     const lastAi = document.querySelectorAll('#pfx-messages .pfx-msg-ai');
-                    if (lastAi.length) appendSources(lastAi[lastAi.length - 1].querySelector('.pfx-bubble-wrap'), data.ai_response.sources);
+                    if (lastAi.length) {
+                        appendSources(lastAi[lastAi.length - 1].querySelector('.pfx-bubble-wrap'), data.ai_response.sources);
+                        appendCards(lastAi[lastAi.length - 1].querySelector('.pfx-bubble-wrap'), data.ai_response.cards);
+                    }
                     if (data.ai_response.uuid) lastMessageUuid = data.ai_response.uuid;
                     registerAiReply();
                     playNotificationSound();
@@ -900,6 +991,7 @@ ${bubbleCSS()}
                     }
 
                     appendSources(div.querySelector('.pfx-bubble-wrap'), payload.sources);
+                    appendCards(div.querySelector('.pfx-bubble-wrap'), payload.cards);
                     div.removeAttribute('id');
                     if (payload.message_uuid) lastMessageUuid = payload.message_uuid;
                     registerAiReply();
@@ -1425,6 +1517,20 @@ ${bubbleCSS()}
                             showProactiveBubble(pm.message, pm.id, pm.quick_replies || []);
                         }
                     });
+                } else if (pm.trigger_type === 'time_on_page') {
+                    setTimeout(function () {
+                        if (!isOpen && !proactiveShown) showProactiveBubble(pm.message, pm.id, pm.quick_replies || []);
+                    }, Math.max(3, pm.trigger_value || 30) * 1000);
+                } else if (pm.trigger_type === 'idle') {
+                    let idleT;
+                    const arm = function () {
+                        clearTimeout(idleT);
+                        idleT = setTimeout(function () {
+                            if (!isOpen && !proactiveShown) showProactiveBubble(pm.message, pm.id, pm.quick_replies || []);
+                        }, Math.max(5, pm.trigger_value || 20) * 1000);
+                    };
+                    ['mousemove', 'keydown', 'scroll', 'touchstart'].forEach(function (ev) { window.addEventListener(ev, arm, { passive: true }); });
+                    arm();
                 } else if (pm.trigger_type === 'scroll_depth') {
                     window.addEventListener('scroll', function handler() {
                         const scrolled = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;

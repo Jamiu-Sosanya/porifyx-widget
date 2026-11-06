@@ -33,7 +33,7 @@ class Widget extends Model
         'sound_enabled', 'offline_form_enabled', 'offline_form_message', 'offline_form_messages',
 
         // Smart features
-        'smart_suggestions_enabled', 'smart_suggestions_count', 'auto_language_detection', 'show_sources',
+        'smart_suggestions_enabled', 'smart_suggestions_count', 'auto_language_detection', 'show_sources', 'engagement',
 
         // Proactive messaging
         'proactive_enabled', 'proactive_trigger_seconds', 'proactive_trigger_pages', 'proactive_message',
@@ -90,6 +90,7 @@ class Widget extends Model
             'csat_prompt_enabled'         => 'boolean',
             'smart_suggestions_enabled'   => 'boolean',
             'show_sources'                => 'boolean',
+            'engagement'                  => 'array',
             'auto_language_detection'     => 'boolean',
             'proactive_enabled'           => 'boolean',
             'notify_on_lead'              => 'boolean',
