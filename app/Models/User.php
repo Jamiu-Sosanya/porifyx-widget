@@ -18,7 +18,7 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasFactory, Notifiable, HasRoles, SoftDeletes, LogsActivity;
 
     protected $fillable = [
-        'name', 'email', 'password', 'avatar', 'role', 'timezone', 'locale',
+        'name', 'email', 'password', 'avatar', 'role', 'timezone', 'locale', 'ai_credits',
         'two_factor_enabled', 'two_factor_secret', 'two_factor_recovery_codes',
         'two_factor_confirmed_at', 'is_active', 'company_name', 'company_website',
         'phone', 'notification_preferences', 'telegram_chat_id',
@@ -132,9 +132,22 @@ class User extends Authenticatable implements MustVerifyEmail
         return (bool) $this->subscription?->isActive();
     }
 
+    /** The paid plan while it is active; otherwise the Free plan (if the admin keeps it on), so widgets never go dark. */
     public function currentPlan(): ?Plan
     {
-        return $this->subscription?->plan;
+        if ($this->subscription?->isActive()) return $this->subscription->plan;
+
+        return self::freePlan() ?? $this->subscription?->plan;
+    }
+
+    public static function freePlan(): ?Plan
+    {
+        return once(fn () => Plan::where('slug', 'free')->where('is_active', true)->first());
+    }
+
+    public function onFreePlan(): bool
+    {
+        return ! $this->subscription?->isActive() && self::freePlan() !== null;
     }
 
     public function getUsageThisMonth(string $metric): int
@@ -154,7 +167,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function canUse(string $metric): bool
     {
         if ($this->isAdmin()) return true;
-        if (! $this->hasActivePlan()) return false;
+        if (! $this->hasActivePlan() && ! self::freePlan()) return false;
 
         $plan = $this->currentPlan();
         $limit = match ($metric) {
@@ -176,18 +189,23 @@ class User extends Authenticatable implements MustVerifyEmail
             'automations'      => $this->automations()->count(),
             default            => $this->getUsageThisMonth($metric),
         };
-        return $used < $limit;
+        // Past the monthly AI allowance, top-up credits keep the assistant answering.
+        return $used < $limit || ($metric === 'messages' && $this->ai_credits > 0);
     }
 
     /** On/off plan features: live_chat, custom_branding, api_access, ai_insights, white_label, priority_support. */
     public function hasFeature(string $feature): bool
     {
         if ($this->isAdmin()) return true;
-        return $this->hasActivePlan() && (bool) $this->currentPlan()?->{'has_' . $feature};
+        return ($this->hasActivePlan() || self::freePlan()) && (bool) $this->currentPlan()?->{'has_' . $feature};
     }
 
     public function incrementUsage(string $metric, int $amount = 1): void
     {
+        if ($metric === 'messages' && $this->ai_credits > 0 && ($limit = (int) $this->currentPlan()?->messages_per_month) !== -1 && $this->getUsageThisMonth('messages') >= $limit) {
+            static::whereKey($this->id)->where('ai_credits', '>', 0)->decrement('ai_credits', min($amount, $this->ai_credits));
+            $this->ai_credits = max(0, $this->ai_credits - $amount);
+        }
         UsageRecord::updateOrCreate(
             [
                 'user_id' => $this->id,

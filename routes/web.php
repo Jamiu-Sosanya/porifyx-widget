@@ -233,6 +233,7 @@ Route::middleware(['auth', \App\Http\Middleware\WorkspaceContext::class])->group
     Route::post('/settings/billing/bank-transfer', [\App\Http\Controllers\BillingController::class, 'bankSubmit'])->name('billing.bank.submit');
     Route::post('/settings/billing/paypal', [\App\Http\Controllers\PayPalController::class, 'checkout'])->name('billing.paypal');
     Route::get('/settings/billing/paypal/return', [\App\Http\Controllers\PayPalController::class, 'returned'])->name('billing.paypal.return');
+    Route::post('/settings/billing/credits', [\App\Http\Controllers\BillingController::class, 'buyCredits'])->name('billing.credits');
     Route::get('/settings/billing/portal', [\App\Http\Controllers\BillingController::class, 'portal'])->name('billing.portal');
     Route::post('/settings/billing/cancel', [SettingsController::class, 'cancelSubscription'])->name('settings.billing.cancel');
     Route::get('/settings/developer', [SettingsController::class, 'developer'])->name('settings.developer');

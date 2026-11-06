@@ -3,7 +3,7 @@
 @section('content')
 <div>
     <h2 class="text-2xl font-bold text-white mb-1">Create your account</h2>
-    <p class="text-gray-400 mb-8">Start your 14-day free trial. No credit card required.</p>
+    <p class="text-gray-400 mb-8">Start with a 14-day Pro trial, then stay on the Free plan or upgrade. No card required.</p>
 
     <form method="POST" action="{{ route('register') }}" class="space-y-5">
         @csrf

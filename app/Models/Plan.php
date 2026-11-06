@@ -55,7 +55,7 @@ class Plan extends Model
 
         return array_values(array_filter([
             $n($this->widgets_limit, 'chat widget', 'chat widgets'),
-            $n($this->messages_per_month, 'AI message', 'AI messages') . ' / month',
+            $n($this->messages_per_month, 'AI reply', 'AI replies') . ' / month included',
             $n($this->leads_per_month, 'lead', 'leads') . ' / month',
             $this->bookings_per_month ? $n($this->bookings_per_month, 'booking', 'bookings') . ' / month' : null,
             $n($this->training_sources_limit, 'training source', 'training sources'),

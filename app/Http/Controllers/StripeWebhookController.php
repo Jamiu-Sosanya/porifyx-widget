@@ -187,6 +187,12 @@ class StripeWebhookController extends Controller
     {
         $s = $event->data->object;
         $user = User::find((int) ($s->client_reference_id ?? $s->metadata->user_id ?? 0));
+        if ($user && ($s->mode ?? '') === 'payment' && ($s->payment_status ?? '') === 'paid' && ($n = (int) ($s->metadata->credits ?? 0)) > 0) {
+            // Idempotent: Stripe may resend the same event.
+            if (\Illuminate\Support\Facades\Cache::add('pfx:credits:' . $s->id, 1, now()->addDays(30))) $user->increment('ai_credits', $n);
+
+            return;
+        }
         if (! $user || ($s->mode ?? '') !== 'subscription' || ($s->payment_status ?? 'paid') === 'unpaid') return;
 
         Subscription::updateOrCreate(['user_id' => $user->id], [

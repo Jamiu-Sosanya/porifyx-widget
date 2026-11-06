@@ -217,7 +217,7 @@ class SettingsController extends Controller
     {
         $user = $request->user();
         $subscription = $user->subscription;
-        $plan = $subscription?->plan;
+        $plan = $request->user()->currentPlan();
         $plans = Plan::active()->get();
         $invoices = $user->invoices()->orderBy('created_at', 'desc')->take(20)->get();
 

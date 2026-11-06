@@ -74,7 +74,7 @@
 </ul>
 
 <h2 id="trial">9. Free trials</h2>
-<p>New accounts may start with a free trial. You do not need a payment card to start one. At the end of the trial, you can choose a paid plan to keep your assistant running. If you do not, your assistant stops replying, but we keep your account and settings for 30 days in case you change your mind.</p>
+<p>New accounts may start with a free trial. You do not need a payment card to start one. At the end of the trial, your account moves to the Free plan and keeps working within its limits, unless you choose a paid plan. Paid plans never upgrade automatically. If you use more AI replies than your plan includes, you can buy credits, which do not expire.</p>
 
 <h2 id="cancel">10. Cancelling</h2>
 <p>You can cancel at any time from your billing settings. When you cancel, your plan stays active until the end of the period you have already paid for. We do not usually give refunds for partial periods, but if something has gone wrong, talk to us. We are reasonable people.</p>

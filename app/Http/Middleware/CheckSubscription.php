@@ -21,7 +21,7 @@ class CheckSubscription
 
         $subscription = $user->subscription;
 
-        if ($subscription && $subscription->isActive()) {
+        if (($subscription && $subscription->isActive()) || \App\Models\User::freePlan()) {
             return $next($request);
         }
 

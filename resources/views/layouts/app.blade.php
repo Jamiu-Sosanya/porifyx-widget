@@ -112,24 +112,24 @@
                 @php
                     $pfxU = auth()->user();
                     $pfxOut = [];
-                    if ($pfxU && ! $pfxU->isAdmin() && $pfxU->hasActivePlan()) {
+                    if ($pfxU && ! $pfxU->isAdmin() && $pfxU->currentPlan()) {
                         foreach (['messages' => 'AI messages', 'leads' => 'new leads', 'bookings' => 'bookings'] as $m => $label) {
                             if ($pfxU->currentPlan()->{['messages' => 'messages_per_month', 'leads' => 'leads_per_month', 'bookings' => 'bookings_per_month'][$m]} != 0 && ! $pfxU->canUse($m)) $pfxOut[] = $label;
                         }
                     }
                 @endphp
-                @if($pfxU && ! $pfxU->isAdmin() && (! $pfxU->hasActivePlan() || $pfxOut))
+                @if($pfxU && ! $pfxU->isAdmin() && (! $pfxU->currentPlan() || $pfxOut))
                 <div class="max-w-[1400px] mx-auto px-4 sm:px-6 mt-4">
-                    <div class="p-4 rounded-xl border text-sm flex flex-col sm:flex-row sm:items-center gap-3 {{ $pfxU->hasActivePlan() ? 'bg-amber-500/10 border-amber-500/20 text-amber-300' : 'bg-rose-500/10 border-rose-500/20 text-rose-300' }}">
+                    <div class="p-4 rounded-xl border text-sm flex flex-col sm:flex-row sm:items-center gap-3 {{ $pfxU->currentPlan() ? 'bg-amber-500/10 border-amber-500/20 text-amber-300' : 'bg-rose-500/10 border-rose-500/20 text-rose-300' }}">
                         <p class="flex-1">
-                            @if(! $pfxU->hasActivePlan())
+                            @if(! $pfxU->currentPlan())
                                 <strong>Your subscription is not active.</strong> Your chat widgets are not answering with AI: visitors see a "leave a message" form and bookings are paused.
                             @else
                                 <strong>You have used all your {{ implode(', ', $pfxOut) }} for this month.</strong>
                                 {{ in_array('AI messages', $pfxOut) ? 'Visitors now see a "leave a message" form instead of AI replies.' : 'Visitors can still chat, but these stop until next month or an upgrade.' }}
                             @endif
                         </p>
-                        <a href="{{ route('settings.billing') }}" class="shrink-0 text-center px-4 py-2 rounded-lg bg-brand-500 text-white text-xs font-semibold">{{ $pfxU->hasActivePlan() ? 'Upgrade plan' : 'Renew now' }}</a>
+                        <a href="{{ route('settings.billing') }}" class="shrink-0 text-center px-4 py-2 rounded-lg bg-brand-500 text-white text-xs font-semibold">{{ $pfxU->currentPlan() ? 'Upgrade plan' : 'Renew now' }}</a>
                     </div>
                 </div>
                 @endif

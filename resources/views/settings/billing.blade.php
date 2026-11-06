@@ -96,6 +96,25 @@
     </div>
     @endif
 
+    {{-- AI credits --}}
+    @php $pfxCredits = (int) auth()->user()->ai_credits; @endphp
+    <div class="mb-8 rounded-2xl border border-white/[0.07] bg-gray-900/50 p-5 flex flex-col lg:flex-row lg:items-center gap-5">
+        <div class="flex-1">
+            <p class="text-sm font-semibold text-white">AI reply credits <span class="ml-2 px-2 py-0.5 rounded-full bg-brand-500/15 text-brand-300 text-xs">{{ number_format($pfxCredits) }} left</span></p>
+            <p class="mt-1 text-xs text-gray-400">Your plan's AI replies are included every month. Credits are only used after that, never expire, and keep your assistant answering at busy times. No surprise upgrades.</p>
+        </div>
+        @if($pfxStripe)
+        <div class="flex flex-wrap gap-2">
+            @foreach(config('plans.credit_packs') as $k => [$n, $price])
+            <form method="POST" action="{{ route('billing.credits') }}">@csrf<input type="hidden" name="pack" value="{{ $k }}">
+                <button class="px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm text-white"><strong>{{ number_format($n) }}</strong> replies · ${{ $price }}</button></form>
+            @endforeach
+        </div>
+        @else
+        <p class="text-xs text-gray-500">Card payments are not set up yet. Contact us to add credits.</p>
+        @endif
+    </div>
+
     {{-- Plan selector --}}
     <div class="mb-8" x-data="{ cycle: '{{ $subscription?->billing_cycle ?? 'monthly' }}' }">
         <div class="flex items-center justify-between mb-4">
@@ -112,7 +131,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-4">
             @foreach($plans as $p)
             @php $isCurrent = $plan && $plan->id === $p->id; @endphp
             <div class="relative bg-gray-900/50 border {{ $p->is_popular ? 'border-brand-500/30 ring-1 ring-brand-500/15' : 'border-white/5' }} rounded-2xl p-5 flex flex-col">

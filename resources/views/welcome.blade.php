@@ -86,11 +86,11 @@
             </h1>
             <p class="mt-6 text-base sm:text-lg max-w-xl {{ $muted }}">{{ $pfxHero['subtitle'] }}</p>
             <div class="mt-8 flex flex-col sm:flex-row gap-3">
-                <a href="{{ route('register') }}" class="px-6 py-4 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-semibold text-center shadow-lg shadow-brand-500/30">Start your free trial</a>
+                <a href="{{ route('register') }}" class="px-6 py-4 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-semibold text-center shadow-lg shadow-brand-500/30">Start free, no card</a>
                 <a href="#how" class="px-6 py-4 rounded-xl border border-slate-300 hover:border-slate-900 dark:border-white/20 dark:hover:bg-white/5 font-semibold text-center">See how it works</a>
             </div>
             <ul class="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-sm {{ $muted }}">
-                <li>✓ {{ config('branding.trial_days') }}-day free trial</li><li>✓ No card required</li><li>✓ Live in 10 minutes</li>
+                <li>✓ Free plan forever</li><li>✓ {{ config('branding.trial_days') }}-day Pro trial, no card</li><li>✓ Live in 10 minutes</li>
             </ul>
         </div>
 
@@ -431,18 +431,24 @@
 
 {{-- ================= PRICING ================= --}}
 @if($plans->count())
-<section id="pricing" class="max-w-6xl mx-auto px-5 py-20 md:py-28 scroll-mt-16">
+<section id="pricing" class="max-w-7xl mx-auto px-5 py-20 md:py-28 scroll-mt-16">
     <div class="text-center">
         <p class="{{ $eyebrow }}">Pricing</p>
-        <h2 class="{{ $h2 }}">Plans that grow with you.</h2>
+        <h2 class="{{ $h2 }}">Start free. Pay less as you grow.</h2>
+        <p class="mt-4 max-w-2xl mx-auto {{ $muted }}">AI is included in every plan. No per-reply credits, no surprise upgrades, no add-on fees for the AI.</p>
+        <div class="mt-6 flex flex-wrap justify-center gap-2 text-xs font-semibold">
+            @foreach(['Free plan, forever', 'AI included, not an add-on', 'No automatic upgrades', 'Top-ups that never expire', 'Bookings included', '14-day Pro trial, no card'] as $x)
+            <span class="px-3 py-1.5 rounded-full border border-slate-200 bg-white dark:border-white/10 dark:bg-white/5">✓ {{ $x }}</span>
+            @endforeach
+        </div>
         <div class="mt-8 inline-flex p-1 rounded-xl bg-slate-200/70 dark:bg-white/5 text-sm font-semibold">
             <button @click="yearly = false" :class="!yearly ? 'bg-white shadow text-slate-900' : 'text-slate-500 dark:text-slate-400'" class="px-5 py-2 rounded-lg">Monthly</button>
             <button @click="yearly = true" :class="yearly ? 'bg-white shadow text-slate-900' : 'text-slate-500 dark:text-slate-400'" class="px-5 py-2 rounded-lg">Yearly</button>
         </div>
     </div>
-    <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-{{ min($plans->count(), 4) }}">
+    <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         @foreach($plans as $plan)
-        <div class="rounded-3xl p-7 flex flex-col {{ $plan->is_popular ? 'bg-[#0d1a33] text-white ring-2 ring-brand-500 shadow-2xl shadow-brand-500/20' : $card }}">
+        <div class="rounded-3xl p-6 flex flex-col {{ $plan->is_popular ? 'bg-[#0d1a33] text-white ring-2 ring-brand-500 shadow-2xl shadow-brand-500/20' : $card }}">
             <div class="flex items-center justify-between gap-2">
                 <h3 class="font-bold text-lg">{{ $plan->name }}</h3>
                 @if($plan->is_popular)<span class="text-[11px] font-bold uppercase tracking-wider bg-brand-500 rounded-full px-2.5 py-1">Popular</span>@endif
@@ -465,6 +471,7 @@
         </div>
         @endforeach
     </div>
+    <p class="mt-8 text-center text-sm {{ $muted }}">Need more AI replies? Top up any time: 1,000 for $5, 5,000 for $19 or 20,000 for $59. Credits never expire.</p>
     @if($pfxGuarantee = \App\Models\SystemSetting::get('money_back_text'))
     <p class="mt-8 text-center text-sm font-semibold {{ $muted }}">🛡️ {{ $pfxGuarantee }}</p>
     @endif

@@ -108,6 +108,9 @@ return [
 
     'trial_days' => 14,
 
+    // AI reply top-ups: key => [credits, price in USD]. Credits never expire.
+    'credit_packs' => ['s' => [1000, 5], 'm' => [5000, 19], 'l' => [20000, 59]],
+
     'overage' => [
         'enabled'           => true,
         'price_per_message' => 0.01, // $0.01 per message over limit

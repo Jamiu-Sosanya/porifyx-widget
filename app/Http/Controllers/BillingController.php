@@ -60,7 +60,10 @@ class BillingController extends Controller
             $customer = $user->subscription?->stripe_customer_id;
             $session = $stripe->checkout->sessions->create(array_filter([
                 'mode' => 'subscription',
-                'line_items' => [['price' => $priceId, 'quantity' => 1]],
+                'line_items' => [str_starts_with((string) $priceId, 'price_') && ! preg_match('/^price_(free|starter|pro|business|enterprise)_/', (string) $priceId)
+                    ? ['price' => $priceId, 'quantity' => 1]
+                    : ['quantity' => 1, 'price_data' => ['currency' => 'usd', 'unit_amount' => (int) round(($cycle === 'yearly' ? $plan->price_yearly : $plan->price_monthly) * 100),
+                        'recurring' => ['interval' => $cycle === 'yearly' ? 'year' : 'month'], 'product_data' => ['name' => 'PoriFyx ' . $plan->name]]]],
                 'customer' => $customer ?: null,
                 'customer_email' => $customer ? null : $user->email,
                 'client_reference_id' => (string) $user->id,
@@ -76,6 +79,34 @@ class BillingController extends Controller
             Log::error('Stripe checkout failed: ' . $e->getMessage(), ['plan' => $plan->id]);
 
             return back()->with('error', 'Card payment could not start. ' . (self::bankReady() ? 'You can pay by bank transfer instead.' : 'Please try again later.'));
+        }
+    }
+
+    /** One-off AI credit top-up. Credits never expire and are used only after the monthly allowance. */
+    public function buyCredits(Request $request)
+    {
+        $packs = config('plans.credit_packs');
+        $d = $request->validate(['pack' => 'required|in:' . implode(',', array_keys($packs))]);
+        [$credits, $price] = $packs[$d['pack']];
+        abort_unless(self::stripeReady(), 404);
+        try {
+            $user = $request->user();
+            $session = (new \Stripe\StripeClient(config('services.stripe.secret')))->checkout->sessions->create(array_filter([
+                'mode' => 'payment',
+                'line_items' => [['quantity' => 1, 'price_data' => ['currency' => 'usd', 'unit_amount' => $price * 100, 'product_data' => ['name' => number_format($credits) . ' AI reply credits']]]],
+                'customer' => $user->subscription?->stripe_customer_id ?: null,
+                'customer_email' => $user->subscription?->stripe_customer_id ? null : $user->email,
+                'client_reference_id' => (string) $user->id,
+                'metadata' => ['user_id' => $user->id, 'credits' => $credits],
+                'success_url' => route('settings.billing') . '?credits=1',
+                'cancel_url' => route('settings.billing'),
+            ]));
+
+            return redirect()->away($session->url);
+        } catch (\Throwable $e) {
+            Log::error('Stripe credits checkout failed: ' . $e->getMessage());
+
+            return back()->with('error', 'Card payment could not start. Please try again later.');
         }
     }
 

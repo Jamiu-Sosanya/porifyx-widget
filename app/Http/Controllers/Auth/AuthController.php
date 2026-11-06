@@ -97,7 +97,7 @@ class AuthController extends Controller
         ]);
 
         // Create a trial subscription
-        $starterPlan = \App\Models\Plan::where('slug', 'starter')->first();
+        $starterPlan = \App\Models\Plan::where('slug', 'pro')->first() ?? \App\Models\Plan::where('slug', 'starter')->first();
         if ($starterPlan) {
             \App\Models\Subscription::create([
                 'user_id'              => $user->id,
