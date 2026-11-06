@@ -1,15 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.settings')
 @section('title', 'Two-Factor Authentication')
 @section('page-title', 'Settings')
-@section('content')
-<div class="max-w-3xl" x-data="{ showDisableForm: false }">
-
-    {{-- Settings Nav --}}
-    <div class="flex items-center gap-1 bg-gray-900/50 border border-white/5 rounded-2xl p-1.5 mb-6 overflow-x-auto">
-        @foreach(['settings.profile' => '👤 Profile', 'settings.notifications' => '🔔 Notifications', 'settings.team' => '👥 Team', 'settings.billing' => '💳 Billing', 'settings.twoFactor' => '🔐 Two-Factor', 'settings.apiKeys' => '🔑 API Keys'] as $route => $label)
-        <a href="{{ route($route) }}" class="px-4 py-2 text-xs font-medium rounded-xl transition whitespace-nowrap {{ request()->routeIs($route) ? 'bg-white/10 text-white shadow' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">{{ $label }}</a>
-        @endforeach
-    </div>
+@section('settings')
+<div class="w-full" x-data="{ showDisableForm: false }">
 
     {{-- Flash messages --}}
     @if(session('success'))
@@ -108,9 +101,10 @@
                 <p class="text-xs font-medium text-gray-400 mb-3">Step 1 — Scan QR Code</p>
                 @if($qrUrl)
                 <div class="p-4 bg-white rounded-2xl inline-block">
-                    {{-- Render QR code via Google Chart API --}}
-                    <img src="https://chart.googleapis.com/chart?chs=200x200&chld=M|0&cht=qr&chl={{ urlencode($qrUrl) }}"
-                         alt="2FA QR Code" class="w-48 h-48">
+                    {{-- QR drawn on the server: the secret never leaves this site. --}}
+                    <div class="w-48 h-48 [&>svg]:w-full [&>svg]:h-full" role="img" aria-label="QR code for your authenticator app">
+                        {!! (new \BaconQrCode\Writer(new \BaconQrCode\Renderer\ImageRenderer(new \BaconQrCode\Renderer\RendererStyle\RendererStyle(192, 0), new \BaconQrCode\Renderer\Image\SvgImageBackEnd())))->writeString($qrUrl) !!}
+                    </div>
                 </div>
                 @endif
             </div>
@@ -119,7 +113,7 @@
                 <p class="text-xs text-gray-500 mb-2">Account: <span class="text-white">{{ $user->email }}</span></p>
                 <p class="text-xs text-gray-500 mb-3">Key:</p>
                 <div class="flex items-center gap-2">
-                    <code class="flex-1 bg-black/30 border border-white/5 rounded-xl px-3 py-2.5 text-sm font-mono text-brand-300 tracking-widest break-all">{{ $secret }}</code>
+                    <code class="flex-1 pfx-code bg-black/30 border border-white/5 rounded-xl px-3 py-2.5 text-sm font-mono text-brand-300 tracking-widest break-all">{{ $secret }}</code>
                     <button type="button" onclick="navigator.clipboard.writeText('{{ $secret }}').then(() => { this.textContent = '✓'; setTimeout(() => this.textContent = '⧉', 2000) })"
                             class="p-2 bg-white/5 hover:bg-white/10 rounded-xl text-gray-400 hover:text-white transition text-sm" title="Copy secret">⧉</button>
                 </div>

@@ -1,14 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.settings')
 @section('title', 'Team')
 @section('page-title', 'Settings')
-@section('content')
-<div class="max-w-3xl">
-    {{-- Settings Nav --}}
-    <div class="flex items-center gap-1 bg-gray-900/50 border border-white/5 rounded-2xl p-1.5 mb-6 overflow-x-auto">
-        @foreach(['settings.profile' => '👤 Profile', 'settings.notifications' => '🔔 Notifications', 'settings.team' => '👥 Team', 'settings.billing' => '💳 Billing', 'settings.twoFactor' => '🔐 Two-Factor', 'settings.apiKeys' => '🔑 API Keys'] as $route => $label)
-        <a href="{{ route($route) }}" class="px-4 py-2 text-xs font-medium rounded-xl transition whitespace-nowrap {{ request()->routeIs($route) ? 'bg-white/10 text-white shadow' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">{{ $label }}</a>
-        @endforeach
-    </div>
+@section('settings')
+<div class="w-full">
 
     @if(session('success'))
     <div class="mb-5 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-sm text-emerald-400 flex items-center gap-2">

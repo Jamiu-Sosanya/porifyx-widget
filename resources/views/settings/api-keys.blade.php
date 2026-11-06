@@ -1,8 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.settings')
 @section('title', 'API Keys')
 @section('page-title', 'Settings')
-@section('content')
-<div class="max-w-3xl" x-data="{
+@section('settings')
+<div class="w-full" x-data="{
     showCreate: false,
     permissions: ['read'],
     togglePerm(p) {
@@ -13,12 +13,6 @@
         }
     }
 }">
-    {{-- Settings Nav --}}
-    <div class="flex items-center gap-1 bg-gray-900/50 border border-white/5 rounded-2xl p-1.5 mb-6 overflow-x-auto">
-        @foreach(['settings.profile' => '👤 Profile', 'settings.notifications' => '🔔 Notifications', 'settings.team' => '👥 Team', 'settings.billing' => '💳 Billing', 'settings.twoFactor' => '🔐 Two-Factor', 'settings.apiKeys' => '🔑 API Keys'] as $route => $label)
-        <a href="{{ route($route) }}" class="px-4 py-2 text-xs font-medium rounded-xl transition whitespace-nowrap {{ request()->routeIs($route) ? 'bg-white/10 text-white shadow' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">{{ $label }}</a>
-        @endforeach
-    </div>
 
     {{-- New key reveal --}}
     @if(session('new_key'))
@@ -77,11 +71,9 @@
                     <label class="relative cursor-pointer">
                         <input type="checkbox" name="permissions[]" value="{{ $val }}"
                                x-model="permissions"
-                               @change="togglePerm('{{ $val }}')"
-                               class="sr-only peer"
-                               {{ $val === 'read' ? 'checked' : '' }}>
+                               class="sr-only peer">
                         <div class="p-3 bg-white/2 border border-white/10 rounded-xl peer-checked:border-brand-500/40 peer-checked:bg-brand-500/10 transition">
-                            <p class="text-sm font-semibold text-white peer-checked:text-brand-300">{{ $label }}</p>
+                            <p class="text-sm font-semibold text-white">{{ $label }}</p>
                             <p class="text-[10px] text-gray-600 mt-0.5 leading-tight">{{ $desc }}</p>
                         </div>
                     </label>
@@ -178,7 +170,7 @@
     </div>
 
     {{-- Usage docs hint --}}
-    <div class="mt-4 bg-gray-900/30 border border-white/4 rounded-2xl p-4 text-xs text-gray-500">
+    <div class="mt-4 bg-gray-900/50 border border-white/5 rounded-2xl p-4 text-xs text-gray-400">
         <p class="font-medium text-gray-400 mb-1">Using your API key</p>
         <p class="leading-relaxed">Pass your key in the <code class="bg-white/5 px-1.5 py-0.5 rounded text-gray-300 font-mono">Authorization</code> header as a Bearer token:</p>
         <code class="block mt-2 bg-black/30 border border-white/5 rounded-xl p-3 text-[10px] font-mono text-gray-400">

@@ -1,9 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.settings')
 @section('title', 'Canned Responses')
 @section('page-title', 'Canned Responses')
 
-@section('content')
-<div class="max-w-4xl mx-auto space-y-6" x-data="cannedResponses()">
+@section('settings')
+<div class="w-full mx-auto space-y-6" x-data="cannedResponses()">
 
     {{-- Header --}}
     <div class="flex items-center justify-between">

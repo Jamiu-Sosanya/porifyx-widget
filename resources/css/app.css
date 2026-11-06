@@ -236,3 +236,9 @@ html.light .pfx-canvas .bg-gray-900\/50 { box-shadow: 0 1px 2px rgba(15, 23, 42,
 html.light .pfx-appbar a.from-brand-600, html.light .pfx-appbar a.from-brand-600 * { color: #fff !important; }
 html.light .pfx-canvas .text-amber-100, html.light .pfx-canvas .text-amber-200 { color: #78350f !important; }
 html.light .pfx-canvas .text-amber-300 { color: #b45309 !important; }
+
+/* Keep white text on brand-coloured buttons and badges in light mode. */
+html.light main :is([class*="bg-brand-5"], [class*="bg-brand-6"], [class*="bg-rose-5"], [class*="bg-emerald-5"], [class*="from-brand"]):not([class*="/"]) ,
+html.light main :is([class*="bg-brand-5"], [class*="bg-brand-6"], [class*="bg-rose-5"], [class*="bg-emerald-5"], [class*="from-brand"]):not([class*="/"]) * { color: #fff !important; }
+html.light main .pfx-code { background: #f1f5f9 !important; color: #1e3a8a !important; border-color: #e2e8f0 !important; }
+html.light main input[type=file]::file-selector-button { background: #e2e8f0 !important; color: #0f172a !important; }

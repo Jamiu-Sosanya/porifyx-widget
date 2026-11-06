@@ -1,8 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.settings')
 @section('title', 'Developer — Webhooks & API')
 @section('page-title', 'Developer documentation')
-@section('content')
-<div class="max-w-4xl space-y-8" x-data="{ section: 'overview' }">
+@section('settings')
+<div class="w-full space-y-8" x-data="{ section: 'overview' }">
     <p class="text-sm text-gray-400">Reference for embedding the widget, verifying outbound webhooks, and connecting <strong class="text-gray-300">Zapier</strong> or <strong class="text-gray-300">Make</strong>. Bundle path: <code class="text-brand-400 text-xs">/documentation/</code> on disk for buyers.</p>
 
     <div class="flex flex-wrap gap-2">
