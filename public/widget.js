@@ -19,6 +19,7 @@
     let isLoading       = false;
     let handoffDone     = false;
     let aiTurnCount     = 0;
+    let leadKeywordHit  = false;
     let unreadCount     = 0;
     let proactiveShown  = false;
     let pageCount       = parseInt(sessionStorage.getItem('pfx_pages') || '0') + 1;
@@ -543,6 +544,9 @@ ${bubbleCSS()}
 .pfx-notice-btns { display:flex; gap:8px; margin-top:10px; }
 .pfx-notice-btns .pfx-btn-primary { flex:1; }
 .pfx-notice-decline { flex:1; border:1px solid ${t.border}; background:transparent; color:${t.text}; border-radius:10px; padding:8px; cursor:pointer; font-family:inherit; }
+.pfx-leadform .pfx-offline-input { margin-top:6px; }
+.pfx-lf-check { display:flex; gap:8px; align-items:center; margin-top:8px; font-size:12.5px; }
+.pfx-lf-err { color:#ef4444; font-size:12px; margin-top:6px; }
 .pfx-cards { display:flex; flex-direction:column; gap:6px; padding-top:8px; }
 .pfx-card { display:flex; flex-direction:column; gap:3px; padding:10px 12px; border-radius:12px; border:1px solid ${t.border}; background:${t.surface}; font-size:12.5px; color:${t.text}; }
 .pfx-card span { color:${t.textDim}; font-size:12px; }
@@ -659,6 +663,7 @@ ${bubbleCSS()}
 
             if (config.service_available === false) serviceUnavailable();
             else if (!conversationUuid) await startConversation();
+            if (config.lead_form && config.lead_form.mode === 'pre_chat' && config.service_available !== false) showLeadForm();
             startPolling();
         } else {
             stopPolling();
@@ -837,6 +842,69 @@ ${bubbleCSS()}
         });
     }
 
+    // ── Lead form (built in the dashboard) ───────────────────────────────────
+    function leadDone() { return localStorage.getItem('pfx_lead_' + config.uuid) === '1'; }
+    function setInputVisible(on) {
+        const input = document.getElementById('pfx-input');
+        if (input) input.closest('div').style.display = on ? '' : 'none';
+    }
+    function showLeadForm() {
+        const lf = config.lead_form;
+        if (!lf || leadDone() || document.getElementById('pfx-leadform')) return;
+        if (lf.mode !== 'pre_chat' && sessionStorage.getItem('pfx_lead_skip_' + config.uuid)) return; // skipped this visit
+        const pre = lf.mode === 'pre_chat';
+        const el = document.createElement('form');
+        el.id = 'pfx-leadform';
+        el.className = 'pfx-notice pfx-leadform';
+        el.noValidate = true;
+        el.innerHTML = '<strong>' + escapeHtml(lf.title) + '</strong>' + (lf.intro ? '<p>' + escapeHtml(lf.intro) + '</p>' : '') +
+            lf.fields.map(function (f) {
+                const req = f.required ? ' required' : '';
+                const ph = escapeAttr(f.label + (f.required ? ' *' : ''));
+                const nm = 'data-k="' + escapeAttr(f.key) + '"';
+                if (f.type === 'textarea') return '<textarea ' + nm + ' class="pfx-offline-input" rows="2" placeholder="' + ph + '"' + req + '></textarea>';
+                if (f.type === 'select') return '<select ' + nm + ' class="pfx-offline-input"' + req + '><option value="">' + ph + '</option>' +
+                    (f.options || '').split(',').map(function (o) { o = o.trim(); return o ? '<option>' + escapeHtml(o) + '</option>' : ''; }).join('') + '</select>';
+                if (f.type === 'checkbox') return '<label class="pfx-lf-check"><input type="checkbox" ' + nm + '> ' + escapeHtml(f.label) + '</label>';
+                return '<input ' + nm + ' type="' + (f.type === 'email' ? 'email' : f.type === 'tel' ? 'tel' : 'text') + '" class="pfx-offline-input" placeholder="' + ph + '"' + req +
+                    (f.type === 'email' ? ' autocomplete="email"' : f.key === 'name' ? ' autocomplete="name"' : f.type === 'tel' ? ' autocomplete="tel"' : '') + '>';
+            }).join('') +
+            '<div class="pfx-lf-err" style="display:none"></div>' +
+            '<div class="pfx-notice-btns"><button type="submit" class="pfx-btn-primary">' + escapeHtml(lf.button || 'Send') + '</button>' +
+            (pre ? '' : '<button type="button" class="pfx-notice-decline" data-skip>Not now</button>') + '</div>';
+        const c = document.getElementById('pfx-messages');
+        c.appendChild(el);
+        c.scrollTop = c.scrollHeight;
+        if (pre) setInputVisible(false);
+
+        const skip = el.querySelector('[data-skip]');
+        if (skip) skip.addEventListener('click', function () { el.remove(); sessionStorage.setItem('pfx_lead_skip_' + config.uuid, '1'); });
+        el.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const fields = {}, err = el.querySelector('.pfx-lf-err');
+            el.querySelectorAll('[data-k]').forEach(function (i) { fields[i.getAttribute('data-k')] = i.type === 'checkbox' ? i.checked : i.value.trim(); });
+            const missing = lf.fields.find(function (f) { return f.required && !fields[f.key]; });
+            if (missing) { err.textContent = 'Please fill in: ' + missing.label; err.style.display = 'block'; return; }
+            const btn = el.querySelector('[type=submit]');
+            btn.disabled = true;
+            try {
+                const res = await fetch(apiBase + '/' + config.uuid + '/lead', { method: 'POST', headers: hdrs('application/json'), body: JSON.stringify({ conversation_uuid: conversationUuid || undefined, fields: fields }) });
+                if (res.status === 422) {
+                    const j = await res.json();
+                    const first = j.errors ? Object.values(j.errors)[0][0] : 'Please check your details.';
+                    err.textContent = first.replace(/fields\./, ''); err.style.display = 'block'; btn.disabled = false; return;
+                }
+                if (!res.ok) throw new Error('lead ' + res.status);
+                localStorage.setItem('pfx_lead_' + config.uuid, '1');
+                el.innerHTML = '<strong>Thank you!</strong><p>We have your details' + (fields.name ? ', ' + escapeHtml(String(fields.name).split(' ')[0]) : '') + '. How else can I help?</p>';
+                setInputVisible(true);
+                setTimeout(function () { el.remove(); }, 6000);
+            } catch (x) {
+                err.textContent = 'Something went wrong. Please try again.'; err.style.display = 'block'; btn.disabled = false;
+            }
+        });
+    }
+
     // ── Action cards under an answer ─────────────────────────────────────────
     function appendCards(wrap, cards) {
         if (!wrap || !cards || !cards.length) return;
@@ -863,6 +931,10 @@ ${bubbleCSS()}
         const content = input.value.trim();
         if (!content || isLoading) return;
         if (!noticeAccepted()) { showNotice(); return; }
+        if (config.lead_form && config.lead_form.mode === 'keyword') {
+            const low = ' ' + content.toLowerCase() + ' ';
+            if ((config.lead_form.keywords || '').split(',').some(function (k) { k = k.trim().toLowerCase(); return k && low.indexOf(k) !== -1; })) leadKeywordHit = true;
+        }
 
         // Hide starters after first message
         const starters = document.getElementById('pfx-starters');
@@ -1053,6 +1125,8 @@ ${bubbleCSS()}
     function registerAiReply() {
         aiTurnCount += 1;
         tryShowCsat();
+        const lf = config.lead_form;
+        if (lf && ((lf.mode === 'first_message' && aiTurnCount >= 1) || (lf.mode === 'engagement' && aiTurnCount >= 2) || (lf.mode === 'keyword' && leadKeywordHit))) showLeadForm();
 
         // Increment unread if chat is closed
         if (!isOpen) {

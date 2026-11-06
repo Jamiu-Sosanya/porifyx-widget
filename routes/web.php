@@ -109,6 +109,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/widgets/{widget}/triggers', [\App\Http\Controllers\EngagementController::class, 'storeTrigger'])->name('widgets.triggers.store');
         Route::put('/widgets/{widget}/triggers/{trigger}', [\App\Http\Controllers\EngagementController::class, 'updateTrigger'])->name('widgets.triggers.update');
         Route::delete('/widgets/{widget}/triggers/{trigger}', [\App\Http\Controllers\EngagementController::class, 'destroyTrigger'])->name('widgets.triggers.destroy');
+        Route::get('/widgets/{widget}/lead-form', [\App\Http\Controllers\LeadFormController::class, 'show'])->name('widgets.leadform');
+        Route::put('/widgets/{widget}/lead-form', [\App\Http\Controllers\LeadFormController::class, 'save'])->name('widgets.leadform.save');
         Route::get('/widgets/{widget}/answers', [\App\Http\Controllers\AnswerController::class, 'index'])->name('widgets.answers');
         Route::post('/widgets/{widget}/answers', [\App\Http\Controllers\AnswerController::class, 'store'])->name('widgets.answers.store');
         Route::put('/widgets/{widget}/answers/{answer}', [\App\Http\Controllers\AnswerController::class, 'update'])->name('widgets.answers.update');
@@ -157,6 +159,7 @@ Route::middleware(['auth'])->group(function () {
         // Leads
         Route::get('/leads', [LeadController::class, 'index'])->name('leads.index');
         Route::get('/leads/export', [LeadController::class, 'export'])->name('leads.export');
+        Route::put('/leads/pipeline', [LeadController::class, 'pipeline'])->name('leads.pipeline');
         Route::get('/leads/{lead}', [LeadController::class, 'show'])->name('leads.show');
         Route::put('/leads/{lead}', [LeadController::class, 'update'])->name('leads.update');
         Route::post('/leads/{lead}/notes', [LeadController::class, 'addNote'])->name('leads.addNote');

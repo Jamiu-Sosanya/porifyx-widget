@@ -35,6 +35,9 @@
                 <div class="space-y-2 text-sm">
                     @if($lead->phone)<div class="flex justify-between"><span class="text-gray-500">Phone</span><span class="text-white">{{ $lead->phone }}</span></div>@endif
                     @if($lead->company)<div class="flex justify-between"><span class="text-gray-500">Company</span><span class="text-white">{{ $lead->company }}</span></div>@endif
+                    @foreach(array_diff_key((array) $lead->form_data, array_flip(['name', 'email', 'phone', 'company'])) as $fk => $fv)
+                    <div class="flex justify-between gap-3"><span class="text-gray-500">{{ ucfirst(str_replace('_', ' ', $fk)) }}</span><span class="text-white text-right break-words min-w-0">{{ is_bool($fv) ? ($fv ? 'Yes' : 'No') : $fv }}</span></div>
+                    @endforeach
                     @if($lead->service_interest)<div class="flex justify-between"><span class="text-gray-500">Interest</span><span class="text-white">{{ $lead->service_interest }}</span></div>@endif
                     @if($lead->budget_range)<div class="flex justify-between"><span class="text-gray-500">Budget</span><span class="text-white">{{ $lead->budget_range }}</span></div>@endif
                     @if($lead->timeline)<div class="flex justify-between"><span class="text-gray-500">Timeline</span><span class="text-white">{{ $lead->timeline }}</span></div>@endif
@@ -48,8 +51,8 @@
                 <form method="POST" action="{{ route('leads.update', $lead) }}" class="space-y-3">
                     @csrf @method('PUT')
                     <select name="status" class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500/50 transition">
-                        @foreach(['new', 'contacted', 'qualified', 'proposal', 'won', 'lost'] as $s)
-                        <option value="{{ $s }}" {{ $lead->status === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
+                        @foreach(\App\Support\LeadPipeline::settings(auth()->user())['statuses'] as $st)
+                        <option value="{{ $st['key'] }}" {{ $lead->status === $st['key'] ? 'selected' : '' }}>{{ $st['label'] }}</option>
                         @endforeach
                     </select>
                     <select name="temperature" class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500/50 transition">

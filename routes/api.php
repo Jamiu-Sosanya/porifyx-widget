@@ -32,6 +32,9 @@ Route::prefix('widget')->middleware([WidgetRateLimit::class])->group(function ()
     // CSAT Feedback
     Route::post('/{widgetUuid}/conversations/{conversationUuid}/feedback', [WidgetApiController::class, 'submitFeedback']);
 
+    // Lead form
+    Route::post('/{widgetUuid}/lead', [\App\Http\Controllers\Api\LeadCaptureController::class, 'store']);
+
     // Offline messages (when visitor leaves email)
     Route::post('/{widgetUuid}/offline', [WidgetApiController::class, 'submitOfflineMessage']);
 

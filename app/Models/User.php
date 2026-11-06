@@ -23,7 +23,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'two_factor_confirmed_at', 'is_active', 'company_name', 'company_website',
         'phone', 'notification_preferences', 'telegram_chat_id',
         'last_login_at', 'last_login_ip',
-        'pwa_installed_at', 'pwa_platform',
+        'pwa_installed_at', 'pwa_platform', 'lead_settings',
     ];
 
     protected $hidden = [
@@ -37,6 +37,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'two_factor_confirmed_at'    => 'datetime',
             'last_login_at'              => 'datetime',
             'pwa_installed_at'           => 'datetime',
+            'lead_settings'              => 'array',
             'password'                   => 'hashed',
             'two_factor_enabled'         => 'boolean',
             'is_active'                  => 'boolean',

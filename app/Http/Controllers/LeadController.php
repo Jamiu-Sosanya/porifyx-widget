@@ -32,11 +32,14 @@ class LeadController extends Controller
             });
         }
 
-        $sortBy = $request->get('sort', 'created_at');
-        $sortDir = $request->get('dir', 'desc');
+        // Only known columns: the sort value comes from the URL.
+        $sortBy = in_array($request->get('sort'), ['created_at', 'score', 'name', 'last_engagement_at'], true) ? $request->get('sort') : 'created_at';
+        $sortDir = $request->get('dir') === 'asc' ? 'asc' : 'desc';
         $query->orderBy($sortBy, $sortDir);
 
+        $boardLeads = (clone $query)->limit(300)->get(); // board shows every column at once
         $leads = $query->paginate(25);
+        $pipeline = \App\Support\LeadPipeline::settings($user);
 
         // Stats
         $stats = [
@@ -50,7 +53,7 @@ class LeadController extends Controller
 
         $widgets = $user->widgets()->get();
 
-        return view('leads.index', compact('leads', 'stats', 'widgets'));
+        return view('leads.index', compact('leads', 'stats', 'widgets', 'boardLeads', 'pipeline'));
     }
 
     public function show(Lead $lead)
@@ -67,7 +70,7 @@ class LeadController extends Controller
         $this->authorizeLead($lead);
 
         $validated = $request->validate([
-            'status'      => 'nullable|in:new,contacted,qualified,proposal,won,lost',
+            'status'      => 'nullable|in:' . implode(',', \App\Support\LeadPipeline::keys($request->user())),
             'priority'    => 'nullable|in:high,medium,low',
             'temperature' => 'nullable|in:hot,warm,cold',
             'score'       => 'nullable|integer|min:0|max:100',
@@ -81,7 +84,36 @@ class LeadController extends Controller
 
         $lead->update(array_filter($validated, fn ($v) => $v !== null));
 
+        if ($request->expectsJson()) return response()->json(['ok' => true, 'status' => $lead->status]);
+
         return back()->with('success', 'Lead updated.');
+    }
+
+    /** Board columns (lead statuses) and Hot/Warm thresholds. */
+    public function pipeline(Request $request)
+    {
+        $d = $request->validate([
+            'statuses'         => 'required|array|min:2|max:12',
+            'statuses.*.label' => 'required|string|max:30',
+            'statuses.*.color' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            'statuses.*.key'   => 'nullable|string|max:40',
+            'warm'             => 'required|integer|min:1|max:99',
+            'hot'              => 'required|integer|min:2|max:100|gt:warm',
+        ]);
+        $seen = [];
+        $statuses = [];
+        foreach ($d['statuses'] as $i => $st) {
+            $key = \App\Support\LeadForm::key(($st['key'] ?? null) ?: $st['label']);
+            while (isset($seen[$key])) $key .= '_' . $i;
+            $seen[$key] = true;
+            $statuses[] = ['key' => $key, 'label' => $st['label'], 'color' => strtolower($st['color'])];
+        }
+        $user = $request->user();
+        $user->update(['lead_settings' => ['statuses' => $statuses, 'warm' => $d['warm'], 'hot' => $d['hot']]]);
+        // Leads in a removed column move to the first one.
+        Lead::where('user_id', $user->id)->whereNotIn('status', array_keys($seen))->update(['status' => $statuses[0]['key']]);
+
+        return back()->with('success', 'Pipeline saved.');
     }
 
     public function addNote(Request $request, Lead $lead)

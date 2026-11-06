@@ -18,7 +18,7 @@ class Lead extends Model
         'score', 'temperature', 'quality_grade', 'engagement_score',
         'service_interest', 'budget_range', 'timeline', 'pain_point',
         'industry', 'company_size', 'notes', 'tags', 'status', 'priority',
-        'qualification_answers', 'qualified_at', 'last_engagement_at', 'follow_up_priority',
+        'qualification_answers', 'form_data', 'qualified_at', 'last_engagement_at', 'follow_up_priority',
     ];
 
     protected function casts(): array
@@ -26,6 +26,7 @@ class Lead extends Model
         return [
             'tags'                   => 'array',
             'qualification_answers'  => 'array',
+            'form_data'              => 'array',
             'qualified_at'           => 'datetime',
             'last_engagement_at'     => 'datetime',
             'score'                  => 'integer',

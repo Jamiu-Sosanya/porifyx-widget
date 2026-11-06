@@ -10,6 +10,9 @@ use OpenAI\Laravel\Facades\OpenAI;
 
 class LeadQualificationService
 {
+    /** Owner of the conversation being scored (their Hot/Warm thresholds apply). */
+    protected ?\App\Models\User $owner = null;
+
     /**
      * Analyze conversation and qualify/score a lead.
      */
@@ -60,9 +63,15 @@ class LeadQualificationService
             ];
 
             $existingLead = Lead::query()->where($leadKey)->first();
+            // Same person (same email) on this widget: update their lead instead of creating a duplicate.
+            if (! $existingLead && filled($data['email'] ?? null)) {
+                $existingLead = Lead::where('widget_id', $conversation->widget_id)->where('email', mb_strtolower($data['email']))->first();
+                if ($existingLead) $leadKey = ['id' => $existingLead->id];
+            }
             $previousScore = $existingLead?->score;
             // Plan gate: no new leads once the monthly allowance is used (existing leads still update).
             $owner = $conversation->user ?? $conversation->widget?->user;
+            $this->owner = $owner;
             if (! $existingLead && $owner && ! $owner->canUse('leads')) {
                 return null;
             }
@@ -74,7 +83,7 @@ class LeadQualificationService
                     'widget_id'        => $conversation->widget_id,
                     'visitor_id'       => $conversation->visitor_id,
                     'name'             => $data['name'] ?? $visitor?->name,
-                    'email'            => $data['email'] ?? $visitor?->email,
+                    'email'            => filled($data['email'] ?? null) ? mb_strtolower($data['email']) : $visitor?->email,
                     'phone'            => $data['phone'] ?? $visitor?->phone,
                     'company'          => $data['company'] ?? null,
                     'service_interest' => $data['service_interest'] ?? null,
@@ -147,9 +156,7 @@ class LeadQualificationService
 
     protected function scoreToTemperature(int $score): string
     {
-        if ($score >= config('ai.lead_qualification.hot_threshold', 80)) return 'hot';
-        if ($score >= config('ai.lead_qualification.warm_threshold', 50)) return 'warm';
-        return 'cold';
+        return \App\Support\LeadPipeline::temperature($this->owner, $score);
     }
 
     /**
