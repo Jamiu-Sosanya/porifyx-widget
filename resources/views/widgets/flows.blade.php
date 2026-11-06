@@ -81,7 +81,7 @@
             @if($editing)<button form="del-flow" class="px-4 py-3 rounded-xl bg-rose-500/10 text-rose-400 text-sm font-semibold">Delete</button>@endif
         </div>
     </form>
-    @if($editing)<form id="del-flow" method="POST" action="{{ route('widgets.flows.destroy', [$widget, $editing]) }}" onsubmit="return confirm('Delete this flow?')">@csrf @method('DELETE')</form>@endif
+    @if($editing)<form id="del-flow" class="hidden" method="POST" action="{{ route('widgets.flows.destroy', [$widget, $editing]) }}" onsubmit="return confirm('Delete this flow?')">@csrf @method('DELETE')</form>@endif
 
     {{-- Tester --}}
     <aside class="rounded-2xl border border-white/5 bg-gray-900/50 p-5 self-start xl:sticky xl:top-28" x-data="{ msgs: [], text: '', state: null, busy: false,

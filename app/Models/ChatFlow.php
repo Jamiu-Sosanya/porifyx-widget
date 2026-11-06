@@ -14,6 +14,7 @@ class ChatFlow extends Model
         'tag'      => 'Tag the conversation',
         'webhook'  => 'Send to a webhook',
         'escalate' => 'Hand over to a human',
+        'end'      => 'End the flow',
     ];
 
     public const OPERATORS = ['equals' => 'equals', 'contains' => 'contains', 'starts_with' => 'starts with', 'is_empty' => 'is empty', 'not_empty' => 'is not empty'];

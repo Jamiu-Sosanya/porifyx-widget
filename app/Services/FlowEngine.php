@@ -86,6 +86,9 @@ class FlowEngine
                     $out['escalate'] = true;
                     $index = count($steps); // flow ends here
                     break;
+                case 'end':
+                    $index = count($steps);
+                    break;
                 default:
                     $index++;
             }

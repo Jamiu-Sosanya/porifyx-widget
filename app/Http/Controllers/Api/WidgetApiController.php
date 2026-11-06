@@ -352,7 +352,7 @@ class WidgetApiController extends Controller
             ]);
             $aiResponse = [
                 'uuid' => $aiMessage->uuid, 'role' => 'ai', 'content' => $flow['reply'], 'confidence_score' => 1, 'is_fallback' => false,
-                'smart_suggestions' => $flow['choices'], 'sources' => [], 'cards' => [], 'created_at' => $aiMessage->created_at->toISOString(),
+                'smart_suggestions' => $flow['choices'], 'sources' => [], 'cards' => [], 'in_flow' => (bool) $flow['state'], 'created_at' => $aiMessage->created_at->toISOString(),
             ];
         } elseif ($conversation->isAiActive()) {
             $result = $this->chatService->generateResponse($conversation, $validated['content']);
@@ -468,7 +468,7 @@ class WidgetApiController extends Controller
 
             return response()->stream(function () use ($flow, $m) {
                 echo 'data: ' . json_encode(['chunk' => $flow['reply']]) . "\n\n";
-                echo 'data: ' . json_encode(['done' => true, 'message_uuid' => $m->uuid, 'smart_suggestions' => $flow['choices'], 'sources' => [], 'cards' => []]) . "\n\n";
+                echo 'data: ' . json_encode(['done' => true, 'message_uuid' => $m->uuid, 'smart_suggestions' => $flow['choices'], 'sources' => [], 'cards' => [], 'in_flow' => (bool) $flow['state']]) . "\n\n";
                 if (ob_get_level() > 0) ob_flush();
                 flush();
             }, 200, ['Content-Type' => 'text/event-stream', 'Cache-Control' => 'no-cache', 'X-Accel-Buffering' => 'no']);

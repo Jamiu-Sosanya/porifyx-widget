@@ -973,7 +973,7 @@ ${bubbleCSS()}
                         appendCards(lastAi[lastAi.length - 1].querySelector('.pfx-bubble-wrap'), data.ai_response.cards);
                     }
                     if (data.ai_response.uuid) lastMessageUuid = data.ai_response.uuid;
-                    registerAiReply();
+                    registerAiReply(data.ai_response.in_flow);
                     playNotificationSound();
                 }
             }
@@ -1078,7 +1078,7 @@ ${bubbleCSS()}
                     appendCards(div.querySelector('.pfx-bubble-wrap'), payload.cards);
                     div.removeAttribute('id');
                     if (payload.message_uuid) lastMessageUuid = payload.message_uuid;
-                    registerAiReply();
+                    registerAiReply(payload.in_flow);
                     playNotificationSound();
                     break;
                 }
@@ -1134,11 +1134,11 @@ ${bubbleCSS()}
     }
 
     // ── CSAT ──────────────────────────────────────────────────────────────────
-    function registerAiReply() {
+    function registerAiReply(inFlow) {
         aiTurnCount += 1;
         tryShowCsat();
         const lf = config.lead_form;
-        if (lf && ((lf.mode === 'first_message' && aiTurnCount >= 1) || (lf.mode === 'engagement' && aiTurnCount >= 2) || (lf.mode === 'keyword' && leadKeywordHit))) showLeadForm();
+        if (lf && !inFlow && ((lf.mode === 'first_message' && aiTurnCount >= 1) || (lf.mode === 'engagement' && aiTurnCount >= 2) || (lf.mode === 'keyword' && leadKeywordHit))) showLeadForm();
 
         // Increment unread if chat is closed
         if (!isOpen) {

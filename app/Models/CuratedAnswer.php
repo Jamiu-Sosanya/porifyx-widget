@@ -27,7 +27,7 @@ class CuratedAnswer extends Model
 
         foreach (static::where('widget_id', $widget->id)->where('is_active', true)->get() as $c) {
             foreach (array_filter(array_map(fn ($k) => KnowledgeGap::normalize($k), explode(',', (string) $c->keywords))) as $k) {
-                if (preg_match('/\b' . preg_quote($k, '/') . '\b/u', $msg)) return $c;
+                if (preg_match('/\b' . preg_quote($k, '/') . '/u', $msg)) return $c; // prefix: refund matches refunds
             }
             similar_text($msg, KnowledgeGap::normalize($c->question), $pct);
             if ($pct >= 82) return $c;

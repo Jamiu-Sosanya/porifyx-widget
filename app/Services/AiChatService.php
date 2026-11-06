@@ -54,6 +54,7 @@ class AiChatService
         try {
             $result  = $this->aiProvider->chat($widget, $messages, $this->getMaxTokens($widget));
             $content = $result['content'] ?? '';
+            if (trim($content) === '') throw new \RuntimeException('AI provider returned an empty reply');
 
             $confidence = $this->calculateConfidence($relevantChunks);
             $isFallback = $confidence < config('ai.response.confidence_threshold', 0.6);
@@ -132,9 +133,18 @@ class AiChatService
 
         [, $messages] = $this->prepare($conversation, $userMessage, $lang);
 
+        $sent = false;
         try {
-            yield from $this->aiProvider->chatStreamed($widget, $messages, $this->getMaxTokens($widget));
-        } catch (\Exception $e) {
+            foreach ($this->aiProvider->chatStreamed($widget, $messages, $this->getMaxTokens($widget)) as $chunk) {
+                if ($chunk !== '') $sent = true;
+                yield $chunk;
+            }
+            // Provider returned nothing (bad key, timeout): never leave the visitor with an empty bubble.
+            if (! $sent) {
+                Log::warning('AI stream returned no content', ['provider' => \App\Services\MultiProviderAiService::platformProvider()]);
+                yield 'Sorry, I could not answer that just now. Please try again in a moment, or leave your email and our team will reply.';
+            }
+        } catch (\Throwable $e) {
             Log::error('AI stream error: ' . $e->getMessage(), [
                 'provider' => \App\Services\MultiProviderAiService::platformProvider(),
             ]);
