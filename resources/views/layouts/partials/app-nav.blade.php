@@ -80,8 +80,8 @@
 <div x-show="sidebarOpen" x-transition.opacity x-cloak @click="sidebarOpen = false" class="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"></div>
 
 {{-- Sidebar --}}
-<aside class="pfx-sidebar fixed z-50 inset-y-0 left-0 w-72 p-3 transition-transform duration-300 lg:translate-x-0"
-       :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
+<aside class="pfx-sidebar fixed z-50 inset-y-0 left-0 w-72 p-3 -translate-x-full lg:translate-x-0 duration-300"
+       :class="sidebarOpen && 'translate-x-0'" x-init="requestAnimationFrame(() => $el.classList.add('transition-transform'))">
     <div class="h-full flex flex-col rounded-3xl border border-white/[0.07] bg-gradient-to-b from-[#0d1428] to-[#080c18] shadow-2xl shadow-black/40 overflow-hidden">
         <div class="px-5 pt-5 pb-4 flex items-center justify-between">
             <a href="{{ $isAdmin ? route('admin.dashboard') : route('dashboard') }}" class="flex items-center gap-2.5 min-w-0">
@@ -101,9 +101,8 @@
         @endunless
 
         {{-- Keeps its scroll position between pages so the clicked item stays in view. --}}
-        <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-5 custom-scrollbar"
-             x-data x-init="$el.scrollTop = +sessionStorage.getItem('pfx-nav-scroll') || 0; const on = $el.querySelector('[aria-current=page]'); if (on) { const r = on.getBoundingClientRect(), n = $el.getBoundingClientRect(); if (r.top < n.top || r.bottom > n.bottom) on.scrollIntoView({ block: 'center' }); }"
-             @scroll.debounce.100ms="sessionStorage.setItem('pfx-nav-scroll', $el.scrollTop)">
+        <nav id="pfx-nav" class="flex-1 overflow-y-auto px-3 py-4 space-y-5 custom-scrollbar"
+             x-data @scroll.debounce.100ms="sessionStorage.setItem('pfx-nav-scroll', $el.scrollTop)">
             @foreach($groups as $group => $items)
             <div>
                 <p class="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-gray-500">{{ $group }}</p>
@@ -144,6 +143,17 @@
             </div>
             @endforeach
         </nav>
+        <script>
+            (function () {
+                var n = document.getElementById('pfx-nav');
+                n.scrollTop = +sessionStorage.getItem('pfx-nav-scroll') || 0;
+                var on = n.querySelector('[aria-current=page]');
+                if (on) {
+                    var r = on.getBoundingClientRect(), b = n.getBoundingClientRect();
+                    if (r.top < b.top || r.bottom > b.bottom) n.scrollTop += r.top - b.top - b.height / 2 + r.height / 2;
+                }
+            })();
+        </script>
 
         <div class="p-3 border-t border-white/[0.06]">
             @if($plan)
