@@ -61,6 +61,11 @@ class LeadQualificationService
 
             $existingLead = Lead::query()->where($leadKey)->first();
             $previousScore = $existingLead?->score;
+            // Plan gate: no new leads once the monthly allowance is used (existing leads still update).
+            $owner = $conversation->user ?? $conversation->widget?->user;
+            if (! $existingLead && $owner && ! $owner->canUse('leads')) {
+                return null;
+            }
             $previousTemp = $existingLead?->temperature;
 
             $lead = Lead::updateOrCreate(
@@ -90,6 +95,9 @@ class LeadQualificationService
             );
 
             // Record A/B test lead if this is a new lead
+            if ($lead->wasRecentlyCreated && $owner) {
+                $owner->incrementUsage('leads');
+            }
             if ($lead->wasRecentlyCreated && $visitor) {
                 $this->recordAbTestLead($conversation->widget, $visitor->fingerprint);
             }

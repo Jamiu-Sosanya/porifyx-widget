@@ -500,62 +500,10 @@
         </div>
 
         {{-- ── AI Provider Tab ──────────────────────────────────────────────── --}}
-        <div x-show="tab === 'ai'" x-transition x-data="{ provider: '{{ old('ai_provider', $widget->ai_provider ?? 'openai') }}' }" class="bg-gray-900/50 border border-white/5 rounded-2xl p-6 space-y-6">
-            <h3 class="text-base font-semibold text-white">AI Provider & Model</h3>
-
-            {{-- Provider Cards --}}
+        <div x-show="tab === 'ai'" x-transition x-data="{ provider: '{{ old('ai_provider', \App\Services\MultiProviderAiService::platformProvider()) }}' }" class="bg-gray-900/50 border border-white/5 rounded-2xl p-6 space-y-6">
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-3">AI Provider</label>
-                @php
-                    $pfxProviders = \App\Services\MultiProviderAiService::providers();
-                    $pfxModels    = \App\Services\MultiProviderAiService::availableModels();
-                    $pfxCurrent   = $widget->ai_provider ?? 'openai';
-                @endphp
-                <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-                    @foreach($pfxProviders as $providerVal => [$providerName, $models, $color])
-                    <label class="cursor-pointer" @click="provider = '{{ $providerVal }}'">
-                        <input type="radio" name="ai_provider" value="{{ $providerVal }}" {{ $pfxCurrent === $providerVal ? 'checked' : '' }} class="sr-only" x-model="provider">
-                        <div :class="provider === '{{ $providerVal }}' ? 'border-brand-500 bg-brand-500/10' : 'border-white/10 bg-white/[0.02] hover:border-white/20'"
-                             class="rounded-xl border-2 p-4 transition-all">
-                            <span class="block w-2.5 h-2.5 rounded-full mb-2" style="background: {{ $color }}"></span>
-                            <p class="text-sm font-semibold text-white">{{ $providerName }}</p>
-                            <p class="text-[10px] text-gray-500 mt-1">{{ $models }}</p>
-                        </div>
-                    </label>
-                    @endforeach
-                </div>
-            </div>
-
-            {{-- Model selection per provider (only the visible one is submitted) --}}
-            <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1.5">Model</label>
-                @foreach($pfxModels as $providerVal => $options)
-                <div x-show="provider === '{{ $providerVal }}'">
-                    <select name="ai_model_{{ $providerVal }}" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-500/50 transition">
-                        @if($pfxCurrent === $providerVal && $widget->ai_model && ! isset($options[$widget->ai_model]))
-                        <option value="{{ $widget->ai_model }}" selected>{{ $widget->ai_model }} (custom)</option>
-                        @endif
-                        @foreach($options as $val => $lbl)
-                        <option value="{{ $val }}" {{ $pfxCurrent === $providerVal && $widget->ai_model === $val ? 'selected' : '' }}>{{ $lbl }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                @endforeach
-                <p class="text-[11px] text-gray-500 mt-2">If this provider fails, PoriFyx automatically retries on the backup provider set by your administrator.</p>
-            </div>
-
-            {{-- Provider info banners --}}
-            <div x-show="provider === 'openrouter'" class="p-4 bg-brand-500/5 border border-brand-500/20 rounded-xl text-sm text-brand-300">
-                🔀 <strong>OpenRouter</strong> gives one API key access to hundreds of models from every major lab. Requires an OPENROUTER_API_KEY.
-            </div>
-            <div x-show="provider === 'groq'" class="p-4 bg-accent-500/5 border border-accent-500/20 rounded-xl text-sm text-accent-300">
-                ⚡ <strong>Groq</strong> delivers the fastest AI inference — typical response times under 0.5s. Great for high-volume, latency-sensitive deployments. Requires a GROQ_API_KEY in your .env file.
-            </div>
-            <div x-show="provider === 'anthropic'" class="p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl text-sm text-amber-300">
-                🧠 <strong>Anthropic Claude</strong> models excel at nuanced reasoning, long-context understanding, and following complex instructions. Requires an ANTHROPIC_API_KEY in your .env file.
-            </div>
-            <div x-show="provider === 'gemini'" class="p-4 bg-accent-500/5 border border-accent-500/20 rounded-xl text-sm text-accent-300">
-                🔵 <strong>Google Gemini</strong> offers multimodal capabilities and competitive pricing. Requires a GEMINI_API_KEY in your .env file.
+                <h3 class="text-base font-semibold text-white">AI behaviour</h3>
+                <p class="mt-1 text-xs text-gray-500">The AI model is managed by the platform, so your assistant always runs on a tested model with automatic backup. Tune how it answers below.</p>
             </div>
 
             {{-- AI Tuning --}}

@@ -91,7 +91,7 @@
                     </td>
                     <td class="px-4 py-4 text-center">
                         <span class="px-2 py-0.5 text-xs bg-brand-500/10 text-brand-400 rounded-lg font-mono">
-                            {{ strtoupper($widget->ai_provider ?? 'openai') }}
+                            {{ strtoupper(\App\Services\MultiProviderAiService::platformProvider()) }}
                         </span>
                     </td>
                     <td class="px-4 py-4 text-center">

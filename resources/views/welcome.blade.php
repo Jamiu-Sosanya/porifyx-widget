@@ -420,17 +420,7 @@
                 <span class="text-base font-medium opacity-60">/mo</span>
             </p>
             <ul class="mt-6 space-y-2.5 text-sm flex-1">
-                @foreach(array_filter([
-                    $fmt($plan->widgets_limit) . ' widgets',
-                    $fmt($plan->messages_per_month) . ' messages / month',
-                    $fmt($plan->leads_per_month) . ' leads / month',
-                    $fmt($plan->team_members_limit) . ' team seats',
-                    $plan->has_live_chat ? 'Live agent takeover' : null,
-                    $plan->has_webhooks ? 'Webhooks & automations' : null,
-                    $plan->has_ai_insights ? 'AI insights' : null,
-                    $plan->has_custom_branding ? 'Your own branding' : null,
-                    $plan->has_priority_support ? 'Priority support' : null,
-                ]) as $line)
+                @foreach($plan->featureList() as $line)
                 <li class="flex gap-2"><span class="text-brand-500 font-bold">✓</span>{{ $line }}</li>
                 @endforeach
             </ul>

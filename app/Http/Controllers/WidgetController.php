@@ -38,11 +38,7 @@ class WidgetController extends Controller
         $user = $request->user();
 
         // Check widget limit
-        $plan = $user->currentPlan();
-        $currentCount = $user->widgets()->count();
-        $limit = $plan?->widgets_limit ?? 1;
-
-        if ($limit !== -1 && $currentCount >= $limit) {
+        if (! $user->canUse('widgets')) {
             return back()->with('error', 'You have reached your widget limit. Please upgrade your plan.');
         }
 
@@ -327,6 +323,14 @@ class WidgetController extends Controller
         $widget->regenerateToken();
 
         return back()->with('success', 'Widget token regenerated.');
+    }
+
+    /** Test the widget for real before launch: works while inactive, messages are not counted. */
+    public function playground(Widget $widget)
+    {
+        $this->authorize('update', $widget);
+
+        return view('widgets.playground', ['widget' => $widget, 'plan' => $widget->planState()]);
     }
 
     public function embedCode(Widget $widget)

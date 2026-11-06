@@ -60,6 +60,8 @@ return [
 
     // Provider retried once when a widget's own provider errors (blank = off).
     'fallback_provider' => env('AI_FALLBACK_PROVIDER'),
+    // Platform-wide provider chosen by the admin (Admin > Settings > AI). Widgets cannot override it.
+    'provider' => env('AI_PROVIDER', 'openai'),
 
     /*
     |--------------------------------------------------------------------------

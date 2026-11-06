@@ -124,8 +124,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function hasActivePlan(): bool
     {
-        $sub = $this->subscription;
-        return $sub && in_array($sub->status, ['active', 'trialing']);
+        return (bool) $this->subscription?->isActive();
     }
 
     public function currentPlan(): ?Plan
@@ -142,22 +141,44 @@ class User extends Authenticatable implements MustVerifyEmail
             ->value('count') ?? 0;
     }
 
+    /**
+     * Plan gate for every limited feature. Admin always passes.
+     * Monthly metrics (messages, leads, bookings) are counted in usage_records;
+     * the rest are counted live. An inactive or expired subscription fails every gate.
+     */
     public function canUse(string $metric): bool
     {
-        // Platform admin (installer owner) always has unlimited access.
-        // The plan gate is for end-users of the SaaS platform, not the owner.
         if ($this->isAdmin()) return true;
+        if (! $this->hasActivePlan()) return false;
 
         $plan = $this->currentPlan();
-        if (!$plan) return false;
         $limit = match ($metric) {
-            'messages' => $plan->messages_per_month,
-            'leads'    => $plan->leads_per_month,
-            'widgets'  => $plan->widgets_limit,
-            default    => -1,
+            'messages'         => $plan->messages_per_month,
+            'leads'            => $plan->leads_per_month,
+            'bookings'         => $plan->bookings_per_month,
+            'widgets'          => $plan->widgets_limit,
+            'training_sources' => $plan->training_sources_limit,
+            'team_members'     => $plan->team_members_limit,
+            'automations'      => $plan->workflow_automations_limit,
+            default            => -1,
         };
         if ($limit === -1) return true;
-        return $this->getUsageThisMonth($metric) < $limit;
+        if ((int) $limit === 0) return false;
+
+        $used = match ($metric) {
+            'widgets'          => $this->widgets()->count(),
+            'training_sources' => \App\Models\TrainingSource::whereHas('knowledgeBase', fn ($q) => $q->where('user_id', $this->id))->count(),
+            'automations'      => $this->automations()->count(),
+            default            => $this->getUsageThisMonth($metric),
+        };
+        return $used < $limit;
+    }
+
+    /** On/off plan features: live_chat, custom_branding, api_access, ai_insights, white_label, priority_support. */
+    public function hasFeature(string $feature): bool
+    {
+        if ($this->isAdmin()) return true;
+        return $this->hasActivePlan() && (bool) $this->currentPlan()?->{'has_' . $feature};
     }
 
     public function incrementUsage(string $metric, int $amount = 1): void

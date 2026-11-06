@@ -38,19 +38,21 @@ class WidgetApiController extends Controller
      */
     public function config(string $widgetUuid)
     {
-        $widget = Widget::where('uuid', $widgetUuid)->where('is_active', true)->first();
+        $widget = Widget::forPublicApi($widgetUuid, false);
 
         if (!$widget) {
             return response()->json(['error' => 'Widget not found or inactive.'], 404);
         }
 
         $origin = request()->header('Origin') ?? request()->header('Referer');
-        if ($origin && $widget->domain_restriction) {
+        if ($origin && $widget->domain_restriction && ! $widget->isPlaygroundRequest()) {
             $domain = parse_url($origin, PHP_URL_HOST);
             if (!$widget->isDomainAllowed($domain)) {
                 return response()->json(['error' => 'Domain not authorized.'], 403);
             }
         }
+
+        $plan = $widget->planState();
 
         // Detect user language
         $userLanguage = $this->detectUserLanguage(request());
@@ -85,7 +87,7 @@ class WidgetApiController extends Controller
                 // Behavior (localized)
                 'welcome_message'     => $this->getLocalizedText($widget->welcome_messages, $userLanguage, $widget->welcome_message),
                 'placeholder_text'    => $this->getLocalizedText($widget->placeholder_texts, $userLanguage, $widget->placeholder_text),
-                'show_branding'       => $widget->show_branding,
+                'show_branding'       => $widget->show_branding || $plan['branding'],
                 'auto_open'           => $widget->auto_open,
                 'auto_open_delay'     => $widget->auto_open_delay,
                 'show_on_mobile'      => $widget->show_on_mobile,
@@ -102,14 +104,17 @@ class WidgetApiController extends Controller
                 'smart_suggestions_enabled' => (bool) $widget->smart_suggestions_enabled,
 
                 // Handoff
-                'show_handoff_button'  => (bool) $widget->show_handoff_button,
+                'show_handoff_button'  => (bool) $widget->show_handoff_button && $plan['handoff'],
                 'handoff_button_label' => $widget->handoff_button_label,
 
                 // CSAT
                 'csat_prompt_enabled'  => (bool) $widget->csat_prompt_enabled,
 
                 // Offline form (localized)
-                'offline_form_enabled' => (bool) $widget->offline_form_enabled,
+                'offline_form_enabled' => (bool) $widget->offline_form_enabled || ! $plan['chat'],
+                // Plan limit reached or subscription inactive: the widget shows a friendly notice and the message form.
+                'service_available'    => $plan['chat'],
+                'playground'           => $widget->isPlaygroundRequest(),
                 'offline_form_message' => $this->getLocalizedText($widget->offline_form_messages, $userLanguage, $widget->offline_form_message),
 
                 // Proactive
@@ -119,7 +124,7 @@ class WidgetApiController extends Controller
                 'ab_test' => $this->getActiveAbTest($widget, (string) request()->get('fingerprint', '')),
 
                 // Bookings
-                'booking' => ($b = \App\Support\Booking::settings($widget))['enabled'] ? ['label' => $b['button_label']] : null,
+                'booking' => ($b = \App\Support\Booking::settings($widget))['enabled'] && $plan['bookings'] ? ['label' => $b['button_label']] : null,
 
                 // Language info
                 'detected_language' => $userLanguage,
@@ -217,7 +222,7 @@ class WidgetApiController extends Controller
      */
     public function startConversation(Request $request, string $widgetUuid)
     {
-        $widget = Widget::where('uuid', $widgetUuid)->where('is_active', true)->firstOrFail();
+        $widget = Widget::forPublicApi($widgetUuid);
 
         $validated = $request->validate([
             'fingerprint' => 'required|string|max:64',
@@ -309,7 +314,7 @@ class WidgetApiController extends Controller
      */
     public function sendMessage(Request $request, string $widgetUuid, string $conversationUuid)
     {
-        $widget       = Widget::where('uuid', $widgetUuid)->where('is_active', true)->firstOrFail();
+        $widget       = Widget::forPublicApi($widgetUuid);
         $conversation = $this->conversationForWidget($widget, $conversationUuid);
 
         $validated = $request->validate([
@@ -318,7 +323,7 @@ class WidgetApiController extends Controller
 
         $user = $widget->user;
         if (!$user->canUse('messages')) {
-            return response()->json(['error' => 'Message limit reached.'], 429);
+            return response()->json(['error' => 'unavailable', 'code' => 'service_unavailable'], 503);
         }
 
         // Sentiment on visitor message
@@ -375,7 +380,7 @@ class WidgetApiController extends Controller
             'is_read'         => false,
         ]);
 
-        $user->incrementUsage('messages');
+        if (! $widget->isPlaygroundRequest()) $user->incrementUsage('messages');
         $widget->increment('total_messages');
 
         // Update conversation sentiment
@@ -411,7 +416,7 @@ class WidgetApiController extends Controller
      */
     public function streamMessage(Request $request, string $widgetUuid, string $conversationUuid): StreamedResponse|JsonResponse
     {
-        $widget       = Widget::where('uuid', $widgetUuid)->where('is_active', true)->firstOrFail();
+        $widget       = Widget::forPublicApi($widgetUuid);
         $conversation = $this->conversationForWidget($widget, $conversationUuid);
 
         $maxLen    = (int) config('ai.widget.max_message_length', 2000);
@@ -421,7 +426,7 @@ class WidgetApiController extends Controller
 
         $user = $widget->user;
         if (!$user->canUse('messages')) {
-            return response()->json(['error' => 'Message limit reached.'], 429);
+            return response()->json(['error' => 'unavailable', 'code' => 'service_unavailable'], 503);
         }
 
         if (!$conversation->isAiActive()) {
@@ -474,7 +479,7 @@ class WidgetApiController extends Controller
             ]);
             $conversation->increment('ai_message_count');
 
-            $user->incrementUsage('messages');
+            if (! $widget->isPlaygroundRequest()) $user->incrementUsage('messages');
             $widget->increment('total_messages');
 
             // Update sentiment
@@ -514,7 +519,7 @@ class WidgetApiController extends Controller
      */
     public function pollMessages(Request $request, string $widgetUuid, string $conversationUuid): JsonResponse
     {
-        $widget       = Widget::where('uuid', $widgetUuid)->where('is_active', true)->firstOrFail();
+        $widget       = Widget::forPublicApi($widgetUuid);
         $conversation = $this->conversationForWidget($widget, $conversationUuid);
 
         $afterUuid = $request->query('after');
@@ -551,9 +556,9 @@ class WidgetApiController extends Controller
      */
     public function requestHumanHandoff(Request $request, string $widgetUuid, string $conversationUuid)
     {
-        $widget = Widget::where('uuid', $widgetUuid)->where('is_active', true)->firstOrFail();
+        $widget = Widget::forPublicApi($widgetUuid);
 
-        if (!$widget->show_handoff_button) {
+        if (!$widget->show_handoff_button || ! $widget->user->hasFeature('live_chat')) {
             return response()->json(['error' => 'Handoff is disabled for this widget.'], 403);
         }
 
@@ -614,7 +619,7 @@ class WidgetApiController extends Controller
      */
     public function submitFeedback(Request $request, string $widgetUuid, string $conversationUuid)
     {
-        $widget = Widget::where('uuid', $widgetUuid)->where('is_active', true)->firstOrFail();
+        $widget = Widget::forPublicApi($widgetUuid);
 
         if (!$widget->csat_prompt_enabled) {
             return response()->json(['error' => 'Feedback is disabled for this widget.'], 403);
@@ -651,9 +656,10 @@ class WidgetApiController extends Controller
      */
     public function submitOfflineMessage(Request $request, string $widgetUuid)
     {
-        $widget = Widget::where('uuid', $widgetUuid)->where('is_active', true)->firstOrFail();
+        $widget = Widget::forPublicApi($widgetUuid);
 
-        if (!$widget->offline_form_enabled) {
+        // Always open when the AI is unavailable (plan limit or inactive subscription), so no visitor is lost.
+        if (!$widget->offline_form_enabled && $widget->user->canUse('messages')) {
             return response()->json(['error' => 'Offline messages are disabled.'], 403);
         }
 
@@ -693,7 +699,7 @@ class WidgetApiController extends Controller
      */
     public function trackProactive(Request $request, string $widgetUuid)
     {
-        $widget    = Widget::where('uuid', $widgetUuid)->where('is_active', true)->firstOrFail();
+        $widget    = Widget::forPublicApi($widgetUuid);
         $validated = $request->validate([
             'proactive_id' => 'required|integer',
             'event'        => 'required|in:shown,clicked',
@@ -719,7 +725,7 @@ class WidgetApiController extends Controller
      */
     public function reactToMessage(Request $request, string $widgetUuid, string $conversationUuid, string $messageUuid)
     {
-        $widget       = Widget::where('uuid', $widgetUuid)->where('is_active', true)->firstOrFail();
+        $widget       = Widget::forPublicApi($widgetUuid);
         $conversation = $this->conversationForWidget($widget, $conversationUuid);
         $validated    = $request->validate(['emoji' => 'required|string|max:8']);
 

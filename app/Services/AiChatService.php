@@ -87,7 +87,7 @@ class AiChatService
             Log::error('AI API error: ' . $e->getMessage(), [
                 'conversation_id' => $conversation->id,
                 'widget_id'       => $widget->id,
-                'provider'        => $widget->ai_provider ?? 'openai',
+                'provider'        => \App\Services\MultiProviderAiService::platformProvider(),
             ]);
 
             return [
@@ -96,7 +96,7 @@ class AiChatService
                 'is_fallback'       => true,
                 'sources_used'      => [],
                 'tokens_used'       => 0,
-                'provider'          => $widget->ai_provider ?? 'openai',
+                'provider'          => \App\Services\MultiProviderAiService::platformProvider(),
                 'model_used'        => null,
                 'smart_suggestions' => [],
                 'detected_language' => $lang,
@@ -125,7 +125,7 @@ class AiChatService
             yield from $this->aiProvider->chatStreamed($widget, $messages, $this->getMaxTokens($widget));
         } catch (\Exception $e) {
             Log::error('AI stream error: ' . $e->getMessage(), [
-                'provider' => $widget->ai_provider ?? 'openai',
+                'provider' => \App\Services\MultiProviderAiService::platformProvider(),
             ]);
             yield 'I\'m experiencing technical difficulties. Please try again.';
         }

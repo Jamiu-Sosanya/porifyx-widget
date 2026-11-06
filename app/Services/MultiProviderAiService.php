@@ -16,8 +16,8 @@ class MultiProviderAiService
 {
     public function chat(Widget $widget, array $messages, int $maxTokens = 512): array
     {
-        $provider = $widget->ai_provider ?? 'openai';
-        $model    = $widget->ai_model ?: $this->defaultModel($provider);
+        $provider = self::platformProvider();
+        $model    = $this->defaultModel($provider); // admin-chosen provider + model (Admin > Settings > AI)
         $temp     = $widget->temperature ?? 0.7;
 
         try {
@@ -46,8 +46,8 @@ class MultiProviderAiService
 
     public function chatStreamed(Widget $widget, array $messages, int $maxTokens = 512): \Generator
     {
-        $provider = $widget->ai_provider ?? 'openai';
-        $model    = $widget->ai_model ?: $this->defaultModel($provider);
+        $provider = self::platformProvider();
+        $model    = $this->defaultModel($provider); // admin-chosen provider + model (Admin > Settings > AI)
         $temp     = $widget->temperature ?? 0.7;
 
         return match ($provider) {
@@ -366,6 +366,17 @@ class MultiProviderAiService
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
+
+    /** Provider every widget uses, chosen by the platform admin. Falls back to the first provider with a key. */
+    public static function platformProvider(): string
+    {
+        $p = (string) config('ai.provider');
+        if (isset(self::providers()[$p]) && filled(config("ai.{$p}.key"))) return $p;
+        foreach (array_keys(self::providers()) as $k) {
+            if (filled(config("ai.{$k}.key"))) return $k;
+        }
+        return isset(self::providers()[$p]) ? $p : 'openai';
+    }
 
     public function defaultModel(string $provider): string
     {

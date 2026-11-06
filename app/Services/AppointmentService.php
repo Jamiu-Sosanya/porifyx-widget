@@ -32,6 +32,10 @@ class AppointmentService
         if (! $s['enabled'] || ! $service) {
             throw ValidationException::withMessages(['service_id' => 'This service is not available for booking.']);
         }
+        // Plan gate: monthly booking allowance, or subscription inactive.
+        if (! $widget->user->canUse('bookings')) {
+            throw ValidationException::withMessages(['service_id' => 'Online booking is not available right now. Please contact us directly to book.']);
+        }
 
         $answers = $this->answers($s, (array) ($data['answers'] ?? []));
         $start = CarbonImmutable::parse($data['start'])->utc();
@@ -69,6 +73,7 @@ class AppointmentService
                 'source'           => $source,
             ]);
         });
+        if (! $widget->isPlaygroundRequest()) $widget->user->incrementUsage('bookings');
 
         $this->announce($appointment);
 

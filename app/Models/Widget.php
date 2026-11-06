@@ -258,6 +258,43 @@ class Widget extends Model
         return false;
     }
 
+    /** Signed token that lets the owner's Playground run this widget before launch. */
+    public function playgroundToken(): string
+    {
+        return hash_hmac('sha256', 'playground|' . $this->uuid, (string) config('app.key'));
+    }
+
+    /** True when the current widget API request comes from this widget's Playground page. */
+    public function isPlaygroundRequest(): bool
+    {
+        $t = (string) request()->header('X-PFX-Playground', '');
+        return $t !== '' && hash_equals($this->playgroundToken(), $t);
+    }
+
+    /**
+     * Widget for the public widget API: live widgets, or an inactive one opened from its Playground.
+     */
+    public static function forPublicApi(string $uuid, bool $fail = true): ?self
+    {
+        $w = static::where('uuid', $uuid)->first();
+        if ($w && ($w->is_active || $w->isPlaygroundRequest())) return $w;
+        if ($fail) abort(404);
+        return null;
+    }
+
+    /** What the owner's plan currently allows visitors to use. */
+    public function planState(): array
+    {
+        $u = $this->user;
+        return [
+            'chat'     => $u->canUse('messages'),
+            'leads'    => $u->canUse('leads'),
+            'bookings' => $u->canUse('bookings'),
+            'handoff'  => $u->hasFeature('live_chat'),
+            'branding' => ! $u->hasFeature('custom_branding'), // must show "Powered by"
+        ];
+    }
+
     public function regenerateToken(): void
     {
         $this->update(['token' => Str::random(48)]);
@@ -265,7 +302,7 @@ class Widget extends Model
 
     public function getProviderLabel(): string
     {
-        return match ($this->ai_provider ?? 'openai') {
+        return match (\App\Services\MultiProviderAiService::platformProvider()) {
             'anthropic' => 'Anthropic Claude',
             'gemini'    => 'Google Gemini',
             'groq'      => 'Groq',

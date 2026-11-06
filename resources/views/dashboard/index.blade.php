@@ -182,7 +182,7 @@
                             </div>
                             <div>
                                 <p class="text-sm font-medium text-white">{{ $w->name }}</p>
-                                <p class="text-[10px] text-gray-500">{{ $w->ai_provider ?? 'openai' }} · {{ $w->theme ?? 'dark' }}</p>
+                                <p class="text-[10px] text-gray-500">{{ \App\Services\MultiProviderAiService::platformProvider() }} · {{ $w->theme ?? 'dark' }}</p>
                             </div>
                         </div>
                     </td>

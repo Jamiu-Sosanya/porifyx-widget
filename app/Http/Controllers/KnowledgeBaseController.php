@@ -62,6 +62,10 @@ class KnowledgeBaseController extends Controller
             'file'       => 'required_if:type,pdf|nullable|file|mimes:pdf|max:20480',
         ]);
 
+        if (! $request->user()->canUse('training_sources')) {
+            return back()->with('error', 'You have used all the training sources in your plan. Upgrade to add more.');
+        }
+
         $filePath = null;
         if ($request->hasFile('file')) {
             $filePath = $request->file('file')->store('training-sources/' . $widget->id, 'local');

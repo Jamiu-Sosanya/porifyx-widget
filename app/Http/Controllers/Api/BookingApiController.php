@@ -15,7 +15,7 @@ class BookingApiController extends Controller
 {
     private function widget(string $uuid): Widget
     {
-        $widget = Widget::where('uuid', $uuid)->where('is_active', true)->firstOrFail();
+        $widget = Widget::forPublicApi($uuid);
 
         $origin = request()->header('Origin') ?? request()->header('Referer');
         $host = $origin ? parse_url($origin, PHP_URL_HOST) : null;

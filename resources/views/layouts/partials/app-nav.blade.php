@@ -10,10 +10,11 @@
     $widgetMenu = [];
     if ($openWidget instanceof \App\Models\Widget && ! $isAdmin) {
         $onEdit = $is('widgets.edit');
-        foreach (['appearance' => 'Appearance', 'behavior' => 'Behaviour', 'ai' => 'AI provider', 'smart' => 'Smart features', 'proactive' => 'Proactive', 'notifications' => 'Notifications', 'lead' => 'Lead capture', 'ab-testing' => 'A/B testing', 'security' => 'Security', 'languages' => 'Languages', 'channels' => 'Channels', 'preview' => 'Live preview'] as $hash => $label) {
+        foreach (['appearance' => 'Appearance', 'behavior' => 'Behaviour', 'ai' => 'AI behaviour', 'smart' => 'Smart features', 'proactive' => 'Proactive', 'notifications' => 'Notifications', 'lead' => 'Lead capture', 'ab-testing' => 'A/B testing', 'security' => 'Security', 'languages' => 'Languages', 'channels' => 'Channels', 'preview' => 'Live preview'] as $hash => $label) {
             $widgetMenu[] = [($onEdit ? '' : route('widgets.edit', $openWidget)) . '#' . $hash, $label, null];
         }
         $widgetMenu[] = [route('widgets.knowledge.index', $openWidget), 'Knowledge base', $is('widgets.knowledge.*')];
+        $widgetMenu[] = [route('widgets.playground', $openWidget), 'Playground', $is('widgets.playground')];
         $widgetMenu[] = [route('widgets.embed', $openWidget), 'Embed code', $is('widgets.embed')];
     }
     $groups = $isAdmin

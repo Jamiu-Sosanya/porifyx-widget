@@ -62,6 +62,10 @@ class AutomationController extends Controller
             'action_config'      => 'nullable|array',
         ]);
 
+        if (! $request->user()->canUse('automations')) {
+            return back()->with('error', 'Your plan does not include more automations. Upgrade to add more.');
+        }
+
         $request->user()->automations()->create($validated);
 
         return redirect()->route('automations.index')->with('success', 'Automation created!');

@@ -30,6 +30,10 @@ class AuthenticateApiKey
         RateLimiter::hit($limiter, 60);
 
         $key->forceFill(['last_used_at' => now(), 'requests_count' => $key->requests_count + 1])->saveQuietly();
+        if (! $key->user?->hasFeature('api_access')) {
+            return response()->json(['message' => 'API access is not included in this account\'s plan, or the subscription is inactive.'], 402);
+        }
+
         Auth::setUser($key->user);
         $request->setUserResolver(fn () => $key->user);
 

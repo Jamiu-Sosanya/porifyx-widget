@@ -24,7 +24,7 @@ class BookingAdvancedTest extends TestCase
 
     private function widget(array $booking = []): Widget
     {
-        $user = User::factory()->create();
+        $user = $this->subscribed(User::factory()->create());
 
         return Widget::create([
             'user_id' => $user->id, 'name' => 'Clinic', 'uuid' => (string) Str::uuid(), 'token' => Str::random(32), 'is_active' => true,
@@ -157,7 +157,7 @@ class BookingAdvancedTest extends TestCase
         $this->getJson('/api/v1/appointments?status=cancelled', $h)->assertOk()->assertJsonPath('meta.total', 1);
 
         // Another account's key cannot see it.
-        $other = ApiKey::create(['user_id' => User::factory()->create()->id, 'name' => 'x', 'is_active' => true]);
+        $other = ApiKey::create(['user_id' => $this->subscribed(User::factory()->create())->id, 'name' => 'x', 'is_active' => true]);
         $this->getJson("/api/v1/appointments/{$id}", ['Authorization' => 'Bearer ' . $other->key])->assertNotFound();
     }
 

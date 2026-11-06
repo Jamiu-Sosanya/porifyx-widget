@@ -37,7 +37,9 @@ class Subscription extends Model
 
     public function isActive(): bool
     {
-        return in_array($this->status, ['active', 'trialing']);
+        // An expired trial is not active, even before the billing webhook flips the status.
+        return $this->status === 'active'
+            || ($this->status === 'trialing' && (! $this->trial_ends_at || $this->trial_ends_at->isFuture()));
     }
 
     public function isTrialing(): bool

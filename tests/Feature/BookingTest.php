@@ -18,7 +18,7 @@ class BookingTest extends TestCase
 
     private function widget(array $booking = []): Widget
     {
-        $user = User::factory()->create();
+        $user = $this->subscribed(User::factory()->create());
         $all = [['09:00', '12:00']];
 
         return Widget::create([

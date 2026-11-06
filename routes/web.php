@@ -103,6 +103,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/widgets/{widget}/booking/crm/{connection}', [\App\Http\Controllers\BookingIntegrationController::class, 'deleteCrm'])->name('widgets.booking.crm.delete');
         Route::get('/calendar/callback/{provider}', [\App\Http\Controllers\BookingIntegrationController::class, 'calendarCallback'])->name('calendar.callback');
         Route::post('/widgets/{widget}/duplicate', [WidgetController::class, 'duplicate'])->name('widgets.duplicate');
+        Route::get('/widgets/{widget}/playground', [WidgetController::class, 'playground'])->name('widgets.playground');
         Route::post('/widgets/{widget}/toggle', [WidgetController::class, 'toggleActive'])->name('widgets.toggle');
         Route::post('/widgets/{widget}/regenerate-token', [WidgetController::class, 'regenerateToken'])->name('widgets.regenerateToken');
         Route::get('/widgets/{widget}/embed', [WidgetController::class, 'embedCode'])->name('widgets.embed');

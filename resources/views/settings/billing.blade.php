@@ -120,14 +120,7 @@
                     </div>
                 </div>
                 <ul class="space-y-2 text-xs text-gray-400 mb-6 flex-1">
-                    @foreach([
-                        [$p->widgets_limit == -1 ? 'Unlimited' : $p->widgets_limit . ' widgets',       true],
-                        [($p->messages_per_month == -1 ? 'Unlimited' : number_format($p->messages_per_month)) . ' msgs/mo', true],
-                        [($p->leads_per_month == -1 ? 'Unlimited' : number_format($p->leads_per_month)) . ' leads/mo', true],
-                        ['Live chat support', $p->has_live_chat],
-                        ['AI insights', $p->has_ai_insights],
-                        ['API access', $p->has_api_access],
-                    ] as [$feature, $included])
+                    @foreach(array_map(fn ($l) => [$l, true], $p->featureList()) as [$feature, $included])
                     @if($included)
                     <li class="flex items-center gap-2">
                         <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>

@@ -341,6 +341,15 @@ class SystemSettingsSeeder extends Seeder
                 'value'      => config('ai.openrouter.model', 'openai/gpt-4o-mini'),
             ],
             [
+                'key'        => 'ai_provider',
+                'config_key' => 'ai.provider',
+                'label'      => 'AI Provider (all widgets)',
+                'description'=> 'The provider every widget uses: openai, anthropic, gemini, groq or openrouter. Its default model below is the model used. Customers cannot change this.',
+                'type'       => 'string',
+                'group'      => 'ai',
+                'value'      => config('ai.provider', 'openai'),
+            ],
+            [
                 'key'        => 'ai_fallback_provider',
                 'config_key' => 'ai.fallback_provider',
                 'label'      => 'Backup AI Provider',

@@ -41,6 +41,7 @@ class EnvWriter
         'ai.openrouter.key'              => 'OPENROUTER_API_KEY',
         'ai.openrouter.model'            => 'OPENROUTER_MODEL',
         'ai.fallback_provider'           => 'AI_FALLBACK_PROVIDER',
+        'ai.provider'                    => 'AI_PROVIDER',
         'mail.default'                   => 'MAIL_MAILER',
         'mail.mailers.smtp.host'         => 'MAIL_HOST',
         'mail.mailers.smtp.port'         => 'MAIL_PORT',

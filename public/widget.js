@@ -11,6 +11,7 @@
 
     // ── State ─────────────────────────────────────────────────────────────────
     let apiBase         = '';
+    let pgToken         = ''; // set on the owner's Playground page only
     let config          = null;
     let conversationUuid = null;
     let fingerprint     = null;
@@ -181,8 +182,14 @@
         return new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
+    function hdrs(accept) {
+        const h = { 'Content-Type': 'application/json', Accept: accept };
+        if (pgToken) h['X-PFX-Playground'] = pgToken;
+        return h;
+    }
+
     async function api(method, path, body) {
-        const opts = { method, headers: { 'Content-Type': 'application/json', Accept: 'application/json' } };
+        const opts = { method, headers: hdrs('application/json') };
         if (body) opts.body = JSON.stringify(body);
         const res = await fetch(apiBase + path, opts);
         if (!res.ok) throw new Error('API error: ' + res.status);
@@ -206,6 +213,7 @@
     // Script-tag install: <script src=".../widget.js" data-widget-id="UUID" async></script>
     const _cs = document.currentScript;
     if (_cs && _cs.getAttribute("data-widget-id") && !_queue.some(function (a) { return a[0] === "init"; })) {
+        pgToken = _cs.getAttribute('data-playground') || '';
         init({ widgetId: _cs.getAttribute("data-widget-id"), apiBase: _cs.getAttribute("data-api-base") || new URL(_cs.src).origin + "/api/widget" });
     }
 
@@ -293,7 +301,7 @@
         const tail = L.bubble_tail === false ? r : 4;
         return '.pfx-bubble{border-radius:' + r + 'px;font-size:' + (+L.bubble_size || 13) + 'px}' +
             '.pfx-bubble-visitor{border-bottom-right-radius:' + tail + 'px;' + (L.user_bg ? 'background:' + L.user_bg + ';' : '') + 'color:' + (L.user_text || '#fff') + '}' +
-            '.pfx-bubble-ai,.pfx-bubble-agent{border-bottom-left-radius:' + tail + 'px;' + (L.ai_bg ? 'background:' + L.ai_bg + ';border-color:transparent;' : '') + (L.ai_text ? 'color:' + L.ai_text : '') + '}' +
+            '.pfx-bubble-ai,.pfx-bubble-agent{border-bottom-left-radius:' + tail + 'px;' + (L.ai_bg ? 'background:' + L.ai_bg + ';border-color:transparent;' : '') + (L.ai_text && L.ai_bg ? 'color:' + L.ai_text : '') + '}' +
             '@keyframes pfx-wave{0%,60%,100%{transform:scaleY(.4)}30%{transform:scaleY(1)}}@keyframes pfx-fade{0%,100%{opacity:.25}50%{opacity:1}}' +
             '.pfx-typing-wave span{width:3px;height:14px;border-radius:2px;animation:pfx-wave 1s infinite ease-in-out}' +
             '.pfx-typing-pulse span{width:9px;height:9px;animation:pfx-fade 1.2s infinite}' +
@@ -627,7 +635,8 @@ ${bubbleCSS()}
             unreadCount = 0;
             if (badge) { badge.textContent = '0'; badge.classList.remove('visible'); }
 
-            if (!conversationUuid) await startConversation();
+            if (config.service_available === false) serviceUnavailable();
+            else if (!conversationUuid) await startConversation();
             startPolling();
         } else {
             stopPolling();
@@ -644,7 +653,7 @@ ${bubbleCSS()}
         try {
             const data = await api('POST', '/' + config.uuid + '/conversations', {
                 fingerprint:  fingerprint,
-                page_url:     window.location.href,
+                page_url:     /^https?:/.test(location.href) ? location.href : undefined,
                 referrer:     document.referrer || undefined,
                 timezone:     Intl.DateTimeFormat().resolvedOptions().timeZone,
                 device_type:  /Mobi|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
@@ -776,7 +785,9 @@ ${bubbleCSS()}
             }
         } catch (err) {
             hideTyping();
-            if (err.message && err.message.includes('429')) {
+            if (err.message && err.message.includes('503')) {
+                serviceUnavailable();
+            } else if (err.message && err.message.includes('429')) {
                 appendMessage('ai', 'You\'re sending messages too quickly. Please wait a moment.');
             } else {
                 appendMessage('ai', 'Sorry, something went wrong. Please try again.');
@@ -790,11 +801,12 @@ ${bubbleCSS()}
         const url = apiBase + '/' + config.uuid + '/conversations/' + conversationUuid + '/stream';
         const res = await fetch(url, {
             method:  'POST',
-            headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
+            headers: hdrs('text/event-stream'),
             body:    JSON.stringify({ content }),
         });
 
         if (res.status === 429) throw new Error('429');
+        if (res.status === 503) throw new Error('503');
         if (!res.ok)           throw new Error('stream error');
 
         const reader  = res.body.getReader();
@@ -999,6 +1011,19 @@ ${bubbleCSS()}
         } catch (e) { console.warn('PFX: CSAT submit failed', e); }
     }
 
+    // ── Service unavailable (owner's plan limit reached or subscription inactive) ──
+    // Visitors never see billing details: they get a friendly note and can still leave a message.
+    function serviceUnavailable() {
+        if (document.getElementById('pfx-unavailable')) return;
+        const input = document.getElementById('pfx-input');
+        if (input) input.closest('div').style.display = 'none';
+        appendMessage('ai', 'Thanks for stopping by! Our assistant is not available right now. Leave your name, email and message below and the team will get back to you.');
+        const last = document.getElementById('pfx-messages').lastElementChild;
+        if (last) last.id = 'pfx-unavailable';
+        config.offline_form_enabled = true;
+        showOfflineForm();
+    }
+
     // ── Offline form ──────────────────────────────────────────────────────────
     function showOfflineForm() {
         if (!config.offline_form_enabled) return;
@@ -1036,7 +1061,7 @@ ${bubbleCSS()}
                 name,
                 email,
                 message,
-                page_url: window.location.href,
+                page_url: /^https?:/.test(location.href) ? location.href : undefined,
                 conversation_uuid: conversationUuid || undefined,
             });
 
@@ -1055,7 +1080,7 @@ ${bubbleCSS()}
     const bk = { info: null, service: null, date: null, slot: null, slots: [], form: null };
 
     async function bkApi(method, path, body) {
-        const opts = { method, headers: { 'Content-Type': 'application/json', Accept: 'application/json' } };
+        const opts = { method, headers: hdrs('application/json') };
         if (body) opts.body = JSON.stringify(body);
         const res = await fetch(apiBase + '/' + config.uuid + '/booking' + path, opts);
         let data = {};
