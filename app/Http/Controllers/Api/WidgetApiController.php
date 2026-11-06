@@ -120,6 +120,7 @@ class WidgetApiController extends Controller
                 'hidden'               => ! $widget->isPlaygroundRequest() && \App\Support\Engagement::hiddenOn($widget, (string) request('page_url', '')),
                 'ai_notice'            => ($n = \App\Support\Engagement::settings($widget)['ai_notice'])['enabled'] ? $n + ['version' => substr(md5($n['title'] . $n['text']), 0, 8)] : null,
                 'voice_input_enabled'  => (bool) $widget->voice_input_enabled,
+                'voice_upload'         => \App\Http\Controllers\Api\TranscribeController::provider() !== null,
                 'lead_form'            => ($lf = \App\Support\LeadForm::settings($widget))['mode'] !== 'off' ? $lf : null,
                 'offline_form_message' => $this->getLocalizedText($widget->offline_form_messages, $userLanguage, $widget->offline_form_message),
 

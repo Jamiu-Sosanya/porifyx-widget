@@ -43,6 +43,9 @@ Route::prefix('widget')->middleware([WidgetRateLimit::class])->group(function ()
         return response()->noContent();
     });
 
+    // Voice fallback (record + Whisper) for browsers without speech recognition
+    Route::post('/{widgetUuid}/transcribe', \App\Http\Controllers\Api\TranscribeController::class)->middleware('throttle:20,1');
+
     // Lead form
     Route::post('/{widgetUuid}/lead', [\App\Http\Controllers\Api\LeadCaptureController::class, 'store']);
 

@@ -406,7 +406,7 @@
             '<div id="pfx-collect-form" style="display:none;margin-bottom:8px;"></div>' +
             '<div style="display:flex;gap:8px;align-items:flex-end;">' +
             '<textarea id="pfx-input" rows="1" placeholder="' + escapeAttr(config.placeholder_text || 'Type a message...') + '" style="flex:1;resize:none;border:1px solid ' + t.inputBorder + ';border-radius:12px;padding:10px 14px;font-size:13px;background:' + t.inputBg + ';color:' + t.text + ';outline:none;font-family:inherit;transition:border-color 0.2s,max-height 0.2s;max-height:120px;line-height:1.5;overflow-y:auto;"></textarea>' +
-            (config.voice_input_enabled && (window.SpeechRecognition || window.webkitSpeechRecognition)
+            (config.voice_input_enabled && voiceSupported()
                 ? '<button id="pfx-mic" type="button" aria-label="Speak your question" title="Speak your question" style="width:42px;height:42px;border-radius:12px;border:1px solid ' + t.inputBorder + ';background:' + t.inputBg + ';color:' + t.text + ';cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>'
                 : '') +
             '<button id="pfx-send" type="button" style="width:42px;height:42px;border-radius:12px;border:none;background:' + config.primary_color + ';color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity 0.2s,transform 0.15s;box-shadow:0 4px 12px rgba(0,0,0,0.2);">' +
@@ -799,29 +799,75 @@ ${bubbleCSS()}
     }
 
     // ── Voice input ───────────────────────────────────────────────────────────
-    let recog = null;
+    // Built-in speech recognition where it works (Chrome, Edge, Safari); otherwise record a clip
+    // and transcribe it on the server (Firefox, Brave, or when the speech service fails).
+    let recog = null, rec = null, recStop = null;
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const isBrave = !!(navigator.brave);
+    function canRecord() { return !!(config.voice_upload && window.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia); }
+    function voiceSupported() { return !!((SR && !isBrave) || canRecord()); }
+    function micState(on, label) {
+        const mic = document.getElementById('pfx-mic'), t = getTheme();
+        if (!mic) return;
+        mic.style.background = on ? config.primary_color : t.inputBg;
+        mic.style.color = on ? '#fff' : t.text;
+        mic.title = label || 'Speak your question';
+        const input = document.getElementById('pfx-input');
+        if (input) input.placeholder = on ? (label || 'Listening…') : (config.placeholder_text || 'Type a message...');
+    }
     function toggleVoice() {
-        const mic = document.getElementById('pfx-mic');
         if (config.ai_notice && !noticeAccepted()) { showNotice(); return; }
         if (recog) { recog.stop(); return; }
-        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (rec) { recStop(); return; }
+        if (SR && !isBrave) return speak();
+        if (canRecord()) return record();
+    }
+    function speak() {
         recog = new SR();
         recog.lang = config.detected_language && config.detected_language !== 'en' ? config.detected_language : (navigator.language || 'en-US');
         recog.interimResults = true;
-        mic.style.background = config.primary_color; mic.style.color = '#fff';
+        let failed = false;
+        micState(true, 'Listening… tap the mic to stop');
         recog.onresult = function (e) {
             document.getElementById('pfx-input').value = Array.from(e.results).map(function (r) { return r[0].transcript; }).join('');
         };
+        recog.onerror = function (e) { failed = e.error === 'network' || e.error === 'service-not-allowed'; };
         recog.onend = function () {
-            recog = null;
-            const t = getTheme();
-            mic.style.background = t.inputBg; mic.style.color = t.text;
+            recog = null; micState(false);
+            if (failed && canRecord()) return record(); // speech service unavailable: record instead
             if (document.getElementById('pfx-input').value.trim()) sendMessage();
         };
-        recog.onerror = function () { if (recog) recog.stop(); };
         recog.start();
     }
-
+    async function record() {
+        let stream;
+        try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+        catch (e) { micState(false); appendMessage('system', 'Microphone access was blocked. Allow it in your browser to talk.'); return; }
+        const chunks = [];
+        const type = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus', 'audio/mp4'].find(function (m) { return MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(m); }) || '';
+        rec = new MediaRecorder(stream, type ? { mimeType: type } : undefined);
+        rec.ondataavailable = function (e) { if (e.data.size) chunks.push(e.data); };
+        const timer = setTimeout(function () { recStop(); }, 30000);
+        recStop = function () { clearTimeout(timer); if (rec && rec.state !== 'inactive') rec.stop(); };
+        rec.onstop = async function () {
+            stream.getTracks().forEach(function (t) { t.stop(); });
+            rec = null; micState(true, 'Transcribing…');
+            const blob = new Blob(chunks, { type: type || 'audio/webm' });
+            const fd = new FormData();
+            fd.append('audio', blob, 'speech.' + (type.indexOf('mp4') !== -1 ? 'mp4' : type.indexOf('ogg') !== -1 ? 'ogg' : 'webm'));
+            fd.append('lang', (navigator.language || 'en').slice(0, 2));
+            try {
+                const h = pgToken ? { 'X-PFX-Playground': pgToken, Accept: 'application/json' } : { Accept: 'application/json' };
+                const res = await fetch(apiBase + '/' + config.uuid + '/transcribe', { method: 'POST', headers: h, body: fd });
+                const j = await res.json().catch(function () { return {}; });
+                micState(false);
+                if (j.text) { document.getElementById('pfx-input').value = j.text; sendMessage(); }
+                else appendMessage('system', j.error || 'Sorry, I could not hear that. Please try again or type your question.');
+            } catch (e) { micState(false); report('voice_failed', e && e.message); }
+        };
+        rec.start();
+        micState(true, 'Recording… tap the mic to send');
+    }
     // ── AI notice (EU AI Act): shown before the first message, remembered per wording ──
     function noticeAccepted() {
         return !config.ai_notice || localStorage.getItem('pfx_notice_' + config.uuid) === config.ai_notice.version;

@@ -41,8 +41,10 @@ class FlowController extends Controller
             'steps.*.goto'     => 'nullable|integer|min:1|max:40',
             'steps.*.tag'      => 'nullable|string|max:30',
             'steps.*.url'      => 'nullable|url:https|max:500',
+            'steps.*.x'        => 'nullable|integer|min:0|max:20000',
+            'steps.*.y'        => 'nullable|integer|min:0|max:20000',
         ]);
-        $steps = array_values(array_map(fn ($s) => array_intersect_key($s, array_flip(['type', 'text', 'var', 'choices', 'op', 'value', 'goto', 'tag', 'url'])), $d['steps']));
+        $steps = array_values(array_map(fn ($s) => array_intersect_key($s, array_flip(['type', 'text', 'var', 'choices', 'op', 'value', 'goto', 'tag', 'url', 'x', 'y'])), $d['steps']));
 
         $errors = [];
         foreach ($steps as $i => $s) {
