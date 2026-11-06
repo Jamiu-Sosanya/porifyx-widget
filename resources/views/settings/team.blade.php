@@ -33,6 +33,8 @@
                     <option value="agent">Agent — can view &amp; reply to chats</option>
                     <option value="admin">Admin — full access except billing</option>
                     <option value="viewer">Viewer — read-only access</option>
+                    @php $pfxRoles = \Illuminate\Support\Facades\DB::table('custom_roles')->where('owner_id', auth()->id())->get(); @endphp
+                    @foreach($pfxRoles as $cr)<option value="custom:{{ $cr->id }}">{{ $cr->name }} (custom)</option>@endforeach
                 </select>
             </div>
             <div class="flex items-end">
@@ -94,7 +96,7 @@
                         <form method="POST" action="{{ route('settings.team.updateRole', $member) }}" class="flex items-center gap-1.5">
                             @csrf @method('PATCH')
                             <select name="role" class="bg-gray-800 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500/50">
-                                @foreach(['agent' => 'Agent', 'admin' => 'Admin', 'viewer' => 'Viewer'] as $val => $label)
+                                @foreach(array_merge(['agent' => 'Agent', 'admin' => 'Admin', 'viewer' => 'Viewer'], \Illuminate\Support\Facades\DB::table('custom_roles')->where('owner_id', auth()->id())->pluck('name', 'id')->mapWithKeys(fn ($n, $i) => ['custom:' . $i => $n])->all()) as $val => $label)
                                 <option value="{{ $val }}" {{ $member->role === $val ? 'selected' : '' }}>{{ $label }}</option>
                                 @endforeach
                             </select>
@@ -160,5 +162,39 @@
             @endforeach
         </div>
     </div>
+</div>
+{{-- Custom roles --}}
+@php $pfxCustom = \Illuminate\Support\Facades\DB::table('custom_roles')->where('owner_id', auth()->id())->get(); $pfxGroups = collect(\App\Support\Workspace::PERMISSIONS)->groupBy(fn ($p) => $p[1], true); @endphp
+<div class="mt-6 bg-gray-900/50 border border-white/5 rounded-2xl p-6" x-data="{ edit: null }">
+    <h3 class="text-base font-semibold text-white">Roles</h3>
+    <p class="mt-1 text-xs text-gray-500">Built-in: Admin (everything except billing), Agent (chats, tickets, leads, bookings), Viewer (read-only leads and analytics). Create your own below.</p>
+    <div class="mt-4 space-y-2">
+        @foreach($pfxCustom as $cr)
+        <div class="flex items-center gap-3 rounded-xl border border-white/5 bg-white/[0.02] px-4 py-2.5">
+            <span class="flex-1 min-w-0 text-sm text-white">{{ $cr->name }} <span class="text-xs text-gray-500">· {{ count(json_decode($cr->permissions, true) ?: []) }} permissions</span></span>
+            <button type="button" @click="edit = {{ $cr->id }}" class="text-xs text-brand-400">Edit</button>
+            <form method="POST" action="{{ route('settings.roles.delete', $cr->id) }}" onsubmit="return confirm('Delete this role?')">@csrf @method('DELETE')<button class="text-xs text-rose-400">Delete</button></form>
+        </div>
+        @endforeach
+    </div>
+    @foreach($pfxCustom->push((object) ['id' => null, 'name' => '', 'permissions' => '[]']) as $cr)
+    @php $has = json_decode($cr->permissions, true) ?: []; @endphp
+    <form method="POST" action="{{ route('settings.roles.save') }}" x-show="edit === {{ $cr->id ?? 'null' }} || ({{ $cr->id ? 'false' : 'true' }} && edit === 'new')" x-cloak class="mt-4 rounded-xl border border-white/10 p-4 space-y-3">
+        @csrf @method('PUT')
+        <input type="hidden" name="id" value="{{ $cr->id }}">
+        <input name="name" required maxlength="60" value="{{ $cr->name }}" placeholder="Role name, e.g. Support lead" class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white">
+        <div class="grid sm:grid-cols-2 gap-4">
+            @foreach($pfxGroups as $area => $perms)
+            <div><p class="text-xs font-semibold uppercase tracking-wider text-gray-500">{{ $area }}</p>
+                @foreach($perms as $key => [$label])
+                <label class="mt-1.5 flex items-start gap-2 text-sm text-gray-300"><input type="checkbox" name="permissions[]" value="{{ $key }}" @checked(in_array($key, $has, true)) class="mt-1"> {{ $label }}</label>
+                @endforeach
+            </div>
+            @endforeach
+        </div>
+        <button class="px-5 py-2.5 rounded-xl bg-brand-500 text-white text-sm font-semibold">Save role</button>
+    </form>
+    @endforeach
+    <button type="button" x-show="edit === null" @click="edit = 'new'" class="mt-4 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-semibold text-white">+ New role</button>
 </div>
 @endsection

@@ -68,7 +68,11 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 Route::get('/team/accept/{token}', [\App\Http\Controllers\SettingsController::class, 'acceptInvite'])->name('team.accept');
 
 // Authenticated Routes
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', \App\Http\Middleware\WorkspaceContext::class])->group(function () {
+    Route::post('/workspaces/switch', [\App\Http\Controllers\WorkspaceController::class, 'switch'])->name('workspaces.switch');
+    Route::post('/workspaces', [\App\Http\Controllers\WorkspaceController::class, 'store'])->name('workspaces.store');
+    Route::put('/settings/roles', [\App\Http\Controllers\WorkspaceController::class, 'saveRole'])->name('settings.roles.save');
+    Route::delete('/settings/roles/{id}', [\App\Http\Controllers\WorkspaceController::class, 'deleteRole'])->whereNumber('id')->name('settings.roles.delete');
 
     // ── Email Verification ────────────────────────────────────────────────────
     // These routes must NOT have the 'verified' middleware so unverified users can reach them.

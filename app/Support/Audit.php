@@ -11,7 +11,7 @@ class Audit
     {
         try {
             $a = activity('audit')->event($action)->withProperties($meta + ['ip' => request()?->ip()]);
-            if (auth()->user()) $a->causedBy(auth()->user());
+            if ($who = \App\Support\Workspace::realUser()) $a->causedBy($who);
             if ($subject) $a->performedOn($subject);
             $a->log($action);
         } catch (\Throwable $e) {

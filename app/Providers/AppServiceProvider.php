@@ -20,6 +20,19 @@ class AppServiceProvider extends ServiceProvider
     {
         Gate::policy(Widget::class, WidgetPolicy::class);
 
+        // Extra workspaces have placeholder addresses: deliver their mail to the people who own them.
+        \Illuminate\Support\Facades\Event::listen(\Illuminate\Mail\Events\MessageSending::class, function ($event) {
+            $to = $event->message->getTo();
+            if (! collect($to)->contains(fn ($a) => str_ends_with($a->getAddress(), '@workspaces.invalid'))) return;
+            $real = collect($to)->flatMap(function ($a) {
+                if (! str_ends_with($a->getAddress(), '@workspaces.invalid')) return [$a->getAddress()];
+                $ws = \App\Models\User::where('email', $a->getAddress())->first();
+
+                return $ws ? \App\Models\User::whereIn('id', \App\Models\TeamMember::where('owner_id', $ws->id)->where('role', 'owner')->pluck('user_id'))->pluck('email')->all() : [];
+            })->unique()->values()->all();
+            $event->message->to(...($real ?: ['postmaster@localhost']));
+        });
+
         // Shared class strings for the public site pages (light and dark pairs kept in one place).
         \Illuminate\Support\Facades\View::composer(['pages.*', 'layouts.site', 'layouts.doc'], fn ($view) => $view->with([
             'name'    => config('branding.name'),

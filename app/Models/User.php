@@ -23,7 +23,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'two_factor_confirmed_at', 'is_active', 'company_name', 'company_website',
         'phone', 'notification_preferences', 'telegram_chat_id',
         'last_login_at', 'last_login_ip',
-        'pwa_installed_at', 'pwa_platform', 'lead_settings', 'support_settings', 'changelog_seen_at',
+        'pwa_installed_at', 'pwa_platform', 'lead_settings', 'support_settings', 'changelog_seen_at', 'is_workspace',
     ];
 
     protected $hidden = [
@@ -40,6 +40,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'lead_settings'              => 'array',
             'support_settings'           => 'array',
             'changelog_seen_at'          => 'datetime',
+            'is_workspace'               => 'boolean',
             'password'                   => 'hashed',
             'two_factor_enabled'         => 'boolean',
             'is_active'                  => 'boolean',

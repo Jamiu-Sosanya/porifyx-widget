@@ -167,16 +167,40 @@
         </script>
 
         <div class="p-3 border-t border-white/[0.06]">
+            @php $pfxReal = \App\Support\Workspace::realUser(); $pfxWs = $pfxReal && ! $isAdmin ? \App\Support\Workspace::for($pfxReal) : []; @endphp
+            @if(! $isAdmin)
+            <div x-data="{ open: false }" class="relative mb-2">
+                <button type="button" @click="open = !open" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.07] text-left">
+                    <span class="grid place-items-center w-6 h-6 rounded-md bg-accent-500/20 text-accent-300 text-[11px] font-bold">{{ mb_strtoupper(mb_substr(auth()->user()->company_name ?: auth()->user()->name, 0, 1)) }}</span>
+                    <span class="flex-1 min-w-0"><span class="block text-xs font-semibold text-white truncate">{{ auth()->user()->company_name ?: auth()->user()->name }}</span>
+                        <span class="block text-[10px] text-gray-500">{{ app()->bound('pfx.workspace_role') ? \App\Support\Workspace::roleLabel(app('pfx.workspace_role')) : 'Your workspace' }}</span></span>
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 9l4-4 4 4M16 15l-4 4-4-4"/></svg>
+                </button>
+                <div x-show="open" x-cloak @click.outside="open = false" class="absolute bottom-full mb-2 left-0 right-0 rounded-xl border border-white/10 bg-[#0d1a33] p-1.5 shadow-2xl z-10">
+                    @foreach($pfxWs as $ws)
+                    <form method="POST" action="{{ route('workspaces.switch') }}">@csrf<input type="hidden" name="workspace" value="{{ $ws['id'] }}">
+                        <button class="w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-lg text-left text-xs hover:bg-white/5 {{ $ws['id'] === auth()->id() ? 'text-white font-semibold' : 'text-gray-300' }}">
+                            <span class="truncate">{{ $ws['name'] }}</span><span class="shrink-0 text-[10px] text-gray-500">{{ \App\Support\Workspace::roleLabel($ws['role']) }}</span>
+                        </button>
+                    </form>
+                    @endforeach
+                    <form method="POST" action="{{ route('workspaces.store') }}" class="mt-1 pt-1.5 border-t border-white/5 flex gap-1.5">@csrf
+                        <input name="name" required maxlength="80" placeholder="New workspace name" class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white">
+                        <button class="px-2.5 rounded-lg bg-brand-500 text-white text-xs font-semibold">+</button>
+                    </form>
+                </div>
+            </div>
+            @endif
             @if($plan)
             <a href="{{ route('settings.billing') }}" class="block mb-2 px-3 py-2.5 rounded-xl bg-brand-500/10 border border-brand-500/20 text-xs">
                 <span class="text-gray-400">Plan</span> <span class="font-semibold text-white">{{ $plan }}</span>
             </a>
             @endif
             <div class="flex items-center gap-3 px-2 py-1.5">
-                <img src="{{ auth()->user()->avatarUrl() }}" alt="" class="w-9 h-9 rounded-xl object-cover shrink-0">
+                <img src="{{ ($pfxReal ?? auth()->user())->avatarUrl() }}" alt="" class="w-9 h-9 rounded-xl object-cover shrink-0">
                 <div class="min-w-0 flex-1">
-                    <p class="text-sm font-semibold text-white truncate">{{ auth()->user()->name }}</p>
-                    <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email }}</p>
+                    <p class="text-sm font-semibold text-white truncate">{{ ($pfxReal ?? auth()->user())->name }}</p>
+                    <p class="text-xs text-gray-500 truncate">{{ ($pfxReal ?? auth()->user())->email }}</p>
                 </div>
             </div>
         </div>

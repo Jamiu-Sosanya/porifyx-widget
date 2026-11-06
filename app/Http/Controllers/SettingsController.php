@@ -92,7 +92,7 @@ class SettingsController extends Controller
     {
         $validated = $request->validate([
             'email' => 'required|email',
-            'role'  => 'required|in:admin,agent,viewer',
+            'role'  => ['required', \Illuminate\Validation\Rule::in(array_merge(['admin', 'agent', 'viewer'], \Illuminate\Support\Facades\DB::table('custom_roles')->where('owner_id', $request->user()->id)->pluck('id')->map(fn ($i) => 'custom:' . $i)->all()))],
         ]);
 
         $user = $request->user();
@@ -205,7 +205,7 @@ class SettingsController extends Controller
     {
         abort_unless((int) $member->owner_id === (int) $request->user()->id, 403);
 
-        $request->validate(['role' => 'required|in:admin,agent,viewer']);
+        $request->validate(['role' => ['required', \Illuminate\Validation\Rule::in(array_merge(['admin', 'agent', 'viewer'], \Illuminate\Support\Facades\DB::table('custom_roles')->where('owner_id', $request->user()->id)->pluck('id')->map(fn ($i) => 'custom:' . $i)->all()))]]);
 
         $member->update(['role' => $request->role]);
 
