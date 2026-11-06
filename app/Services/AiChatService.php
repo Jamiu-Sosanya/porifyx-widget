@@ -56,10 +56,10 @@ class AiChatService
             if (trim($content) === '') throw new \RuntimeException('AI provider returned an empty reply');
 
             $confidence = $this->calculateConfidence($relevantChunks);
-            $isFallback = $confidence < config('ai.response.confidence_threshold', 0.6);
+            $isFallback = $confidence < ($widget->min_confidence !== null ? (float) $widget->min_confidence : config('ai.response.confidence_threshold', 0.6));
 
             if ($isFallback && $widget->strict_mode) {
-                $content = config('ai.response.fallback_message');
+                $content = $widget->fallback_message ?: config('ai.response.fallback_message');
             }
 
             // 6. Translate response if needed
@@ -305,7 +305,7 @@ class AiChatService
         }
 
         $chunks = $this->retrievalService->findRelevantChunks($widget, $query);
-        if ($this->calculateConfidence($chunks) < config('ai.response.confidence_threshold', 0.6) && $widget->activeKnowledgeBase) {
+        if ($this->calculateConfidence($chunks) < ($widget->min_confidence !== null ? (float) $widget->min_confidence : config('ai.response.confidence_threshold', 0.6)) && $widget->activeKnowledgeBase) {
             KnowledgeGap::record($widget, $userMessage);
         }
 

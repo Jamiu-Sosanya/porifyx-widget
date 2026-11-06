@@ -2,7 +2,7 @@
 @section('title', $widget->name)
 @section('page-title', 'Widget Overview')
 @section('content')
-<div class="max-w-6xl">
+<div>
     {{-- Header --}}
     <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
         <div>
@@ -41,6 +41,8 @@
             </a>
         </div>
     </div>
+
+    @include('widgets.partials.hub')
 
     {{-- KPI Stats --}}
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 mb-8">

@@ -541,6 +541,19 @@
                 </div>
             </label>
 
+            <div class="grid md:grid-cols-2 gap-4 p-4 rounded-xl border border-white/5 bg-white/[0.02]" x-data="{ c: {{ $widget->min_confidence ?? config('ai.response.confidence_threshold', 0.6) }} }">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">Answer confidence <span class="text-brand-400" x-text="Math.round(c * 100) + '%'"></span></label>
+                    <input type="range" name="min_confidence" min="0.3" max="0.95" step="0.05" x-model="c" class="mt-2 w-full">
+                    <p class="mt-1 text-xs text-gray-500">How sure the assistant must be of its knowledge before answering. Higher = safer but says "I'm not sure" more often. Questions below it appear in Answers &amp; gaps.</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">Reply when unsure</label>
+                    <textarea name="fallback_message" rows="3" maxlength="500" placeholder="{{ config('ai.response.fallback_message') }}" class="mt-2 w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white">{{ $widget->fallback_message }}</textarea>
+                    <p class="mt-1 text-xs text-gray-500">Used with Strict mode when the knowledge base has no confident answer.</p>
+                </div>
+            </div>
+
             <label class="flex items-center gap-3 p-3 bg-white/[0.02] border border-white/5 rounded-xl cursor-pointer">
                 <input type="checkbox" name="show_sources" value="1" {{ ($widget->show_sources ?? true) ? 'checked' : '' }} class="w-4 h-4 rounded">
                 <div>

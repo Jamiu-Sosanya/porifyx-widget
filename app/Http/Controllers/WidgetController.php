@@ -191,6 +191,8 @@ class WidgetController extends Controller
             'response_length'           => 'nullable|in:short,medium,long',
             'strict_mode'               => 'nullable|boolean',
             'show_sources'              => 'nullable|boolean',
+            'min_confidence'            => 'nullable|numeric|min:0.3|max:0.95',
+            'fallback_message'          => 'nullable|string|max:500',
             'system_prompt'             => 'nullable|string|max:5000',
             'lead_qualification_enabled'=> 'nullable|boolean',
             'domain_restriction'        => 'nullable|boolean',
@@ -361,6 +363,8 @@ class WidgetController extends Controller
     public function playground(Widget $widget)
     {
         $this->authorize('update', $widget);
+
+        \Illuminate\Support\Facades\Cache::forever('pfx:tested:' . $widget->id, now()->toIso8601String());
 
         return view('widgets.playground', ['widget' => $widget, 'plan' => $widget->planState()]);
     }
