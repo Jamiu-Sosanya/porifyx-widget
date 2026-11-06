@@ -189,7 +189,7 @@
     <div class="max-w-6xl mx-auto px-5 py-20 md:py-28">
         <p class="{{ $eyebrow }}">Everything in one assistant</p>
         <h2 class="{{ $h2 }} max-w-3xl">Answers, leads and support, handled automatically.</h2>
-        <div class="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="mt-10 sm:mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             @foreach([
                 ['Trained on your business', 'Learns from your website, PDFs, documents and Q&A pairs. Strict mode keeps every answer on-topic, and version history lets you roll back.', 'M12 6.25v13m0-13C10.83 5.48 9.25 5 7.5 5S4.17 5.48 3 6.25v13C4.17 18.48 5.75 18 7.5 18s3.33.48 4.5 1.25m0-13C13.17 5.48 14.75 5 16.5 5s3.33.48 4.5 1.25v13C19.83 18.48 18.25 18 16.5 18s-3.33.48-4.5 1.25', true],
                 ['Leads scored for you', 'Contact details captured mid-chat and scored cold, warm or hot, with segments and notes.', 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6', false],
@@ -201,12 +201,18 @@
                 ['Looks like your brand', 'Colours, avatar, launcher, tone and greeting, previewed live. A/B test variants to find what converts best.', 'M7 21a4 4 0 0 1-4-4V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v12a4 4 0 0 1-4 4zm0 0h12a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2.34M11 7.34l1.66-1.66a2 2 0 0 1 2.83 0l2.83 2.83a2 2 0 0 1 0 2.83L9.83 19.83', true],
                 ['Bookings in the chat', 'Services, team diaries, reminders and calendar sync. Every booking gets a number visitors can use to change or cancel.', 'M8 2v3m8-3v3M3.5 9h17M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm4 10 2 2 4-4', false],
             ] as [$title, $body, $icon, $wide])
-            <article class="rounded-3xl p-7 {{ $wide ? 'lg:col-span-2 bg-[#0d1a33] text-white dark:bg-brand-500/10 dark:ring-1 dark:ring-brand-400/20' : 'bg-slate-50 border border-slate-200 dark:bg-white/[0.03] dark:border-white/10' }}">
-                <span class="grid place-items-center w-11 h-11 rounded-xl {{ $wide ? 'bg-white/10 text-accent-300' : 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300' }}">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="{{ $icon }}"/></svg>
+            <article class="group relative overflow-hidden rounded-2xl p-5 sm:p-6 flex sm:block gap-4 bg-white border border-slate-200 dark:bg-white/[0.03] dark:border-white/10 transition duration-300 hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-xl hover:shadow-brand-500/10 dark:hover:border-brand-400/40 {{ $loop->last ? 'sm:col-span-2 lg:col-span-1' : '' }}">
+                <span class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-500/70 to-transparent opacity-0 group-hover:opacity-100 transition" aria-hidden="true"></span>
+                <span class="relative grid place-items-center w-11 h-11 shrink-0 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-white shadow-lg shadow-brand-500/25 ring-1 ring-inset ring-white/20">
+                    <svg class="w-[22px] h-[22px]" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="{{ $icon }}"/></svg>
                 </span>
-                <h3 class="mt-5 text-xl font-bold">{{ $title }}</h3>
-                <p class="mt-2 leading-relaxed {{ $wide ? 'text-slate-300' : $muted }}">{{ $body }}</p>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2 sm:mt-5">
+                        <h3 class="text-base sm:text-lg font-bold tracking-tight">{{ $title }}</h3>
+                        <span class="ml-auto hidden sm:inline text-xs font-semibold tabular-nums text-slate-300 dark:text-white/20">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+                    </div>
+                    <p class="mt-1.5 text-sm sm:text-[15px] leading-relaxed {{ $muted }}">{{ $body }}</p>
+                </div>
             </article>
             @endforeach
         </div>
@@ -309,20 +315,29 @@
     <div class="max-w-6xl mx-auto px-5 py-20 md:py-28">
         <p class="{{ $eyebrow }}">Use cases</p>
         <h2 class="{{ $h2 }} max-w-3xl">Built for teams that live on their website.</h2>
-        <div class="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="mt-10 sm:mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             @foreach([
-                ['🛍️', 'E-commerce', 'Answer sizing, shipping and returns questions instantly and recover hesitant shoppers.'],
-                ['💻', 'SaaS', 'Qualify trial users, explain plans and route enterprise leads to sales.'],
-                ['🏢', 'Agencies', 'Run a branded assistant for every client from one account.'],
-                ['🏠', 'Real estate', 'Capture buyer budgets and viewing requests around the clock.'],
-                ['🩺', 'Clinics & services', 'Handle opening hours, services and booking requests without phone queues.'],
-                ['🎓', 'Education', 'Guide applicants through courses, fees and deadlines in their language.'],
-            ] as [$emoji, $t, $d])
-            <div class="rounded-3xl p-6 bg-slate-50 border border-slate-200 dark:bg-white/[0.03] dark:border-white/10 hover:border-brand-300 dark:hover:border-brand-400/40 transition">
-                <span class="text-2xl" aria-hidden="true">{{ $emoji }}</span>
-                <h3 class="mt-3 font-bold text-lg">{{ $t }}</h3>
-                <p class="mt-1.5 {{ $muted }}">{{ $d }}</p>
-            </div>
+                ['M6 7h12l-1 13H7L6 7zm3 0V5a3 3 0 0 1 6 0v2', 'E-commerce', 'Answer sizing, shipping and returns questions instantly and recover hesitant shoppers.', 'Do you ship to Ireland?'],
+                ['M3 5h18v11H3zM8 20h8M12 16v4', 'SaaS', 'Qualify trial users, explain plans and route enterprise leads to sales.', 'What does the Pro plan include?'],
+                ['M4 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M16 9h2a2 2 0 0 1 2 2v10M8 7h4M8 11h4M8 15h4M2 21h20', 'Agencies', 'Run a branded assistant for every client from one account.', 'Can I see your portfolio?'],
+                ['M3 11l9-7 9 7M5 9.5V20h14V9.5M10 20v-6h4v6', 'Real estate', 'Capture buyer budgets and viewing requests around the clock.', 'Can I view it on Saturday?'],
+                ['M6 3v6a4 4 0 0 0 8 0V3M10 13v2a5 5 0 0 0 10 0v-2M20 11a2 2 0 1 0 0-.01', 'Clinics & services', 'Handle opening hours, services and booking requests without phone queues.', 'Any physio slots this week?'],
+                ['M2 9l10-5 10 5-10 5L2 9zm4 2v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5', 'Education', 'Guide applicants through courses, fees and deadlines in their language.', 'When is the March intake?'],
+            ] as [$icon, $t, $d, $q])
+            <article class="group flex flex-col rounded-2xl p-5 sm:p-6 bg-slate-50 border border-slate-200 dark:bg-white/[0.03] dark:border-white/10 hover:border-brand-300 dark:hover:border-brand-400/40 transition duration-300">
+                <div class="flex items-center gap-3">
+                    <span class="grid place-items-center w-10 h-10 shrink-0 rounded-xl bg-[#0d1a33] text-brand-400 ring-1 ring-white/10 dark:bg-white/[0.06] group-hover:bg-brand-500 group-hover:text-white transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="{{ $icon }}"/></svg>
+                    </span>
+                    <h3 class="font-bold text-base sm:text-lg tracking-tight">{{ $t }}</h3>
+                </div>
+                <p class="mt-3 text-sm sm:text-[15px] leading-relaxed {{ $muted }}">{{ $d }}</p>
+                <p class="mt-auto pt-4">
+                    <span class="inline-flex max-w-full items-center gap-2 rounded-full rounded-bl-md bg-white border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 dark:bg-white/[0.05] dark:border-white/10 dark:text-slate-300">
+                        <span class="w-1.5 h-1.5 shrink-0 rounded-full bg-emerald-500"></span><span class="truncate">“{{ $q }}”</span>
+                    </span>
+                </p>
+            </article>
             @endforeach
         </div>
     </div>
