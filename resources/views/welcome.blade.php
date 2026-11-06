@@ -222,11 +222,17 @@
                 ['Leads scored for you', 'Contact details captured mid-chat and scored cold, warm or hot, with segments and notes.', 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6', false],
                 ['Human handoff', 'Agents take over in a shared inbox with AI summaries, sentiment and suggested replies.', 'M17 20h5v-2a3 3 0 0 0-5.36-1.86M17 20H7m10 0v-2c0-.66-.13-1.28-.36-1.86M7 20H2v-2a3 3 0 0 1 5.36-1.86M7 20v-2c0-.66.13-1.28.36-1.86m0 0a5 5 0 0 1 9.28 0M15 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0z', false],
                 ['Any AI model, with backup', 'OpenAI, Claude, Gemini, Groq or OpenRouter. If one provider goes down, a backup takes over.', 'M13 10V3L4 14h7v7l9-11h-7z', false],
-                ['Automations & webhooks', 'Route hot leads to your CRM, alert your team on keywords and trigger follow-ups with signed webhooks.', 'M4 4v5h.58m15.36 2A8 8 0 0 0 4.58 9m0 0H9m11 11v-5h-.58m0 0a8 8 0 0 1-15.36-2m15.36 2H15', false],
+                ['Workflow automations', '21 ready-made recipes: hot lead to email or CRM, angry words to escalate, AI unsure to Telegram. Test any workflow in one click.', 'M4 4v5h.58m15.36 2A8 8 0 0 0 4.58 9m0 0H9m11 11v-5h-.58m0 0a8 8 0 0 1-15.36-2m15.36 2H15', false],
                 ['Proactive messages', 'Greet visitors on key pages, after a delay or on exit intent, in their own language.', 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.42-4.03 8-9 8a9.86 9.86 0 0 1-4.26-.95L3 20l1.4-3.72A7.56 7.56 0 0 1 3 12c0-4.42 4.03-8 9-8s9 3.58 9 8z', false],
-                ['Analytics that matter', 'Conversations, conversion, CSAT, sentiment and the questions your AI could not answer yet.', 'M9 19v-6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2zm0 0V9a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v10m-6 0a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2m0 0V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z', false],
+                ['Analytics in your inbox', 'Conversion, CSAT, sentiment, busiest hours and unanswered questions, compared with last period and emailed to you every day, week or month.', 'M9 19v-6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2zm0 0V9a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v10m-6 0a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2m0 0V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z', false],
                 ['Looks like your brand', 'Colours, avatar, launcher, tone and greeting, previewed live. A/B test variants to find what converts best.', 'M7 21a4 4 0 0 1-4-4V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v12a4 4 0 0 1-4 4zm0 0h12a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2.34M11 7.34l1.66-1.66a2 2 0 0 1 2.83 0l2.83 2.83a2 2 0 0 1 0 2.83L9.83 19.83', true],
                 ['Bookings in the chat', 'Services, team diaries, reminders and calendar sync. Every booking gets a number visitors can use to change or cancel.', 'M8 2v3m8-3v3M3.5 9h17M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm4 10 2 2 4-4', false],
+                ['Chat flows, no code', 'Drag steps onto a canvas: questions, branches, tags, webhooks and handoff. Perfect for quotes, qualifying and FAQs.', 'M6 3v6m0 0a3 3 0 1 0 0 6m0-6a3 3 0 1 1 0 6m0 0v6M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 0c0 6-12 3-12 9', false],
+                ['Speaks 133 languages', 'Detects each visitor\'s language and replies in it. Your dashboard and help centre can be translated too.', 'M3 5h12M9 3v2m1.05 9.5A18 18 0 0 1 6.41 9m6.09 11 5-10 5 10m-8.6-2h7.2M11.13 5C10.16 10.77 6.4 15.6 3 18', false],
+                ['Tickets with auto-escalation', 'Turn chats and emails into tickets. Overdue or angry tickets move up the queue on their own.', 'M15 5v2m0 4v2m0 4v2M5 5a2 2 0 0 0-2 2v3a2 2 0 1 1 0 4v3a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3a2 2 0 1 1 0-4V7a2 2 0 0 0-2-2H5z', false],
+                ['Plugs into your tools', 'WordPress plugin, WooCommerce order lookup and coupons, HubSpot, calendars, Slack, WhatsApp and MCP servers, all in one hub.', 'M14 7h3a3 3 0 0 1 0 6h-3M10 17H7a3 3 0 0 1 0-6h3M8 12h8', false],
+                ['Teams and workspaces', 'Separate workspaces for each client or brand, with custom roles so every teammate sees only what they need.', 'M17 20h5v-2a3 3 0 0 0-5.36-1.86M9 20H2v-2a3 3 0 0 1 5.36-1.86M15 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0z', false],
+                ['Private by design', 'Consent banner, GDPR export and erase, automatic data retention and a privacy request form your visitors can use.', 'M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7l7-4zm-3 9 2 2 4-4', false],
             ] as [$title, $body, $icon, $wide])
             <article class="group relative overflow-hidden rounded-2xl p-5 sm:p-6 flex sm:block gap-4 bg-white border border-slate-200 dark:bg-white/[0.03] dark:border-white/10 transition duration-300 hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-xl hover:shadow-brand-500/10 dark:hover:border-brand-400/40 {{ $loop->last ? 'sm:col-span-2 lg:col-span-1' : '' }}">
                 <span class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-500/70 to-transparent opacity-0 group-hover:opacity-100 transition" aria-hidden="true"></span>
@@ -258,12 +264,16 @@
 
         @php
             $tour = [
-                'dashboard'    => ['Overview', 'Live totals, trends and plan usage at a glance.'],
+                'dashboard'    => ['Overview', 'Live totals, lead pipeline, knowledge health and recent leads at a glance.'],
+                'workspace'    => ['Widget workspace', 'Setup progress, launch snapshot and every tool for one widget in one place.'],
+                'conversation' => ['Inbox', 'Read any chat, see who the visitor is, tag it and take over.'],
+                'flows'        => ['Chat flows', 'Build step-by-step conversations on a drag-and-drop canvas.'],
+                'automations'  => ['Automations', 'Ready-made workflows with test runs and a log of every run.'],
+                'leads'        => ['Leads', 'Every lead scored hot, warm or cold on a pipeline board.'],
+                'analytics'    => ['Analytics', 'Trends against last period, heatmaps and reports emailed to you.'],
+                'integrations' => ['Integrations', 'Website, CRM, calendars, channels and alerts in one hub.'],
                 'bookings'     => ['Bookings', 'A week view of every appointment, by team member.'],
-                'conversation' => ['Conversations', 'Read any chat, see who the visitor is, and take over.'],
-                'leads'        => ['Leads', 'Every lead scored hot, warm or cold, ready to export.'],
-                'analytics'    => ['Analytics', 'What visitors ask, when they ask it, and what converts.'],
-                'admin'        => ['Admin', 'Revenue, plans and system health for the whole platform.'],
+                'admin'        => ['Admin', 'Revenue, plans, widget monitoring and system health.'],
             ];
         @endphp
         <div class="mt-10 flex flex-wrap justify-center gap-2" role="tablist">
