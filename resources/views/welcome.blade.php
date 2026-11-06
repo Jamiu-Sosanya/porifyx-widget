@@ -242,7 +242,7 @@
         </div>
 
         <div class="mt-8 relative">
-            <div class="absolute -inset-4 sm:-inset-8 -z-10 rounded-[2.5rem] bg-gradient-to-tr from-brand-500/25 via-accent-400/15 to-fuchsia-400/15 blur-2xl" aria-hidden="true"></div>
+            <div class="absolute -inset-4 sm:-inset-8 -z-10 rounded-[2.5rem] bg-gradient-to-tr from-brand-500/25 via-accent-400/15 to-brand-400/15 blur-2xl" aria-hidden="true"></div>
             <div class="rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 bg-white shadow-2xl shadow-slate-900/20 dark:border-white/10 dark:bg-[#0d1a33]">
                 <div class="flex items-center gap-1.5 px-4 py-3 border-b border-slate-200 bg-slate-50 dark:border-white/10 dark:bg-white/[0.03]">
                     <span class="w-3 h-3 rounded-full bg-rose-400"></span><span class="w-3 h-3 rounded-full bg-amber-400"></span><span class="w-3 h-3 rounded-full bg-emerald-400"></span>
@@ -261,31 +261,45 @@
 </section>
 
 {{-- ================= BOOKINGS ================= --}}
-<section id="bookings" class="bg-white border-y border-slate-200 dark:bg-white/[0.02] dark:border-white/10 scroll-mt-16">
-    <div class="max-w-6xl mx-auto px-5 py-20 md:py-28 grid lg:grid-cols-[1fr_1.35fr] gap-12 items-center">
+<section id="bookings" class="relative overflow-hidden bg-[#0d1a33] text-white scroll-mt-16">
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div class="absolute -top-40 -right-32 w-[34rem] h-[34rem] rounded-full bg-brand-500/25 blur-3xl"></div>
+        <div class="absolute -bottom-48 -left-24 w-[30rem] h-[30rem] rounded-full bg-accent-500/20 blur-3xl"></div>
+        <div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#08122a] to-transparent"></div>
+    </div>
+    <div class="relative max-w-6xl mx-auto px-5 py-20 md:py-28 grid lg:grid-cols-[1fr_1.35fr] gap-12 lg:gap-16 items-center">
         <div class="min-w-0">
-            <p class="{{ $eyebrow }}">New · Appointments</p>
-            <h2 class="{{ $h2 }}">Questions become bookings, right inside the chat.</h2>
-            <p class="mt-5 text-lg {{ $muted }}">Visitors pick a service, a person and a free time without leaving the conversation. They get a booking number by email and can come back to the chat to change or cancel.</p>
-            <ul class="mt-8 grid sm:grid-cols-2 gap-3 text-sm font-medium">
+            <p class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[.14em] text-accent-300">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-500"></span>New · Appointments
+            </p>
+            <h2 class="mt-5 text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-[1.08]">
+                Questions become <span class="bg-gradient-to-r from-brand-400 to-brand-500 bg-clip-text text-transparent">bookings</span>, right inside the chat.
+            </h2>
+            <p class="mt-5 text-lg text-accent-100/80">Visitors pick a service, a person and a free time without leaving the conversation. They get a booking number by email and can come back to the chat to change or cancel.</p>
+            <ul class="mt-8 grid sm:grid-cols-2 gap-2.5 text-sm font-medium">
                 @foreach(['Google & Outlook calendar sync', 'Team diaries and opening hours', 'Custom booking questions', 'Sync to HubSpot, Pipedrive & more', 'Reminders and calendar invites', 'Change or cancel by booking number'] as $x)
-                <li class="flex gap-2"><span class="text-brand-500">✓</span>{{ $x }}</li>
+                <li class="flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/[.04] px-3 py-2.5">
+                    <span class="grid place-items-center w-5 h-5 shrink-0 rounded-full bg-brand-500/20 text-brand-400 text-[11px]">✓</span>{{ $x }}
+                </li>
                 @endforeach
             </ul>
         </div>
-        <div class="min-w-0 relative">
-            <div class="absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-to-br from-accent-400/20 via-brand-500/15 to-transparent blur-2xl" aria-hidden="true"></div>
-            <div class="grid grid-cols-2 gap-4 sm:gap-5">
+        {{-- Phones: swipeable row. Tablet and up: staggered 2x2 grid. --}}
+        <div class="min-w-0 -mx-5 sm:mx-0">
+            <div class="flex sm:grid sm:grid-cols-2 gap-4 sm:gap-6 overflow-x-auto sm:overflow-visible snap-x snap-mandatory px-5 sm:px-0 pb-4 sm:pb-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 @foreach([['chat-services', '1', 'Choose a service'], ['chat-times', '2', 'Pick a free time'], ['chat-details', '3', 'Add details'], ['chat-done', '4', 'Booked, with a number']] as [$img, $step, $label])
-                <figure class="{{ $loop->even ? 'sm:translate-y-8' : '' }}">
-                    <img src="{{ asset('images/landing/' . $img . '.webp') }}" alt="Chat booking step {{ $step }}: {{ $label }}" width="393" height="503" loading="lazy" decoding="async"
-                         class="w-full h-auto rounded-2xl shadow-2xl shadow-slate-900/25 ring-1 ring-slate-900/10 dark:ring-white/10">
-                    <figcaption class="mt-3 flex items-center gap-2 text-sm font-semibold">
-                        <span class="grid place-items-center w-6 h-6 rounded-full bg-brand-500 text-white text-xs">{{ $step }}</span>{{ $label }}
+                <figure class="snap-center shrink-0 w-[78%] sm:w-auto group {{ $loop->even ? 'sm:translate-y-10' : '' }}">
+                    <div class="rounded-[1.4rem] p-1.5 bg-gradient-to-b from-white/15 to-white/[.03] ring-1 ring-white/10 shadow-[0_30px_60px_-20px_rgba(0,0,0,.7)] transition duration-300 group-hover:-translate-y-1 group-hover:ring-brand-500/40">
+                        <img src="{{ asset('images/landing/' . $img . '.webp') }}" alt="Chat booking step {{ $step }}: {{ $label }}" width="403" height="622" loading="lazy" decoding="async"
+                             class="w-full h-auto rounded-2xl">
+                    </div>
+                    <figcaption class="mt-3.5 flex items-center gap-2.5 text-sm font-semibold text-white/90">
+                        <span class="grid place-items-center w-7 h-7 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-white text-xs shadow-lg shadow-brand-500/30">{{ $step }}</span>{{ $label }}
                     </figcaption>
                 </figure>
                 @endforeach
             </div>
+            <p class="sm:hidden px-5 text-xs text-accent-200/60">Swipe to see each step →</p>
         </div>
     </div>
 </section>

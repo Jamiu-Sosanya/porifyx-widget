@@ -340,8 +340,8 @@
 <div class="mt-6 bg-gray-900/50 border border-white/5 rounded-2xl overflow-hidden">
     <div class="flex items-center justify-between p-5 border-b border-white/5">
         <div class="flex items-center gap-2">
-            <div class="w-6 h-6 bg-cyan-500/20 rounded-lg flex items-center justify-center">
-                <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.118a1.125 1.125 0 0 1 .865-.501 48.394 48.394 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" /></svg>
+            <div class="w-6 h-6 bg-accent-500/20 rounded-lg flex items-center justify-center">
+                <svg class="w-3.5 h-3.5 text-accent-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.118a1.125 1.125 0 0 1 .865-.501 48.394 48.394 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" /></svg>
             </div>
             <h3 class="text-base font-semibold text-white">Recent Conversation Summaries</h3>
         </div>
@@ -374,7 +374,7 @@
                     @if($summary['quality_grade'])
                     <div class="inline-block px-2 py-0.5 rounded-lg text-[10px] font-bold ml-2
                         {{ $summary['quality_grade'] === 'A' ? 'bg-emerald-500/20 text-emerald-300' : 
-                           ($summary['quality_grade'] === 'B' ? 'bg-blue-500/20 text-blue-300' : 
+                           ($summary['quality_grade'] === 'B' ? 'bg-accent-500/20 text-accent-300' : 
                             ($summary['quality_grade'] === 'C' ? 'bg-amber-500/20 text-amber-300' : 'bg-rose-500/20 text-rose-300')) }}">
                         Grade {{ $summary['quality_grade'] }}
                     </div>
@@ -389,7 +389,7 @@
                 <ul class="space-y-1">
                     @foreach(array_slice($summary['action_items'], 0, 2) as $item)
                     <li class="flex items-start gap-2 text-[11px] text-gray-400">
-                        <span class="text-cyan-400 mt-0.5">→</span>
+                        <span class="text-accent-400 mt-0.5">→</span>
                         <span class="line-clamp-1">{{ $item }}</span>
                     </li>
                     @endforeach
@@ -413,8 +413,8 @@
     </div>
     @else
     <div class="p-8 text-center">
-        <div class="w-12 h-12 bg-cyan-500/10 rounded-2xl flex items-center justify-center mx-auto mb-3">
-            <svg class="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.118a1.125 1.125 0 0 1 .865-.501 48.394 48.394 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" /></svg>
+        <div class="w-12 h-12 bg-accent-500/10 rounded-2xl flex items-center justify-center mx-auto mb-3">
+            <svg class="w-6 h-6 text-accent-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.118a1.125 1.125 0 0 1 .865-.501 48.394 48.394 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" /></svg>
         </div>
         <p class="text-sm font-medium text-white">No Conversation Summaries Yet</p>
         <p class="text-xs text-gray-500 mt-1">Summaries will appear as your AI processes completed conversations.</p>

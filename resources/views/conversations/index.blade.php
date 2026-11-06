@@ -59,7 +59,7 @@
             </div>
             <div class="text-right shrink-0">
                 @php
-                $statusColors = ['ai_active' => 'bg-brand-500/10 text-brand-400', 'human_active' => 'bg-emerald-500/10 text-emerald-400', 'open' => 'bg-blue-500/10 text-blue-400', 'resolved' => 'bg-gray-500/10 text-gray-400', 'spam' => 'bg-rose-500/10 text-rose-400'];
+                $statusColors = ['ai_active' => 'bg-brand-500/10 text-brand-400', 'human_active' => 'bg-emerald-500/10 text-emerald-400', 'open' => 'bg-accent-500/10 text-accent-400', 'resolved' => 'bg-gray-500/10 text-gray-400', 'spam' => 'bg-rose-500/10 text-rose-400'];
                 @endphp
                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium {{ $statusColors[$conv->status] ?? '' }}">
                     {{ str_replace('_', ' ', ucfirst($conv->status)) }}

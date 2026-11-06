@@ -554,7 +554,7 @@
             <div x-show="provider === 'anthropic'" class="p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl text-sm text-amber-300">
                 🧠 <strong>Anthropic Claude</strong> models excel at nuanced reasoning, long-context understanding, and following complex instructions. Requires an ANTHROPIC_API_KEY in your .env file.
             </div>
-            <div x-show="provider === 'gemini'" class="p-4 bg-sky-500/5 border border-sky-500/20 rounded-xl text-sm text-sky-300">
+            <div x-show="provider === 'gemini'" class="p-4 bg-accent-500/5 border border-accent-500/20 rounded-xl text-sm text-accent-300">
                 🔵 <strong>Google Gemini</strong> offers multimodal capabilities and competitive pricing. Requires a GEMINI_API_KEY in your .env file.
             </div>
 
@@ -593,8 +593,8 @@
                 </div>
             </label>
 
-            <label class="flex items-center gap-3 p-3 bg-sky-500/5 border border-sky-500/10 rounded-xl cursor-pointer">
-                <input type="checkbox" name="auto_language_detection" value="1" {{ $widget->auto_language_detection ? 'checked' : '' }} class="w-4 h-4 rounded text-sky-500 focus:ring-sky-500/30">
+            <label class="flex items-center gap-3 p-3 bg-accent-500/5 border border-accent-500/10 rounded-xl cursor-pointer">
+                <input type="checkbox" name="auto_language_detection" value="1" {{ $widget->auto_language_detection ? 'checked' : '' }} class="w-4 h-4 rounded text-accent-500 focus:ring-accent-500/30">
                 <div>
                     <span class="text-sm font-medium text-gray-300">🌐 Auto-Language Detection</span>
                     <p class="text-xs text-gray-500 mt-0.5">Automatically detect the visitor's language and respond in the same language.</p>

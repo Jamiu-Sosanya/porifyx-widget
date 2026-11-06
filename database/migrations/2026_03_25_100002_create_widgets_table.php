@@ -22,7 +22,7 @@ return new class extends Migration
 
             // Appearance
             $table->string('primary_color', 20)->default('#ff6a2b');
-            $table->string('secondary_color', 20)->default('#ffffff');
+            $table->string('secondary_color', 20)->default('#0d1a33');
             $table->string('text_color', 20)->default('#1f2937');
             $table->string('bg_color', 20)->default('#ffffff');
             $table->enum('position', ['bottom-right', 'bottom-left', 'top-right', 'top-left'])->default('bottom-right');

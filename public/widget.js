@@ -122,6 +122,17 @@
         return d.innerHTML;
     }
 
+    // Header gradient end. A white/very light secondary washed the header out
+    // (white text unreadable), so fall back to a darker shade of the primary.
+    function headerEnd() {
+        const hex = c => { const m = /^#?([0-9a-f]{6})$/i.exec((c || '').trim()); return m ? parseInt(m[1], 16) : null; };
+        const s = hex(config.secondary_color), p = hex(config.primary_color);
+        if (s !== null && (0.299 * (s >> 16) + 0.587 * ((s >> 8) & 255) + 0.114 * (s & 255)) < 200) return config.secondary_color;
+        if (p === null) return config.primary_color;
+        const d = v => Math.round(v * 0.55);
+        return 'rgb(' + d(p >> 16) + ',' + d((p >> 8) & 255) + ',' + d(p & 255) + ')';
+    }
+
     function escapeAttr(s) {
         return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
@@ -335,7 +346,7 @@
         return '<div id="pfx-chat" class="' + mHide + '" style="position:fixed;' + hPos + vPos + 'width:min(' + (+(config.launcher_style || {}).chat_w || 380) + 'px,calc(100vw - 32px));height:min(' + (+(config.launcher_style || {}).chat_h || 600) + 'px,calc(100vh - 110px));display:none;flex-direction:column;border-radius:16px;overflow:hidden;box-shadow:0 30px 80px -20px rgba(11,19,36,0.55);z-index:99999;font-family:' + (config.font_family || '\'Plus Jakarta Sans\',system-ui,-apple-system,sans-serif') + ';background:' + t.bg + ';border:1px solid ' + t.border + ';opacity:0;transform:translateY(24px) scale(0.97);transition:opacity 0.35s cubic-bezier(0.4,0,0.2,1),transform 0.35s cubic-bezier(0.4,0,0.2,1);">' +
 
             // ── Header ──
-            '<div id="pfx-header" style="padding:16px 16px 14px;background:linear-gradient(135deg,' + config.primary_color + ' 0%,' + (config.secondary_color || config.primary_color) + ' 100%);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-shrink:0;">' +
+            '<div id="pfx-header" style="padding:16px 16px 14px;background:linear-gradient(135deg,' + config.primary_color + ' 0%,' + headerEnd() + ' 100%);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-shrink:0;">' +
             '<div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1;">' +
             (config.ai_avatar
                 ? '<img src="' + escapeAttr(config.ai_avatar) + '" alt="" style="width:38px;height:38px;border-radius:12px;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,0.3);">'

@@ -26,7 +26,7 @@
                     <div class="flex items-center gap-2 min-w-0">
                         <p class="text-sm font-semibold text-white truncate">{{ $who }}</p>
                         @if($conversation->detected_language)
-                        <span class="px-1.5 py-0.5 bg-sky-500/10 text-sky-400 text-[10px] font-medium rounded uppercase">{{ $conversation->detected_language }}</span>
+                        <span class="px-1.5 py-0.5 bg-accent-500/10 text-accent-400 text-[10px] font-medium rounded uppercase">{{ $conversation->detected_language }}</span>
                         @endif
                     </div>
                     <p class="flex items-center gap-1.5 text-xs text-gray-500 min-w-0">
@@ -141,7 +141,7 @@
                             <span class="text-[11px] opacity-70 ml-auto" title="Sentiment: {{ $msg->sentiment_label ?? 'N/A' }} ({{ $msg->sentiment_score }})">{{ $sentimentEmoji }}</span>
                             @endif
                             @if($msg->detected_language && $msg->detected_language !== 'en')
-                            <span class="text-[9px] uppercase text-sky-400/60">{{ $msg->detected_language }}</span>
+                            <span class="text-[9px] uppercase text-accent-400/60">{{ $msg->detected_language }}</span>
                             @endif
                         </div>
                     </div>
@@ -202,7 +202,7 @@
                 <div class="flex justify-between"><span class="text-gray-500 text-xs">Name</span><span class="text-white text-xs font-medium">{{ $conversation->visitor->name }}</span></div>
                 @endif
                 @if($conversation->visitor?->email)
-                <div class="flex justify-between items-center"><span class="text-gray-500 text-xs">Email</span><span class="text-sky-400 text-xs">{{ $conversation->visitor->email }}</span></div>
+                <div class="flex justify-between items-center"><span class="text-gray-500 text-xs">Email</span><span class="text-accent-400 text-xs">{{ $conversation->visitor->email }}</span></div>
                 @endif
                 @if($conversation->visitor?->phone)
                 <div class="flex justify-between"><span class="text-gray-500 text-xs">Phone</span><span class="text-white text-xs">{{ $conversation->visitor->phone }}</span></div>

@@ -54,7 +54,7 @@
         @php
             $eventColors = [
                 'created'  => ['bg-emerald-500/10 text-emerald-400', 'emerald'],
-                'updated'  => ['bg-sky-500/10 text-sky-400',         'sky'],
+                'updated'  => ['bg-accent-500/10 text-accent-400',         'sky'],
                 'deleted'  => ['bg-rose-500/10 text-rose-400',       'rose'],
                 'login'    => ['bg-brand-500/10 text-brand-400',   'brand'],
                 'logout'   => ['bg-gray-500/10 text-gray-400',       'gray'],

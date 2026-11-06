@@ -50,7 +50,7 @@
             ['Resolved',       number_format($stats['resolved_total']), 'text-accent-400'],
             ['Messages',       number_format($widget->total_messages), 'text-white'],
             ['Leads',          number_format($widget->total_leads), 'text-amber-400'],
-            ['Knowledge Bases',number_format($stats['knowledge_bases']), 'text-sky-400'],
+            ['Knowledge Bases',number_format($stats['knowledge_bases']), 'text-accent-400'],
             ['Avg CSAT',       $stats['avg_csat'] !== null ? $stats['avg_csat'].'/5' : '—', 'text-rose-300'],
         ] as [$label, $value, $color])
         <div class="bg-gray-900/50 border border-white/5 rounded-2xl p-4 text-center hover:border-white/10 transition">
@@ -148,7 +148,7 @@
                 $statusColors = [
                     'ai_active'    => 'bg-brand-500/10 text-brand-400',
                     'human_active' => 'bg-emerald-500/10 text-emerald-400',
-                    'open'         => 'bg-blue-500/10 text-blue-400',
+                    'open'         => 'bg-accent-500/10 text-accent-400',
                     'resolved'     => 'bg-gray-500/10 text-gray-400',
                     'spam'         => 'bg-rose-500/10 text-rose-400',
                 ];

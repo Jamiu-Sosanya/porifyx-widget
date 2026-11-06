@@ -137,7 +137,7 @@
                             <div class="w-7 h-7 rounded-lg bg-{{ $color }}-500/10 flex items-center justify-center text-[10px] font-bold text-{{ $color }}-400 shrink-0">
                                 {{ strtoupper(substr($lead->name ?? $lead->email ?? '?', 0, 1)) }}
                             </div>
-                            <div class="flex items-center gap-1 text-[10px] font-medium {{ $lead->temperature === 'hot' ? 'text-rose-400' : ($lead->temperature === 'warm' ? 'text-amber-400' : 'text-sky-400') }}">
+                            <div class="flex items-center gap-1 text-[10px] font-medium {{ $lead->temperature === 'hot' ? 'text-rose-400' : ($lead->temperature === 'warm' ? 'text-amber-400' : 'text-accent-400') }}">
                                 @if($lead->temperature === 'hot')🔥@elseif($lead->temperature === 'warm')☀️@else❄️@endif
                             </div>
                         </div>
