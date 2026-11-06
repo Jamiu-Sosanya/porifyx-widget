@@ -73,7 +73,7 @@
     <button @click="sidebarOpen = true" class="p-2 -ml-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5" aria-label="Open menu">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
     </button>
-    <a href="{{ route('dashboard') }}" class="flex items-center gap-2">@include('layouts.partials.logo')</a>
+    <a href="{{ route('dashboard') }}" class="flex items-center gap-2">@include('layouts.partials.logo', ['size' => 30])</a>
     <div class="ml-auto flex items-center gap-1">@include('layouts.partials.topbar-actions')</div>
 </header>
 
@@ -85,8 +85,7 @@
     <div class="h-full flex flex-col rounded-3xl border border-white/[0.07] bg-gradient-to-b from-[#0d1428] to-[#080c18] shadow-2xl shadow-black/40 overflow-hidden">
         <div class="px-5 pt-5 pb-4 flex items-center justify-between">
             <a href="{{ $isAdmin ? route('admin.dashboard') : route('dashboard') }}" class="flex items-center gap-2.5 min-w-0">
-                @include('layouts.partials.logo')
-                <span class="text-[15px] font-bold text-white tracking-tight truncate">{{ config('branding.name') }}</span>
+                @include('layouts.partials.logo', ['size' => 34, 'tone' => 'white'])
             </a>
             <button @click="sidebarOpen = false" class="lg:hidden p-1.5 rounded-lg text-gray-500 hover:text-white" aria-label="Close menu">✕</button>
         </div>

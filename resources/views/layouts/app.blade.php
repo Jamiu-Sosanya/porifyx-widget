@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" id="html-root" class="dark">
 <head>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="/images/icon-192x192.png">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -17,8 +20,6 @@
     <meta name="msapplication-TileImage" content="/images/icon-192x192.png">
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/images/icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/images/icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="/images/icon-512x512.png">
     
     <title>@yield('title', 'Dashboard') — {{ config('app.name') }}</title>
     <link rel="preconnect" href="https://fonts.bunny.net">

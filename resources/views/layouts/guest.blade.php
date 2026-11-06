@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
 <head>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="/images/icon-192x192.png">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -17,8 +20,7 @@
             <div class="absolute -bottom-40 -left-40 w-[28rem] h-[28rem] rounded-full bg-brand-500/25 blur-3xl"></div>
             <div class="relative z-10 flex flex-col justify-between p-12 w-full">
                 <a href="{{ route('home') }}" class="flex items-center gap-3">
-                    @include('layouts.partials.logo', ['size' => 38])
-                    <span class="text-xl font-extrabold tracking-tight text-white">{{ config('branding.name') }}</span>
+                    @include('layouts.partials.logo', ['size' => 44, 'tone' => 'white'])
                 </a>
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-[.18em] text-accent-400">Answer · Qualify · Hand off</p>
@@ -44,8 +46,7 @@
             <div class="w-full max-w-md">
                 {{-- Mobile logo --}}
                 <div class="lg:hidden mb-8 flex items-center gap-3">
-                    @include('layouts.partials.logo')
-                    <span class="text-xl font-bold">{{ config('app.name') }}</span>
+                    @include('layouts.partials.logo', ['size' => 40])
                 </div>
 
                 @if(session('status'))

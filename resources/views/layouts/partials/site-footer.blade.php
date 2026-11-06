@@ -3,7 +3,7 @@
     <div class="max-w-6xl mx-auto px-5 pt-16 pb-24 sm:pb-10">
         <div class="grid grid-cols-2 md:grid-cols-6 gap-x-6 gap-y-10">
             <div class="col-span-2">
-                <a href="{{ route('home') }}" class="flex items-center gap-2.5 font-extrabold text-lg">@include('layouts.partials.logo', ['size' => 30]) {{ $name }}</a>
+                <a href="{{ route('home') }}" class="flex items-center gap-2.5 font-extrabold text-lg">@include('layouts.partials.logo', ['size' => 36])</a>
                 <p class="mt-4 text-sm leading-relaxed max-w-xs {{ $muted }}">{{ config('branding.tagline') }}</p>
                 <a href="mailto:{{ config('branding.support_email') }}" class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-brand-600 dark:text-brand-400 break-all">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l9 6 9-6M5 19h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2z"/></svg>{{ config('branding.support_email') }}

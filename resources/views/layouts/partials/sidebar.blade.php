@@ -10,8 +10,7 @@
     {{-- Logo --}}
     <div class="h-16 flex items-center px-5 border-b border-white/5 shrink-0">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-3 overflow-hidden">
-            @include('layouts.partials.logo')
-            <span class="text-base font-bold text-white whitespace-nowrap" x-show="!sidebarCollapsed" x-transition>{{ config('branding.name') }}</span>
+            @include('layouts.partials.logo', ['size' => 32, 'tone' => 'white'])
         </a>
     </div>
 

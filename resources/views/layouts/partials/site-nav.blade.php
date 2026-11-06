@@ -2,7 +2,7 @@
 <header class="sticky top-0 z-40 border-b border-slate-200/70 bg-[#f6f7fb]/80 backdrop-blur-lg dark:border-white/10 dark:bg-[#08122a]/80">
     <nav class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between gap-4">
         <a href="{{ url('/') }}" class="flex items-center gap-2.5 font-extrabold tracking-tight text-lg shrink-0">
-            @include('layouts.partials.logo', ['size' => 32]) <span>{{ $name }}</span>
+            @include('layouts.partials.logo', ['size' => 36])
         </a>
         <div class="hidden lg:flex items-center gap-7 text-sm font-medium {{ $muted }}">
             <a href="{{ $home }}#features" class="hover:text-slate-900 dark:hover:text-white">Features</a>
